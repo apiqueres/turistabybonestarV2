@@ -26,7 +26,7 @@ export const siteContent: SiteContent = {
     hero: {
       kicker: "Gestión de viajes a medida · Sueca, Valencia",
       word: "Viaja",
-      subtitle: ["Tú eliges el mundo. Nosotros lo ordenamos.", "Sin paquetes cerrados: el viaje entero alrededor de cómo viajas tú."],
+      subtitle: ["Tú eliges el destino. Nosotros lo ordenamos.", "Sin paquetes cerrados: el viaje entero alrededor de cómo viajas tú."],
       primary: { label: "¿Dónde nos vamos?", href: "/donde-nos-vamos" },
       secondary: { label: "O cuéntanos cómo viajas", href: "/como-viajas" },
       video: { mp4: "/media/hero.mp4", poster: "/media/hero-poster.webp" },
@@ -36,8 +36,8 @@ export const siteContent: SiteContent = {
       steps: [
         {
           number: "01",
-          title: ["Eliges el destino.", "O no lo eliges."],
-          text: "Marca en el mapa los sitios que te tiran: cualquier país vale, aunque de doce nos sabemos hasta los horarios. Con uno basta para empezar.",
+          title: ["Eliges el destino.", "Tú decides dónde."],
+          text: "Marca en el mapa el país o los países a los que quieres ir. Cualquiera vale, aunque de doce nos sabemos hasta los horarios.",
         },
         {
           number: "02",
@@ -144,7 +144,7 @@ export const siteContent: SiteContent = {
     },
     closing: {
       kicker: "¿Empezamos?",
-      title: ["Dinos dónde,", "o dinos cómo."],
+      title: ["Dinos dónde vas.", "Nosotros lo montamos."],
       image: { src: "/media/pan-closing.webp", alt: "Dunas del desierto al atardecer con dos viajeros a lo lejos" },
       primary: { label: "Abrir el mapa", href: "/donde-nos-vamos" },
       secondary: { label: "Cuéntanos cómo viajas", href: "/como-viajas" },
@@ -180,7 +180,7 @@ export const siteContent: SiteContent = {
       submit: "Enviar",
     },
     success: { title: "Recibido.", text: "Te escribimos en menos de 24 horas laborables." },
-    mapNudge: { text: "¿Todavía no sabes dónde? Empieza por el mapa.", cta: { label: "¿Dónde nos vamos?", href: "/donde-nos-vamos" } },
+    mapNudge: { text: "¿Ya sabes dónde vas? Márcalo en el mapa.", cta: { label: "¿Dónde nos vamos?", href: "/donde-nos-vamos" } },
   },
   footer: {
     sections: "Secciones",

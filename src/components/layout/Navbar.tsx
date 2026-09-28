@@ -54,11 +54,13 @@ export function Navbar({ brand, links, cta }: Props) {
             </Link>
           ))}
         </nav>
-        <div className="nav-cta">
-          <Link href={cta.href} className="btn btn-primary btn-sm" onClick={scrollIfSame(cta.href)}>
-            {cta.label}
-          </Link>
-        </div>
+        {pathname === "/" && (
+          <div className="nav-cta">
+            <Link href={cta.href} className="btn btn-primary btn-sm" onClick={scrollIfSame(cta.href)}>
+              {cta.label}
+            </Link>
+          </div>
+        )}
         <button
           className="nav-burger"
           aria-label={open ? "Cerrar menú" : "Abrir menú"}
@@ -74,9 +76,11 @@ export function Navbar({ brand, links, cta }: Props) {
             {l.label}
           </Link>
         ))}
-        <Link href={cta.href} onClick={() => setOpen(false)} className="btn btn-primary self-start mt-4">
-          {cta.label}
-        </Link>
+        {pathname === "/" && (
+          <Link href={cta.href} onClick={() => setOpen(false)} className="btn btn-primary self-start mt-4">
+            {cta.label}
+          </Link>
+        )}
       </div>
     </>
   );

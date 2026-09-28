@@ -39,7 +39,7 @@ export function Wizard({ content, destinations, brand }: Props) {
   const [answers, setAnswers, hydrated] = usePersistedState<Answers>(KEYS.form, EMPTY);
   const [status, setStatus] = useState<Status>({ kind: "idle" });
 
-  // Once hydrated, merge the map selection (and ?indeciso=1) into the stored answers, one time.
+  // Once hydrated, merge the map selection into the stored answers, one time.
   const merged = useRef(false);
   useEffect(() => {
     if (!hydrated || merged.current) return;
