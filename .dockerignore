@@ -1,0 +1,8 @@
+node_modules
+.next
+.git
+.claude
+scripts/media-manifest-*.json
+public/brand/logo-source.png
+*.md
+!README.md

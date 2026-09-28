@@ -1,0 +1,15 @@
+services:
+  web:
+    build: .
+    image: turistabybonestar/web:latest
+    container_name: tbb-web
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:3000:3000"
+    env_file:
+      - .env
+    volumes:
+      # Solicitudes y mensajes de contacto en JSON (data/solicitudes, data/contacto)
+      - ./data:/app/data
+    # Cuando exista el backend, añade aquí los servicios `api` y `db` (PostgreSQL)
+    # y apúntalos desde API_URL en .env.
