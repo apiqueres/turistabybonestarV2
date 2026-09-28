@@ -56,7 +56,7 @@ src/
     form/                    Wizard, StepView, QuestionField, DestinationsStep, Summary, SuccessView
     contact/                 ContactForm
   data/site.ts               textos de todas las rutas
-  data/destinations.json     los 12 destinos (id ISO numérico, ficha, lon/lat, imagen)
+  data/destinations.json     los 12 destinos (id ISO numérico, ficha sin precios, lon/lat, imagen)
   data/form.ts               los 8 pasos del asistente
   generated/world-map.json   mapa pre-proyectado (no editar a mano)
   lib/                       content.ts (capa de datos), storage.ts, validation.ts, store.ts, gsap.ts, motion.ts, useMotion.ts

@@ -40,7 +40,7 @@ export function QuestionField({ question: q, answers, setAnswer, destinations }:
               <button key={o.id} type="button" className={`${cls} ${on ? "is-on" : ""} ${!on && full ? "is-off" : ""}`} aria-pressed={on} onClick={() => toggle(o.id)}>
                 {q.layout === "cards" ? (
                   <>
-                    <div className="text-[22px] tracking-tight leading-tight">{o.label}</div>
+                    <div className="opt-title">{o.label}</div>
                     {o.text && <p className="t-body t-small mt-3">{o.text}</p>}
                   </>
                 ) : (

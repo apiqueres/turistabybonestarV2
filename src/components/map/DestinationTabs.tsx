@@ -21,7 +21,6 @@ export function DestinationTabs({ content, items, activeId, onSelectTab, selecte
     ["Mejor época", active.bestSeason],
     ["Vuelo desde Valencia", active.flight],
     ["Duración sugerida", active.duration],
-    ["Desde", `${active.priceFrom} / persona`],
   ];
 
   return (

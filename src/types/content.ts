@@ -44,7 +44,6 @@ export interface Destination {
   bestSeason: string;
   flight: string;
   duration: string;
-  priceFrom: string;
   includes: string[];
   image: Media;
   featured?: boolean;

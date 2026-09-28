@@ -28,6 +28,8 @@
   --color-line: var(--line);
   --color-accent: var(--accent);
   --font-sans: var(--font-inter);
+  --font-display: var(--font-serif);
+  --font-label: var(--font-mono);
 }
 
 /* ---------- Base ---------- */
@@ -41,7 +43,7 @@ html.is-loading {
 }
 body {
   font-family: var(--font-inter), Inter, system-ui, sans-serif;
-  font-weight: 600;
+  font-weight: 500;
   font-size: 16px;
   line-height: 1.6;
   -webkit-font-smoothing: antialiased;
@@ -73,25 +75,53 @@ button {
 }
 
 /* ---------- Typography ---------- */
+.t-hero,
+.t-h2,
+.t-h3,
+.t-stat,
+.t-giant,
+.t-lines,
+.t-serif {
+  font-family: var(--font-serif), "Instrument Serif", Georgia, serif;
+  font-weight: 400;
+}
 .t-hero {
-  font-size: clamp(72px, 13vw, 190px);
-  letter-spacing: -0.05em;
-  line-height: 0.92;
+  font-size: clamp(88px, 15vw, 210px);
+  letter-spacing: -0.02em;
+  line-height: 0.9;
 }
 .t-h2 {
-  font-size: clamp(40px, 4.6vw, 60px);
-  letter-spacing: -0.06em;
-  line-height: 1.1;
+  font-size: clamp(44px, 5.2vw, 68px);
+  letter-spacing: -0.02em;
+  line-height: 1.02;
 }
 .t-h3 {
-  font-size: 28px;
-  letter-spacing: -0.03em;
-  line-height: 1.15;
+  font-size: 32px;
+  letter-spacing: -0.01em;
+  line-height: 1.1;
 }
 .t-stat {
-  font-size: clamp(36px, 4vw, 45px);
-  letter-spacing: -0.04em;
+  font-size: clamp(44px, 4.6vw, 56px);
+  letter-spacing: -0.02em;
   line-height: 1;
+}
+.t-label,
+.kicker,
+.chip,
+.tab,
+.btn,
+.nav-links,
+.nav-menu,
+.brand-name,
+.section-label,
+.wiz-header,
+.wiz-footer,
+.field label,
+.check,
+.partner,
+.summary dt,
+.map-tooltip {
+  font-family: var(--font-mono), "IBM Plex Mono", ui-monospace, monospace;
 }
 .t-body {
   color: var(--muted-strong);
@@ -107,13 +137,13 @@ button {
 }
 .t-giant {
   font-size: clamp(32px, 4vw, 48px);
-  letter-spacing: -0.04em;
+  letter-spacing: -0.01em;
   line-height: 1.05;
 }
 .t-lines {
-  font-size: clamp(36px, 5vw, 64px);
-  letter-spacing: -0.05em;
-  line-height: 1.05;
+  font-size: clamp(34px, 4.6vw, 60px);
+  letter-spacing: -0.01em;
+  line-height: 1.08;
 }
 
 /* ---------- Layout primitives ---------- */
@@ -141,7 +171,9 @@ button {
   display: inline-flex;
   align-items: center;
   gap: 10px;
-  font-size: 14px;
+  font-size: 12px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
   line-height: 1;
   z-index: 3;
 }
@@ -167,7 +199,10 @@ button {
   gap: 10px;
   padding: 20px 32px;
   border-radius: 80px;
-  font-size: 16px;
+  font-size: 13px;
+  font-weight: 500;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
   line-height: 1;
   white-space: nowrap;
   transition:
@@ -193,7 +228,7 @@ button {
 }
 .btn-sm {
   padding: 14px 22px;
-  font-size: 14px;
+  font-size: 12px;
 }
 .btn .btn-icon {
   width: 16px;
@@ -207,6 +242,10 @@ button {
   display: inline-flex;
   align-items: center;
   gap: 8px;
+  font-family: var(--font-mono), ui-monospace, monospace;
+  font-size: 12px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
 }
 .link-arrow svg {
   width: 16px;
@@ -301,9 +340,11 @@ html.reduced-motion .hero-el {
   margin-left: auto;
   display: flex;
   align-items: center;
-  gap: 36px;
+  gap: 32px;
   padding: 0 40px;
-  font-size: 14px;
+  font-size: 12px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
 }
 .nav-link {
   position: relative;
@@ -337,8 +378,9 @@ html.reduced-motion .hero-el {
   flex-direction: column;
   padding: 40px var(--gutter);
   gap: 28px;
-  font-size: 32px;
-  letter-spacing: -0.04em;
+  font-size: 16px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
   transform: translateY(-8px);
   opacity: 0;
   pointer-events: none;
@@ -1032,4 +1074,66 @@ html.reduced-motion .hero-el {
   width: 26%;
   transform: translate(-50%, -50%);
   opacity: 0.55;
+}
+
+/* ---------- Typography helpers (serif/mono) ---------- */
+.opt-title {
+  font-family: var(--font-serif), Georgia, serif;
+  font-size: 26px;
+  line-height: 1.05;
+}
+.opt-card .t-body {
+  font-size: 15px;
+}
+.map-scroll {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior-x: contain;
+  scrollbar-width: thin;
+}
+.map-canvas {
+  position: relative;
+  width: 100%;
+}
+@media (max-width: 900px) {
+  .map-canvas {
+    width: 960px;
+  }
+  .t-h3 {
+    font-size: 28px;
+  }
+  .opt-title {
+    font-size: 22px;
+  }
+  .btn {
+    padding: 16px 24px;
+  }
+}
+
+/* ---------- Mobile: natural section heights, compact wizard header ---------- */
+@media (max-width: 900px) {
+  .section,
+  .section .min-h-\[100svh\],
+  .section .min-h-\[calc\(100svh-var\(--nav-h\)-152px\)\] {
+    min-height: 0 !important;
+  }
+  .section-inner {
+    padding-top: calc(var(--nav-h) + 56px);
+    padding-bottom: 48px;
+  }
+  .wiz-body {
+    padding-top: 40px;
+  }
+}
+@media (max-width: 560px) {
+  .wiz-header .brand-name,
+  .nav-logo .brand-name {
+    display: none;
+  }
+  .wiz-header {
+    font-size: 11px;
+  }
+  .t-hero {
+    font-size: clamp(72px, 22vw, 110px);
+  }
 }

@@ -44,12 +44,9 @@ export function DestinationsGrid({ data, items }: Props) {
                   <span className="t-small t-muted whitespace-nowrap">{d.duration}</span>
                 </div>
                 <p className="t-body t-small mt-3 max-w-[38ch]">{d.tagline}</p>
-                <div className="flex items-baseline justify-between gap-4 mt-6 t-small">
-                  <span className="t-muted uppercase tracking-[0.12em] text-[12px]">{d.region}</span>
-                  <span>
-                    <span className="t-muted">Desde </span>
-                    {d.priceFrom}
-                  </span>
+                <div className="flex items-baseline justify-between gap-4 mt-6">
+                  <span className="kicker">{d.region}</span>
+                  <span className="kicker">{d.code}</span>
                 </div>
               </div>
             </Link>

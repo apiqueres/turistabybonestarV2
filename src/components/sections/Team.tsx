@@ -50,7 +50,7 @@ export function Team({ data }: { data: SiteContent["home"]["team"] }) {
                 className="absolute inset-x-0 bottom-0 p-6 pt-28 on-dark"
                 style={{ background: "linear-gradient(to top, rgba(11,15,16,0.92) 0%, rgba(11,15,16,0.45) 55%, rgba(11,15,16,0) 100%)" }}
               >
-                <div className="text-[20px] tracking-tight leading-tight">{m.name}</div>
+                <div className="t-serif text-[24px] leading-tight">{m.name}</div>
                 <div className="t-muted t-small mt-1">{m.role}</div>
               </div>
             </button>

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import map from "@/generated/world-map.json";
 
 interface Props {
@@ -17,10 +17,19 @@ interface Props {
 export function CountryMap({ recommended, selected, onToggle, legend }: Props) {
   const [hover, setHover] = useState<string | null>(null);
   const hoverCountry = hover ? map.countries.find((c) => c.id === hover) : undefined;
+  const scroll = useRef<HTMLDivElement>(null);
+
+  // On narrow screens the map is wider than the viewport: start centred on Europe/Africa.
+  useEffect(() => {
+    const el = scroll.current;
+    if (!el) return;
+    if (el.scrollWidth > el.clientWidth) el.scrollLeft = (el.scrollWidth - el.clientWidth) * 0.55;
+  }, []);
 
   return (
     <div>
-      <div className="relative w-full" style={{ aspectRatio: `${map.width} / ${map.height}` }}>
+      <div ref={scroll} className="map-scroll">
+      <div className="map-canvas" style={{ aspectRatio: `${map.width} / ${map.height}` }}>
         <svg viewBox={`0 0 ${map.width} ${map.height}`} className="w-full h-full" role="group" aria-label="Mapa de países">
           {map.countries.map((c) => {
             const isRec = recommended.has(c.id);
@@ -65,6 +74,8 @@ export function CountryMap({ recommended, selected, onToggle, legend }: Props) {
           </div>
         )}
       </div>
+      </div>
+      <div className="kicker mt-3 md:hidden">Desliza el mapa hacia los lados para recorrerlo</div>
       <div className="rule mt-4 pt-4 flex flex-col sm:flex-row sm:justify-between gap-2 kicker">
         <span>{legend[0]}</span>
         <span>{legend[1]}</span>

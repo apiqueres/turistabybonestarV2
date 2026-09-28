@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
+import { IBM_Plex_Mono, Instrument_Serif, Inter } from "next/font/google";
 import "./globals.css";
 import { Loader } from "@/components/motion/Loader";
 import { PlaneTransition } from "@/components/motion/PlaneTransition";
@@ -7,8 +7,24 @@ import { RouteTransition } from "@/components/motion/RouteTransition";
 
 const inter = Inter({
   subsets: ["latin"],
-  weight: ["600"],
+  weight: ["400", "500", "600"],
   variable: "--font-inter",
+  display: "swap",
+});
+
+// Editorial serif for headlines and a monospaced face for labels, in the spirit of the brand mark.
+const serif = Instrument_Serif({
+  subsets: ["latin"],
+  weight: "400",
+  style: ["normal", "italic"],
+  variable: "--font-serif",
+  display: "swap",
+});
+
+const mono = IBM_Plex_Mono({
+  subsets: ["latin"],
+  weight: ["400", "500"],
+  variable: "--font-mono",
   display: "swap",
 });
 
@@ -31,7 +47,7 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="es" className={`${inter.variable} is-loading`}>
+    <html lang="es" className={`${inter.variable} ${serif.variable} ${mono.variable} is-loading`}>
       <body>
         <Loader />
         <PlaneTransition />
