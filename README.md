@@ -45,7 +45,13 @@ Para pasar a producción: sustituir `src/lib/admin/auth.ts` por Auth.js y los ho
 - Por defecto abre el programa de correo del visitante con un `mailto:` ya relleno (asunto y brief). Sirve para la demo en GitHub Pages sin configurar nada.
 - Si se definen `NEXT_PUBLIC_EMAILJS_SERVICE`, `NEXT_PUBLIC_EMAILJS_TEMPLATE` y `NEXT_PUBLIC_EMAILJS_PUBLIC_KEY` (cuenta gratuita de EmailJS, plantilla con los campos `to_email`, `subject`, `message`, `reply_to`, `from_name`), el envío se hace desde el navegador a través de la API pública de EmailJS, sin servidor propio.
 
-Se usa en la pantalla final del asistente («Enviar por correo»), en el formulario de contacto y en el panel de solicitudes (enviar el brief al cliente).
+Plantillas (`src/lib/email-shell.ts` y `src/lib/email-templates.ts`): correo HTML con el estilo de la web (serif, monoespaciada, cian), con versión en texto plano para `mailto:`.
+
+- **Confirmación al cliente** (`clientConfirmationEmail`): se envía al terminar el asistente si EmailJS está configurado; en la pantalla final siempre hay «Ver el correo que recibirás» para abrir la vista previa.
+- **Mensaje del gestor** (`clientMessageEmail`): desde el panel, en la ficha de cada solicitud, «Escribir al cliente» abre un compositor con asunto, mensaje, firma, resumen opcional de la solicitud y vista previa en vivo.
+- El brief interno `.txt` (`buildPrompt`) tiene formato alineado con reglas y columnas, pensado para leerse en texto plano.
+
+Para enviar HTML con EmailJS, la plantilla del servicio debe imprimir `{{{message_html}}}` (triple llave) en el cuerpo.
 
 ## Dónde se guardan las solicitudes
 

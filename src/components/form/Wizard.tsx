@@ -12,17 +12,19 @@ import { StepView } from "./StepView";
 import { countryName } from "./DestinationsStep";
 import { STATIC_DEMO } from "@/lib/config";
 import { buildPrompt } from "@/lib/prompt";
+import type { EmailBrand } from "@/lib/email-shell";
+import { clientConfirmationEmail } from "@/lib/email-templates";
+import { emailJsConfigured, sendDemoMail } from "@/lib/email";
 import { SuccessView } from "./SuccessView";
 
 interface Props {
   content: FormContent;
   destinations: Destination[];
-  brand: string;
-  /** Agency inbox used by the front-only "send by e-mail" demo. */
-  agencyEmail: string;
+  brand: EmailBrand;
 }
 
-type Status = { kind: "idle" | "sending" | "missing" | "missingDestination" | "error" } | { kind: "done"; id: string; prompt?: string };
+type Status = { kind: "idle" | "sending" | "missing" | "missingDestination" | "error" } | { kind: "done"; id: string; prompt?: string; payload: SolicitudPayload };
+type SolicitudPayload = { destinos: { id: string; nombre: string }[]; respuestas: Answers; contacto: { nombre: string; email: string; telefono: string; canal: string; privacidad: true } };
 const PROCESSING_MS = 2000;
 const delay = (ms: number) => new Promise((r) => window.setTimeout(r, ms));
 const CONTACT_KEYS = ["nombre", "email", "telefono", "canal", "privacidad"];
@@ -31,7 +33,7 @@ const pad = (n: number) => String(n).padStart(2, "0");
 const EMPTY: Answers = {};
 
 /** Full-screen multi-step form. Answers persist in localStorage until they are sent. */
-export function Wizard({ content, destinations, brand, agencyEmail }: Props) {
+export function Wizard({ content, destinations, brand }: Props) {
   const params = useSearchParams();
   const steps = content.steps;
   const total = steps.length;
@@ -127,7 +129,12 @@ export function Wizard({ content, destinations, brand, agencyEmail }: Props) {
       }
       removeKey(KEYS.form);
       removeKey(KEYS.selection);
-      setStatus({ kind: "done", id, prompt });
+      // Branded confirmation to the client, from the browser, when EmailJS is configured.
+      if (emailJsConfigured) {
+        const mail = clientConfirmationEmail(id, payload, brand);
+        sendDemoMail({ to: email, subject: mail.subject, text: mail.text, html: mail.html, replyTo: brand.email, fromName: brand.name }).catch(() => {});
+      }
+      setStatus({ kind: "done", id, prompt, payload });
       window.scrollTo({ top: 0 });
     } catch {
       setStatus({ kind: "error" });
@@ -159,13 +166,13 @@ export function Wizard({ content, destinations, brand, agencyEmail }: Props) {
     return () => window.removeEventListener("keydown", onKey);
   }, []);
 
-  if (status.kind === "done") return <SuccessView content={content.success} id={status.id} brand={brand} prompt={status.prompt} agencyEmail={agencyEmail} demo={STATIC_DEMO} />;
+  if (status.kind === "done") return <SuccessView content={content.success} id={status.id} brand={brand} prompt={status.prompt} payload={status.payload} demo={STATIC_DEMO} />;
 
   const current = steps[step];
   return (
     <div className="wiz">
       <header className="wiz-header">
-        <div title={brand}>
+        <div title={brand.name}>
           <Brand />
         </div>
         <div className="flex items-center gap-8">

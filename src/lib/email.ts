@@ -16,6 +16,8 @@ export interface DemoMail {
   to: string;
   subject: string;
   text: string;
+  /** Optional HTML body; EmailJS templates can print it with {{{message_html}}}. */
+  html?: string;
   replyTo?: string;
   fromName?: string;
 }
@@ -36,7 +38,7 @@ export async function sendDemoMail(mail: DemoMail): Promise<"sent" | "mailto"> {
         service_id: SERVICE,
         template_id: TEMPLATE,
         user_id: PUBLIC_KEY,
-        template_params: { to_email: mail.to, subject: mail.subject, message: mail.text, reply_to: mail.replyTo ?? "", from_name: mail.fromName ?? "Web TuristaByBonestar" },
+        template_params: { to_email: mail.to, subject: mail.subject, message: mail.text, message_html: mail.html ?? "", reply_to: mail.replyTo ?? "", from_name: mail.fromName ?? "Web TuristaByBonestar" },
       }),
     });
     if (!res.ok) throw new Error(`EmailJS ${res.status}`);

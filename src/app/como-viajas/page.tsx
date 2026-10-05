@@ -9,7 +9,7 @@ export default async function FormPage() {
   const [site, form] = await Promise.all([getSiteContent(), getFormContent()]);
   return (
     <Suspense fallback={<div className="wiz" />}>
-      <Wizard content={form} destinations={site.destinations} brand={site.brand.name} agencyEmail={site.brand.email} />
+      <Wizard content={form} destinations={site.destinations} brand={site.brand} />
     </Suspense>
   );
 }

@@ -3,5 +3,5 @@ import { getSiteContent } from "@/lib/content";
 
 export default async function RequestsPage() {
   const { brand } = await getSiteContent();
-  return <RequestsAdmin agencyEmail={brand.email} />;
+  return <RequestsAdmin brand={brand} />;
 }

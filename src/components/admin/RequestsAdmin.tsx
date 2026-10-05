@@ -4,18 +4,20 @@ import { useMemo, useState } from "react";
 import type { StoredRequest, RequestStatus } from "@/data/mock-solicitudes";
 import { useRequests, useFormSteps } from "@/lib/admin/data";
 import { buildPrompt } from "@/lib/prompt";
-import { sendDemoMail, emailJsConfigured } from "@/lib/email";
+import type { EmailBrand } from "@/lib/email-shell";
+import { clientConfirmationEmail, openPreview } from "@/lib/email-templates";
+import { MessageComposer } from "./MessageComposer";
 import { ArrowRight, Close } from "@/components/ui/icons";
 
 const STATUS: Record<RequestStatus, string> = { nueva: "Nueva", "en-curso": "En curso", cerrada: "Cerrada" };
 const fmtDate = (iso: string) => new Date(iso).toLocaleString("es-ES", { dateStyle: "medium", timeStyle: "short" });
 
-export function RequestsAdmin({ agencyEmail }: { agencyEmail: string }) {
+export function RequestsAdmin({ brand }: { brand: EmailBrand }) {
   const { requests, update } = useRequests();
   const { steps } = useFormSteps();
   const [openId, setOpenId] = useState<string | null>(null);
   const [filter, setFilter] = useState<RequestStatus | "todas">("todas");
-  const [mailState, setMailState] = useState<string | null>(null);
+  const [composing, setComposing] = useState(false);
 
   const list = useMemo(() => (filter === "todas" ? requests : requests.filter((r) => r.status === filter)), [requests, filter]);
   const open = requests.find((r) => r.id === openId) ?? null;
@@ -42,21 +44,6 @@ export function RequestsAdmin({ agencyEmail }: { agencyEmail: string }) {
     a.click();
     URL.revokeObjectURL(url);
   };
-  const mail = async (r: StoredRequest) => {
-    try {
-      const how = await sendDemoMail({
-        to: r.data.contacto.email,
-        subject: `Tu propuesta de viaje · ${r.data.destinos.map((d) => d.nombre).join(", ")}`,
-        text: brief(r),
-        replyTo: agencyEmail,
-        fromName: "TuristaByBonestar",
-      });
-      setMailState(how === "sent" ? "Correo enviado." : "Se ha abierto tu cliente de correo con el brief.");
-    } catch {
-      setMailState("No se pudo enviar el correo.");
-    }
-  };
-
   return (
     <>
       <div className="admin-head">
@@ -158,13 +145,24 @@ export function RequestsAdmin({ agencyEmail }: { agencyEmail: string }) {
               <pre className="pre">{brief(open)}</pre>
             </div>
             <div className="flex flex-wrap gap-3 items-center">
-              <button type="button" className="btn btn-secondary btn-sm" onClick={() => download(open)}>Descargar .txt</button>
-              <button type="button" className="btn btn-primary btn-sm" onClick={() => mail(open)}>
-                {emailJsConfigured ? "Enviar brief al cliente" : "Enviar por correo"}
+              <button type="button" className="btn btn-primary btn-sm" onClick={() => setComposing((v) => !v)}>
+                {composing ? "Cerrar mensaje" : "Escribir al cliente"}
                 <ArrowRight className="btn-icon" />
               </button>
-              {mailState && <span className="form-status">{mailState}</span>}
+              <button type="button" className="btn btn-secondary btn-sm" onClick={() => download(open)}>Descargar brief .txt</button>
+              <button type="button" className="btn btn-secondary btn-sm" onClick={() => openPreview(clientConfirmationEmail(open.id, open.data, brand))}>
+                Ver correo de confirmación
+              </button>
             </div>
+            {composing && (
+              <MessageComposer
+                key={open.id}
+                request={open}
+                brand={brand}
+                onSent={(line) => update(open.id, { notes: `${open.notes ? `${open.notes}
+` : ""}Correo enviado · ${line}` })}
+              />
+            )}
           </div>
         )}
       </aside>
