@@ -6,8 +6,8 @@ import type { EmailBrand } from "@/lib/email-shell";
 import { useRequests, useFormSteps } from "@/lib/admin/data";
 import { canalLabel } from "@/lib/prompt";
 import { RequestDetail, STATUS } from "./RequestDetail";
+import { Pager, paginate } from "./Pager";
 
-const PAGE_SIZE = 10;
 const fmtDate = (iso: string) => new Date(iso).toLocaleString("es-ES", { dateStyle: "medium", timeStyle: "short" });
 
 /** Paginated list of requests (10 per page); clicking a row opens its detail inline, below the row. */
@@ -19,11 +19,7 @@ export function RequestsAdmin({ brand }: { brand: EmailBrand }) {
   const [page, setPage] = useState(1);
 
   const filtered = useMemo(() => (filter === "todas" ? requests : requests.filter((r) => r.status === filter)), [requests, filter]);
-  const pages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
-  const current = Math.min(page, pages);
-  const rows = filtered.slice((current - 1) * PAGE_SIZE, current * PAGE_SIZE);
-  const first = filtered.length === 0 ? 0 : (current - 1) * PAGE_SIZE + 1;
-  const last = Math.min(current * PAGE_SIZE, filtered.length);
+  const { rows, current } = paginate(filtered, page);
 
   const setFilter = (f: RequestStatus | "todas") => {
     setFilterState(f);
@@ -31,7 +27,7 @@ export function RequestsAdmin({ brand }: { brand: EmailBrand }) {
     setOpenId(null);
   };
   const goTo = (p: number) => {
-    setPage(Math.min(Math.max(1, p), pages));
+    setPage(p);
     setOpenId(null);
   };
 
@@ -93,20 +89,7 @@ export function RequestsAdmin({ brand }: { brand: EmailBrand }) {
             )}
           </tbody>
         </table>
-        <div className="pager">
-          <span>
-            {first}–{last} de {filtered.length}
-          </span>
-          <div className="pager-pages">
-            <button type="button" onClick={() => goTo(current - 1)} disabled={current <= 1} aria-label="Página anterior">←</button>
-            {Array.from({ length: pages }, (_, i) => i + 1).map((p) => (
-              <button key={p} type="button" className={p === current ? "is-on" : ""} onClick={() => goTo(p)} aria-current={p === current ? "page" : undefined}>
-                {p}
-              </button>
-            ))}
-            <button type="button" onClick={() => goTo(current + 1)} disabled={current >= pages} aria-label="Página siguiente">→</button>
-          </div>
-        </div>
+        <Pager total={filtered.length} page={current} onPage={goTo} />
       </div>
     </>
   );
