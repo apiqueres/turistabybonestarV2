@@ -69,24 +69,31 @@ export function renderEmailHtml(spec: EmailSpec): string {
 <html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>${esc(spec.title)}</title>
 <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif&family=IBM+Plex+Mono:wght@400;500&family=Inter:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  @media only screen and (max-width: 480px) {
+    .tb-pad { padding-left: 20px !important; padding-right: 20px !important; }
+    .tb-title { font-size: 32px !important; }
+    .tb-outer { padding: 16px 8px !important; }
+  }
+</style>
 </head>
 <body style="margin:0;padding:0;background:${ALT}">
 <div style="display:none;max-height:0;overflow:hidden;opacity:0">${esc(spec.preheader)}</div>
-<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:${ALT}"><tr><td align="center" style="padding:32px 16px">
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:${ALT}"><tr><td align="center" class="tb-outer" style="padding:32px 16px">
 <table role="presentation" width="600" cellpadding="0" cellspacing="0" style="max-width:600px;width:100%;background:${PAPER};border:1px solid ${LINE}">
-  <tr><td style="padding:22px 32px;border-bottom:1px solid ${LINE}">
+  <tr><td class="tb-pad" style="padding:22px 32px;border-bottom:1px solid ${LINE}">
     <table role="presentation" cellpadding="0" cellspacing="0"><tr>
       <td style="padding-right:12px"><img src="${logo}" width="54" alt="" style="display:block;width:54px;height:auto"></td>
       <td style="font-family:${MONO};font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:${INK}">Turista<span style="color:${MUTED}"> by </span>Bonestar</td>
     </tr></table>
   </td></tr>
   <tr><td style="height:3px;background:${ACCENT};font-size:0;line-height:0">&nbsp;</td></tr>
-  <tr><td style="padding:36px 32px 8px">
+  <tr><td class="tb-pad" style="padding:36px 32px 8px">
     <div style="font-family:${MONO};font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:${MUTED};margin:0 0 14px">${esc(spec.kicker)}</div>
-    <h1 style="font-family:${SERIF};font-weight:400;font-size:40px;line-height:1.05;letter-spacing:-.01em;color:${INK};margin:0 0 24px">${esc(spec.title)}</h1>
+    <h1 class="tb-title" style="font-family:${SERIF};font-weight:400;font-size:40px;line-height:1.05;letter-spacing:-.01em;color:${INK};margin:0 0 24px">${esc(spec.title)}</h1>
     ${spec.blocks.map(renderBlock).join("")}
   </td></tr>
-  <tr><td style="padding:24px 32px;border-top:1px solid ${LINE};background:${ALT}">
+  <tr><td class="tb-pad" style="padding:24px 32px;border-top:1px solid ${LINE};background:${ALT}">
     <table role="presentation" width="100%" cellpadding="0" cellspacing="0"><tr>
       <td style="font-family:${MONO};font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:${MUTED};line-height:1.9">
         ${esc(brand.name)}<br>${esc(brand.city)} · ${esc(brand.hours)}<br>
