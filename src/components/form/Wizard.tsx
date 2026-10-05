@@ -18,6 +18,8 @@ interface Props {
   content: FormContent;
   destinations: Destination[];
   brand: string;
+  /** Agency inbox used by the front-only "send by e-mail" demo. */
+  agencyEmail: string;
 }
 
 type Status = { kind: "idle" | "sending" | "missing" | "missingDestination" | "error" } | { kind: "done"; id: string; prompt?: string };
@@ -29,7 +31,7 @@ const pad = (n: number) => String(n).padStart(2, "0");
 const EMPTY: Answers = {};
 
 /** Full-screen multi-step form. Answers persist in localStorage until they are sent. */
-export function Wizard({ content, destinations, brand }: Props) {
+export function Wizard({ content, destinations, brand, agencyEmail }: Props) {
   const params = useSearchParams();
   const steps = content.steps;
   const total = steps.length;
@@ -118,9 +120,10 @@ export function Wizard({ content, destinations, brand }: Props) {
           fetch("/api/solicitudes", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(payload) }),
           delay(PROCESSING_MS),
         ]);
-        const json = (await res.json()) as { ok: boolean; id?: string };
+        const json = (await res.json()) as { ok: boolean; id?: string; prompt?: string };
         if (!res.ok || !json.ok || !json.id) throw new Error("save failed");
         id = json.id;
+        prompt = json.prompt;
       }
       removeKey(KEYS.form);
       removeKey(KEYS.selection);
@@ -156,7 +159,7 @@ export function Wizard({ content, destinations, brand }: Props) {
     return () => window.removeEventListener("keydown", onKey);
   }, []);
 
-  if (status.kind === "done") return <SuccessView content={content.success} id={status.id} brand={brand} prompt={status.prompt} />;
+  if (status.kind === "done") return <SuccessView content={content.success} id={status.id} brand={brand} prompt={status.prompt} agencyEmail={agencyEmail} demo={STATIC_DEMO} />;
 
   const current = steps[step];
   return (

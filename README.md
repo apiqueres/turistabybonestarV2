@@ -11,6 +11,10 @@ Web de la agencia de viajes a medida TuristaByBonestar (Sueca, Valencia). Estilo
 | `/como-viajas` | Asistente de **8 pasos** a pantalla completa (ubicaciones, estilo, transporte, ritmo/alojamiento, mesa, cultura, fechas/presupuesto/viajeros, contacto). Progreso arriba, Intro para avanzar, resumen en el último paso, validación (destino obligatorio, nombre, correo y privacidad) y pantalla de confirmación con referencia. Acepta `?paso=<n>`. |
 | `/contacto` | Datos de contacto, horario y formulario corto de 4 campos. |
 | `/aviso-legal`, `/privacidad`, `/cookies` | Páginas legales (placeholders). |
+| `/admin/login` | Acceso al panel (mock: `admin` / `turista2026`, sesión en el navegador). |
+| `/admin/solicitudes` | Solicitudes registradas: listado con filtro por estado, detalle con respuestas, notas internas, brief `.txt` y envío por correo al cliente. |
+| `/admin/destinos` | Editor de los destinos predeterminados (textos, coordenadas, portada e imagen subida desde el ordenador). |
+| `/admin/preguntas` | Editor de los pasos del asistente: títulos, textos, etiquetas, máximo de opciones y las opciones que puede elegir el usuario. |
 | `POST /api/solicitudes` | Recibe el asistente, valida con zod y guarda `data/solicitudes/<id>.json` **y `<id>.txt`**, un brief legible para el gestor (prompt) con todas las respuestas en texto. |
 | `/creditos` | Autoría y licencia de cada fotografía real. |
 | `POST /api/contacto` | Recibe el formulario corto y guarda `data/contacto/<id>.json`. |
@@ -27,6 +31,21 @@ La selección del mapa y las respuestas del asistente se guardan en `localStorag
 | Validación | **zod** | Mismo esquema en cliente y servidor (`src/lib/validation.ts`). |
 | Mapa | `world-atlas` + `d3-geo` (solo en build) | `scripts/build-map.mjs` pre-proyecta un path por país y los marcadores; el bundle no incluye d3. |
 | Despliegue | **Docker** (imagen `standalone`) + **Nginx** + certbot | Un contenedor en tu VPS detrás de Nginx, con `./data` montado como volumen. |
+
+## Panel de administración (mockup)
+
+Todavía no hay base de datos, así que el panel es un **mockup estático**: el login comprueba unas credenciales de demostración en el navegador, y las tres secciones parten de los datos estáticos del sitio (`src/data/*`) y guardan los cambios en `localStorage` (claves `tb:admin-*`). Las solicitudes mostradas son ejemplos (`src/data/mock-solicitudes.ts`) más las que se envíen desde la demo en ese mismo navegador. Los botones «Restablecer» vuelven a los datos originales.
+
+Para pasar a producción: sustituir `src/lib/admin/auth.ts` por Auth.js y los hooks de `src/lib/admin/data.ts` por llamadas a la API; los componentes no cambian.
+
+## Correo desde el front (demo)
+
+`src/lib/email.ts` envía correo **sin pasar por el backend**:
+
+- Por defecto abre el programa de correo del visitante con un `mailto:` ya relleno (asunto y brief). Sirve para la demo en GitHub Pages sin configurar nada.
+- Si se definen `NEXT_PUBLIC_EMAILJS_SERVICE`, `NEXT_PUBLIC_EMAILJS_TEMPLATE` y `NEXT_PUBLIC_EMAILJS_PUBLIC_KEY` (cuenta gratuita de EmailJS, plantilla con los campos `to_email`, `subject`, `message`, `reply_to`, `from_name`), el envío se hace desde el navegador a través de la API pública de EmailJS, sin servidor propio.
+
+Se usa en la pantalla final del asistente («Enviar por correo»), en el formulario de contacto y en el panel de solicitudes (enviar el brief al cliente).
 
 ## Dónde se guardan las solicitudes
 

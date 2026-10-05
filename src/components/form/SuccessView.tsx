@@ -4,16 +4,30 @@ import Link from "next/link";
 import type { FormContent } from "@/types/form";
 import { ArrowRight } from "@/components/ui/icons";
 import { Brand } from "@/components/layout/Brand";
+import { useState } from "react";
+import { sendDemoMail } from "@/lib/email";
 
 interface Props {
   content: FormContent["success"];
   id: string;
   brand: string;
-  /** Demo mode only: the generated brief, offered as a .txt download. */
+  /** The generated brief, offered as a .txt download and as an e-mail. */
   prompt?: string;
+  agencyEmail: string;
+  demo?: boolean;
 }
 
-export function SuccessView({ content, id, brand, prompt }: Props) {
+export function SuccessView({ content, id, brand, prompt, agencyEmail, demo }: Props) {
+  const [mailMsg, setMailMsg] = useState<string | null>(null);
+  const mail = async () => {
+    if (!prompt) return;
+    try {
+      const how = await sendDemoMail({ to: agencyEmail, subject: `Solicitud de viaje · ${id}`, text: prompt, fromName: "Web TuristaByBonestar" });
+      setMailMsg(how === "sent" ? "Correo enviado a la agencia." : "Se ha abierto tu programa de correo con la solicitud.");
+    } catch {
+      setMailMsg("No se pudo enviar el correo.");
+    }
+  };
   const download = () => {
     if (!prompt) return;
     const url = URL.createObjectURL(new Blob([prompt], { type: "text/plain;charset=utf-8" }));
@@ -46,15 +60,22 @@ export function SuccessView({ content, id, brand, prompt }: Props) {
             <span className="kicker">{content.reference}</span>
             <span className="t-small break-all">{id}</span>
           </div>
-          {prompt && (
+          {demo && (
             <p className="t-small t-muted mt-4">
-              Versión de demostración: la solicitud no se ha enviado a ningún servidor. Puedes descargar el brief generado.
+              Versión de demostración: la solicitud no se ha enviado a ningún servidor. Puedes descargar el brief generado o enviarlo por correo.
             </p>
           )}
+          {mailMsg && <p className="form-status mt-4">{mailMsg}</p>}
           <div className="mt-10 flex flex-wrap gap-4">
             {prompt && (
               <button type="button" onClick={download} className="btn btn-primary btn-sm">
                 Descargar brief (.txt)
+                <ArrowRight className="btn-icon" />
+              </button>
+            )}
+            {prompt && (
+              <button type="button" onClick={mail} className="btn btn-secondary btn-sm">
+                Enviar por correo
                 <ArrowRight className="btn-icon" />
               </button>
             )}

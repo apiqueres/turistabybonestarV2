@@ -39,7 +39,7 @@ export default async function ContactPage() {
             </dl>
           </div>
           <div className="md:pl-16 pt-12 md:pt-0">
-            <ContactForm content={contact} />
+            <ContactForm content={contact} agencyEmail={brand.email} />
           </div>
         </div>
       </section>

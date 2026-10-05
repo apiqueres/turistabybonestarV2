@@ -5,16 +5,18 @@ import type { SiteContent } from "@/types/content";
 import { contactoSchema } from "@/lib/validation";
 import { STATIC_DEMO } from "@/lib/config";
 import { readJSON, writeJSON } from "@/lib/storage";
+import { mailtoLink } from "@/lib/email";
 import { ArrowRight } from "@/components/ui/icons";
 
 interface Props {
   content: SiteContent["contact"];
+  agencyEmail: string;
 }
 
 type Fields = { nombre: string; email: string; telefono: string; mensaje: string; privacidad: boolean };
 const empty: Fields = { nombre: "", email: "", telefono: "", mensaje: "", privacidad: false };
 
-export function ContactForm({ content }: Props) {
+export function ContactForm({ content, agencyEmail }: Props) {
   const [f, setF] = useState<Fields>(empty);
   const [errors, setErrors] = useState<Partial<Record<keyof Fields, string>>>({});
   const [status, setStatus] = useState<"idle" | "sending" | "done" | "error">("idle");
@@ -58,6 +60,17 @@ export function ContactForm({ content }: Props) {
         <div className="kicker">{content.formKicker}</div>
         <h2 className="t-h2 mt-6">{content.success.title}</h2>
         <p className="t-body mt-4">{content.success.text}</p>
+        <a
+          href={mailtoLink({ to: agencyEmail, subject: `Contacto web · ${f.nombre}`, text: `${f.mensaje}
+
+${f.nombre}
+${f.email}
+${f.telefono}` })}
+          className="btn btn-secondary btn-sm mt-6"
+        >
+          Enviar también por correo
+          <ArrowRight className="btn-icon" />
+        </a>
       </div>
     );
   }

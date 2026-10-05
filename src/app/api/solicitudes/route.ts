@@ -19,7 +19,7 @@ export async function POST(req: Request) {
   }
   try {
     const record = await saveRecord("solicitudes", parsed.data, (id, createdAt) => buildPrompt(id, createdAt, parsed.data));
-    return NextResponse.json({ ok: true, id: record.id });
+    return NextResponse.json({ ok: true, id: record.id, prompt: record.prompt });
   } catch (err) {
     console.error("[solicitudes] no se pudo guardar", err);
     return NextResponse.json({ ok: false, error: "No se pudo guardar" }, { status: 500 });
