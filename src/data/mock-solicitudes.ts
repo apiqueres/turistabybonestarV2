@@ -119,3 +119,42 @@ export const mockSolicitudes: StoredRequest[] = [
     },
   },
 ];
+
+/* Extra generated samples so the list pagination can be seen in the demo (10 per page). */
+const EXTRA: Array<[string, string, string, { id: string; nombre: string }[], RequestStatus, number]> = [
+  ["Lucía Fernández", "lucia.fernandez@example.com", "+34 633 444 555", [{ id: "380", nombre: "Italia" }], "nueva", 5],
+  ["Andrés Moreno", "andres.moreno@example.com", "", [{ id: "704", nombre: "Vietnam" }, { id: "764", nombre: "Tailandia" }], "en-curso", 6],
+  ["Paula y Nacho", "paula.nacho@example.com", "+34 644 555 666", [{ id: "578", nombre: "Noruega" }], "nueva", 7],
+  ["Familia Torres", "torres@example.com", "+34 655 666 777", [{ id: "484", nombre: "México" }], "cerrada", 9],
+  ["Elena Gil", "elena.gil@example.com", "", [{ id: "400", nombre: "Jordania" }, { id: "818", nombre: "Egipto" }], "nueva", 10],
+  ["Rubén Castro", "ruben.castro@example.com", "+34 666 777 888", [{ id: "516", nombre: "Namibia" }], "en-curso", 12],
+  ["Inés Romero", "ines.romero@example.com", "+34 677 888 999", [{ id: "300", nombre: "Grecia" }], "nueva", 13],
+  ["Marc y Júlia", "marc.julia@example.com", "", [{ id: "620", nombre: "Portugal" }], "cerrada", 15],
+  ["Sofía Navarro", "sofia.navarro@example.com", "+34 688 999 000", [{ id: "392", nombre: "Japón" }, { id: "410", nombre: "Corea del Sur" }], "nueva", 17],
+  ["Hugo Blanco", "hugo.blanco@example.com", "+34 699 000 111", [{ id: "352", nombre: "Islandia" }], "en-curso", 19],
+];
+
+EXTRA.forEach(([nombre, email, telefono, destinos, status, day], i) => {
+  const createdAt = new Date(Date.UTC(2026, 8, day, 9 + i, 15 + i * 3)).toISOString();
+  mockSolicitudes.push({
+    id: `${createdAt.replace(/[:.]/g, "-")}_${(0x1a2b3c + i * 7919).toString(16)}`,
+    createdAt,
+    status,
+    data: {
+      destinos,
+      respuestas: {
+        estilo: i % 2 ? ["descubrimiento", "cultural"] : ["descanso", "gastronomico"],
+        transporte_prefiere: i % 3 ? ["avion-directo"] : ["tren", "coche"],
+        ritmo: ["un-sitio", "dos-tres-bases", "equilibrado"][i % 3],
+        alojamiento: i % 2 ? ["boutique"] : ["apartamento", "local"],
+        mesa_busca: ["mercados", "barrio"],
+        cultura: i % 2 ? ["naturaleza", "fotografia"] : ["museos", "historia"],
+        viajeros: 2 + (i % 3),
+        duracion: ["semana", "10-15", "3-semanas"][i % 3],
+        presupuesto: ["1000-2000", "2000-3500", "3500-6000"][i % 3],
+        fechas_flexibles: i % 2 === 0,
+      },
+      contacto: { nombre, email, telefono, canal: ["correo", "whatsapp", "telefono", "igual"][i % 4], privacidad: true },
+    },
+  });
+});

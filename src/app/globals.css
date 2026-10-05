@@ -1369,3 +1369,59 @@ html.reduced-motion .hero-el {
     grid-template-columns: 1fr;
   }
 }
+
+/* ---------- Admin: inline detail + pager ---------- */
+.table tr.is-open td {
+  background: var(--bg-alt);
+}
+.detail-row > td {
+  padding: 0;
+  background: var(--paper);
+}
+.detail {
+  border-top: 2px solid var(--ink);
+  border-bottom: 1px solid var(--line);
+  padding: 24px 20px 28px;
+  display: grid;
+  grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
+  gap: 28px;
+}
+.pager {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 14px 16px;
+  border-top: 1px solid var(--line);
+  font-family: var(--font-mono), monospace;
+  font-size: 12px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.pager-pages {
+  display: flex;
+  gap: 4px;
+}
+.pager button {
+  min-width: 34px;
+  height: 34px;
+  padding: 0 10px;
+  border: 1px solid var(--line);
+  color: var(--ink);
+  background: var(--paper);
+}
+.pager button[disabled] {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+.pager button.is-on {
+  background: var(--ink);
+  color: var(--paper);
+  border-color: var(--ink);
+}
+@media (max-width: 900px) {
+  .detail {
+    grid-template-columns: 1fr;
+  }
+}
