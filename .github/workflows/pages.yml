@@ -27,7 +27,8 @@ jobs:
           cache: npm
       - run: npm ci
       # Las rutas de API escriben ficheros en el servidor; no existen en la exportación estática.
-      - run: rm -rf src/app/api
+      # El proxy (puerta del admin) y Auth.js tampoco existen en la exportación estática.
+      - run: rm -rf src/app/api src/proxy.ts
       - run: npm run build
         env:
           DEPLOY_TARGET: pages

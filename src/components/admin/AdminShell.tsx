@@ -1,23 +1,14 @@
 "use client";
 
 import { useEffect } from "react";
-import Link from "next/link";
-import { usePathname, useRouter } from "next/navigation";
-import { Brand } from "@/components/layout/Brand";
-import { logout, useSession } from "@/lib/admin/auth";
+import { useRouter } from "next/navigation";
+import { useDemoSession } from "@/lib/admin/auth";
+import { AdminNav } from "./AdminNav";
 
-const NAV = [
-  { href: "/admin/solicitudes", label: "Solicitudes" },
-  { href: "/admin/destinos", label: "Destinos" },
-  { href: "/admin/ofertas", label: "Ofertas" },
-  { href: "/admin/preguntas", label: "Preguntas" },
-];
-
-/** Gate + sidebar for the admin mock. Redirects to the login when there is no session. */
-export function AdminShell({ children }: { children: React.ReactNode }) {
-  const [session, hydrated] = useSession();
+/** Armazón del admin en la DEMO estática: puerta en el navegador (localStorage) + barra lateral. */
+export function DemoAdminShell({ children }: { children: React.ReactNode }) {
+  const [session, hydrated] = useDemoSession();
   const router = useRouter();
-  const pathname = usePathname();
 
   useEffect(() => {
     if (hydrated && !session) router.replace("/admin/login");
@@ -27,30 +18,17 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
 
   return (
     <div className="admin">
-      <aside className="admin-side">
-        <Brand href="/" />
-        <nav className="admin-nav" aria-label="Administración">
-          {NAV.map((n) => (
-            <Link key={n.href} href={n.href} className={pathname.startsWith(n.href) ? "is-active" : ""}>
-              {n.label}
-            </Link>
-          ))}
-        </nav>
-        <div className="mt-auto flex flex-col gap-3">
-          <div className="kicker">Sesión · {session.user}</div>
-          <div className="t-small t-muted">Demo sin base de datos: los cambios se guardan en este navegador.</div>
-          <button
-            type="button"
-            className="btn btn-secondary btn-sm self-start"
-            onClick={() => {
-              logout();
-              router.replace("/admin/login");
-            }}
-          >
-            Salir
-          </button>
-        </div>
-      </aside>
+      <AdminNav userLabel={session.user} note="Demo sin base de datos: los cambios se guardan en este navegador." hide={["/admin/contactos", "/admin/textos", "/admin/cuenta"]} />
+      <main className="admin-main">{children}</main>
+    </div>
+  );
+}
+
+/** Armazón del admin con servidor: la sesión ya se comprobó en el layout. */
+export function AdminShell({ userLabel, children }: { userLabel: string; children: React.ReactNode }) {
+  return (
+    <div className="admin">
+      <AdminNav userLabel={userLabel} />
       <main className="admin-main">{children}</main>
     </div>
   );
