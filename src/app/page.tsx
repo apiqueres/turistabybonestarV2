@@ -5,7 +5,7 @@ import { Method } from "@/components/sections/Method";
 import { DestinationsGrid } from "@/components/sections/DestinationsGrid";
 import { About } from "@/components/sections/About";
 import { Dimensions } from "@/components/sections/Dimensions";
-import { Table } from "@/components/sections/Table";
+import { Pain } from "@/components/sections/Pain";
 import { Team } from "@/components/sections/Team";
 import { Closing } from "@/components/sections/Closing";
 
@@ -20,7 +20,7 @@ export default async function Home() {
       <DestinationsGrid data={home.destinations} items={content.destinations} />
       <About data={home.about} />
       <Dimensions data={home.dimensions} />
-      <Table data={home.table} />
+      <Pain data={home.pain} />
       <Team data={home.team} />
       <Closing data={home.closing} />
     </SiteShell>

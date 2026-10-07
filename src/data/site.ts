@@ -4,10 +4,12 @@ import destinations from "./destinations.json";
 export const siteContent: SiteContent = {
   brand: {
     name: "TuristaByBonestar",
-    tagline: "Gestión de viajes a medida.",
+    tagline: "Viajes a medida para quien no tiene tiempo de organizarlos.",
     city: "Sueca, Valencia",
     phone: "+34 961 00 00 00",
-    whatsapp: "+34 622 00 00 00",
+    whatsapp: "+34 623 37 59 98",
+    communityName: "Turista by Bonestar✈️ Comunidad Privada1",
+    communityUrl: "",
     email: "hola@turistabybonestar.com",
     hours: "L–V · 10:00–19:00",
     instagram: "https://instagram.com",
@@ -24,45 +26,45 @@ export const siteContent: SiteContent = {
   },
   home: {
     hero: {
-      kicker: "Gestión de viajes a medida · Sueca, Valencia",
-      word: "Viaja",
-      subtitle: ["Tú eliges el destino. Nosotros lo ordenamos.", "Sin paquetes cerrados: el viaje entero alrededor de cómo viajas tú."],
+      kicker: "Viajes a medida para hosteleros y empresarios · Sueca, Valencia",
+      word: "Desconecta",
+      subtitle: ["Llevas años sin parar y tu familia lleva años esperando ese viaje.", "Tú eliges el destino y las fechas; nosotros montamos todo lo demás."],
       primary: { label: "¿Dónde nos vamos?", href: "/donde-nos-vamos" },
-      secondary: { label: "O cuéntanos cómo viajas", href: "/como-viajas" },
+      secondary: { label: "Cuéntanos cómo viajas", href: "/como-viajas" },
       video: { mp4: "/media/hero.mp4", poster: "/media/hero-poster.webp" },
     },
     method: {
-      kicker: "El método",
+      kicker: "Así de simple",
       steps: [
         {
           number: "01",
           title: ["Eliges el destino.", "Tú decides dónde."],
-          text: "Marca en el mapa el país o los países a los que quieres ir. Cualquiera vale, aunque de doce nos sabemos hasta los horarios.",
+          text: "Marca en el mapa el país al que quieres llevar a los tuyos. Cualquiera vale, aunque de doce nos sabemos hasta los horarios.",
         },
         {
           number: "02",
-          title: ["Nos cuentas", "cómo viajas."],
-          text: "Ocho pantallas, una pregunta en cada una. Estilo, transporte, ritmo, mesa, cultura, fechas y presupuesto. Cinco minutos.",
+          title: ["Nos cuentas", "lo básico."],
+          text: "Una sola pantalla: fechas, quiénes viajáis, presupuesto, pensión, maletas y traslados y el estilo de viaje. Dos minutos entre servicio y servicio.",
         },
         {
           number: "03",
-          title: ["Recibes el viaje", "ya montado."],
-          text: "Un gestor lo construye a mano: ruta, vuelos, alojamientos, reservas y mesa. Tú lo apruebas o lo corriges.",
+          title: ["Nosotros lo montamos.", "Tú sigues con lo tuyo."],
+          text: "Un gestor construye el viaje entero y te lo manda listo para aprobar. Sin buscar, sin comparar, sin cien llamadas. Solo tienes que decir que sí.",
         },
       ],
     },
     destinations: {
-      kicker: "Algunos sitios que nos sabemos",
+      kicker: "Para quien no tiene tiempo de buscar",
       title: ["Doce destinos que", "conocemos de memoria."],
       link: { label: "Ver el mapa completo", href: "/donde-nos-vamos" },
     },
     about: {
-      kicker: "Sobre nosotros",
-      title: ["Un viaje no se elige", "en un catálogo.", "Se escribe contigo."],
-      meta: "Desde 2014 · Viajes individuales, parejas, familias y grupos pequeños",
+      kicker: "A quién nos dirigimos",
+      title: ["Para quien lleva años", "sin descansar de verdad."],
+      meta: "Hosteleros y empresarios · de 30 a 60 años · familias que llevan tiempo esperando",
       image: { src: "/media/about.webp", alt: "Viajero contemplando un valle de montaña al amanecer" },
       paragraph:
-        "TuristaByBonestar nació en Sueca de una idea sencilla: un viaje bien diseñado se recuerda toda la vida. Cada ruta se construye desde cero, con alojamientos elegidos uno a uno, traslados resueltos y gente local que abre puertas que no aparecen en ninguna guía. Tú decides el ritmo; nosotros nos ocupamos del resto.",
+        "Diriges tu negocio con el alma. Trabajas los siete días de la semana y te has perdido cumpleaños, comuniones y navidades. El dinero nunca ha sido el problema: el problema es encontrar el momento y, cuando por fin llega, que organizarlo no te agote. Para eso estamos nosotros. Tú eliges el destino y las fechas; el viaje entero, con alojamientos, traslados y reservas, lo montamos nosotros y te lo entregamos listo.",
       stats: [
         { value: 60, suffix: "+", label: "Países" },
         { value: 12000, suffix: "+", label: "Viajeros" },
@@ -70,27 +72,30 @@ export const siteContent: SiteContent = {
       partners: ["Aerolíneas del Sur", "Hotelia", "Nomad Cover", "RailEuropa", "GlobalStay"],
     },
     dimensions: {
-      kicker: "Lo que preguntamos",
-      text: "Diez dimensiones. Solo el destino es obligatorio: lo demás que dejes en blanco, lo decidimos nosotros y te lo justificamos.",
+      kicker: "Lo que te preguntamos",
+      text: "Seis preguntas en una sola pantalla. Lo que no nos digas, lo decidimos nosotros y te lo explicamos en la propuesta.",
       items: [
-        { label: "Ubicaciones", step: 0 },
-        { label: "Estilo de viaje", step: 1 },
-        { label: "Transporte", step: 2 },
-        { label: "Ritmo", step: 3 },
-        { label: "Alojamiento", step: 3 },
-        { label: "Comida y restricciones", step: 4 },
-        { label: "Cultura", step: 5 },
-        { label: "Fechas", step: 6 },
-        { label: "Presupuesto", step: 6 },
-        { label: "Viajeros", step: 6 },
+        { label: "Fechas", step: 0 },
+        { label: "Viajeros", step: 0 },
+        { label: "Presupuesto", step: 0 },
+        { label: "Pensión", step: 0 },
+        { label: "Maletas y traslados", step: 0 },
+        { label: "Estilo de viaje", step: 0 },
       ],
     },
-    table: {
-      kicker: "Cómo se come en este viaje",
-      statement: ["Para la mitad de nuestros clientes,", "la mesa ordena el itinerario entero."],
-      quote:
-        "Íbamos a ir doce días a Japón haciendo la ruta de siempre. Nos montaron una que empezaba en Kanazawa y acababa en una isla del mar interior, y no repetimos ni un hotel malo.",
-      author: "Carmen y Víctor",
+    pain: {
+      kicker: "El dolor real",
+      statement: ["No es que no quieras viajar.", "Es que nadie te lo ha puesto fácil."],
+      items: [
+        "Sientes que el negocio no puede funcionar sin ti.",
+        "Te da miedo que tus únicas vacaciones del año sean una decepción.",
+        "Has tenido malas experiencias: cosas que salieron mal, tiempo perdido, dinero mal gastado.",
+        "Sientes culpa cuando descansas.",
+        "No sabes delegar, y eso te paraliza hasta para organizar unas vacaciones.",
+      ],
+      answer: "Delegar el viaje es la primera vez que delegas algo. Nosotros lo montamos entero, tú solo lo apruebas, y el único trabajo que te queda es cerrar el negocio ese día.",
+      quote: "Llevábamos cuatro años prometiendo a los niños el viaje. Nos lo montaron entero mientras yo cerraba la temporada; solo tuve que decir que sí.",
+      author: "Carmen y Víctor, restaurante en Sueca",
       meta: "Japón · 2025",
     },
     team: {
@@ -100,9 +105,9 @@ export const siteContent: SiteContent = {
           id: "laura",
           name: "Laura García",
           role: "Fundadora y diseñadora de viajes",
-          bio: "Empezó organizando rutas para amigos y acabó fundando la agencia. Ha diseñado más de cuatrocientos itinerarios y sigue probando cada hotel nuevo antes de recomendarlo.",
+          bio: "Hija de hosteleros. Sabe lo que cuesta cerrar un negocio una semana y por eso diseña viajes que no den trabajo: todo resuelto antes de salir y un teléfono al otro lado durante el viaje.",
           stats: [
-            { value: 400, suffix: "+", label: "Rutas diseñadas" },
+            { value: 400, suffix: "+", label: "Viajes diseñados" },
             { value: 14, label: "Años de experiencia" },
           ],
           image: { src: "/media/team-4.webp", alt: "Retrato de Laura García" },
@@ -111,7 +116,7 @@ export const siteContent: SiteContent = {
           id: "javier",
           name: "Javier Martínez",
           role: "Guía de montaña",
-          bio: "Guía titulado de alta montaña. Lidera nuestras rutas en Patagonia, Islandia y los Alpes, siempre con un plan B para cada tramo.",
+          bio: "Guía titulado de alta montaña. Lidera las rutas de Patagonia, Islandia y los Alpes, siempre con un plan B para cada tramo.",
           stats: [
             { value: 120, suffix: "+", label: "Expediciones" },
             { value: 30, suffix: "+", label: "Cumbres guiadas" },
@@ -153,7 +158,7 @@ export const siteContent: SiteContent = {
   map: {
     kicker: "02 — ¿Dónde nos vamos?",
     title: "¿Dónde nos vamos?",
-    text: "Marca los sitios que te tiran. Puedes elegir varios y cambiar de idea luego, pero al menos uno tiene que ser.",
+    text: "Marca el país al que quieres llevar a los tuyos. Puedes elegir varios y cambiar de idea luego, pero al menos uno tiene que ser.",
     rule: { label: "Un destino como mínimo", hint: ["Puedes marcar cualquier país.", "Los de cian son los que mejor conocemos."] },
     legend: ["Proyección Equal Earth · cualquier país es válido · 12 recomendados", "Pulsa para marcar · vuelve a pulsar para quitarlo"],
     list: { label: "Tu lista", empty: "Todavía no has marcado nada", cta: "¡Te lo organizamos!", ctaHref: "/como-viajas", needOne: "Marca al menos un país para seguir" },
@@ -168,7 +173,7 @@ export const siteContent: SiteContent = {
   contact: {
     kicker: "03 — Contacto",
     title: "Hablemos.",
-    text: "Si prefieres contarlo por teléfono en vez de rellenar formularios, también vale. Respondemos en menos de 24 horas laborables.",
+    text: "Si prefieres contarlo por teléfono entre servicio y servicio, también vale. Respondemos en menos de 24 horas laborables.",
     formKicker: "Escríbenos",
     fields: {
       name: "Nombre y apellidos",

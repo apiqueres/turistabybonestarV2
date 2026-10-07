@@ -36,11 +36,14 @@ export function canalLabel(canal?: string): string {
 }
 
 /** Answers grouped by wizard step, with labels instead of ids. Shared by the .txt brief and the e-mails. */
+const CONTACT_IDS = new Set(["nombre", "email", "telefono", "canal", "privacidad"]);
+
 export function summarize(s: SolicitudInput): SummarySection[] {
   const out: SummarySection[] = [];
-  for (const step of formContent.steps.slice(1, -1)) {
+  for (const step of formContent.steps) {
     const rows: [string, string][] = [];
     for (const q of step.questions) {
+      if (q.kind === "destinations" || CONTACT_IDS.has(q.id)) continue;
       const v = s.respuestas[q.id];
       if (v === undefined || v === "" || (Array.isArray(v) && v.length === 0)) continue;
       const label = ("label" in q && q.label) || "Elección";

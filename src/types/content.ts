@@ -65,6 +65,9 @@ export interface SiteContent {
     city: string;
     phone: string;
     whatsapp: string;
+    /** Name of the WhatsApp community and, when available, its invite link. */
+    communityName: string;
+    communityUrl: string;
     email: string;
     hours: string;
     instagram: string;
@@ -95,7 +98,7 @@ export interface SiteContent {
       partners: string[];
     };
     dimensions: { kicker: string; text: string; items: { label: string; step: number }[] };
-    table: { kicker: string; statement: [string, string]; quote: string; author: string; meta: string };
+    pain: { kicker: string; statement: [string, string]; items: string[]; answer: string; quote: string; author: string; meta: string };
     team: { title: string; members: TeamMember[] };
     closing: { kicker: string; title: [string, string]; image: Media; primary: Link; secondary: Link };
   };

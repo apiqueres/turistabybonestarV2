@@ -77,7 +77,6 @@ export function Wizard({ content, destinations, brand }: Props) {
     setStep(n);
     setStatus({ kind: "idle" });
     window.scrollTo({ top: 0 });
-    window.dispatchEvent(new CustomEvent("tb:fly", { detail: n + 1 }));
   };
 
   const lastStep = step === total - 1;
@@ -155,6 +154,7 @@ export function Wizard({ content, destinations, brand }: Props) {
   });
 
   useEffect(() => {
+    if (steps.length === 1) return; // single-screen form: Enter never submits by accident
     const onKey = (e: KeyboardEvent) => {
       if (e.key !== "Enter") return;
       const tag = (e.target as HTMLElement).tagName;
@@ -164,7 +164,7 @@ export function Wizard({ content, destinations, brand }: Props) {
     };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
-  }, []);
+  }, [steps.length]);
 
   if (status.kind === "done") return <SuccessView content={content.success} id={status.id} brand={brand} prompt={status.prompt} payload={status.payload} demo={STATIC_DEMO} />;
 
@@ -176,21 +176,25 @@ export function Wizard({ content, destinations, brand }: Props) {
           <Brand />
         </div>
         <div className="flex items-center gap-8">
-          <span>
-            {content.header.stepLabel} {pad(step + 1)} / {pad(total)}
-          </span>
+          {total > 1 && (
+            <span>
+              {content.header.stepLabel} {pad(step + 1)} / {pad(total)}
+            </span>
+          )}
           <Link href="/" className="t-muted hover:text-white transition-colors">
             {content.header.exit}
           </Link>
         </div>
       </header>
-      <div className="wiz-progress" aria-hidden>
-        {steps.map((s, i) => (
-          <span key={s.id} className={i <= step ? "is-done" : ""} />
-        ))}
-      </div>
+      {total > 1 && (
+        <div className="wiz-progress" aria-hidden>
+          {steps.map((s, i) => (
+            <span key={s.id} className={i <= step ? "is-done" : ""} />
+          ))}
+        </div>
+      )}
 
-      <StepView key={current.id} step={current} steps={steps} answers={answers} setAnswer={setAnswer} destinations={destinations} showSummary={lastStep} summary={content.summary} />
+      <StepView key={current.id} step={current} steps={steps} answers={answers} setAnswer={setAnswer} destinations={destinations} showSummary={lastStep && steps.length > 1} summary={content.summary} />
 
       <footer className="wiz-footer">
         {step === 0 ? (

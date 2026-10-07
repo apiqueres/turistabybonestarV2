@@ -21,7 +21,7 @@ export function Dimensions({ data }: { data: SiteContent["home"]["dimensions"] }
         </div>
         <div className="md:pl-16 pt-8 md:pt-0 flex flex-wrap gap-3" data-reveal-group>
           {data.items.map((d) => (
-            <Link key={d.label} href={`/como-viajas?paso=${d.step}`} className="chip" data-reveal>
+            <Link key={d.label} href="/como-viajas" className="chip" data-reveal>
               {d.label}
             </Link>
           ))}

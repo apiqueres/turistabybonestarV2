@@ -2,8 +2,9 @@ import type { Metadata } from "next";
 import { IBM_Plex_Mono, Instrument_Serif, Inter } from "next/font/google";
 import "./globals.css";
 import { Loader } from "@/components/motion/Loader";
-import { PlaneTransition } from "@/components/motion/PlaneTransition";
 import { RouteTransition } from "@/components/motion/RouteTransition";
+import { WhatsAppFab } from "@/components/layout/WhatsAppFab";
+import { getSiteContent } from "@/lib/content";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -45,14 +46,15 @@ export const metadata: Metadata = {
   },
 };
 
-export default function RootLayout({ children }: { children: React.ReactNode }) {
+export default async function RootLayout({ children }: { children: React.ReactNode }) {
+  const { brand } = await getSiteContent();
   return (
     <html lang="es" className={`${inter.variable} ${serif.variable} ${mono.variable} is-loading`}>
       <body>
         <Loader />
-        <PlaneTransition />
         <RouteTransition />
         {children}
+        <WhatsAppFab phone={brand.whatsapp} communityName={brand.communityName} communityUrl={brand.communityUrl} />
       </body>
     </html>
   );
