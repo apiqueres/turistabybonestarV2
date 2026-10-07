@@ -163,7 +163,7 @@ export function Wizard({ content, destinations, brand }: Props) {
     return () => window.removeEventListener("keydown", onKey);
   }, [steps.length]);
 
-  if (status.kind === "done") return <SuccessView content={content.success} id={status.id} brand={brand} prompt={status.prompt} payload={status.payload} demo={STATIC_DEMO} />;
+  if (status.kind === "done") return <SuccessView content={content.success} id={status.id} brand={brand} prompt={status.prompt} demo={STATIC_DEMO} />;
 
   const current = steps[step];
   const destinoId = Array.isArray(answers.destinos) ? (answers.destinos as string[])[0] : undefined;
