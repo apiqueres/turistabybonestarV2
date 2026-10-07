@@ -159,10 +159,11 @@ export const siteContent: SiteContent = {
   map: {
     kicker: "02 — ¿Dónde nos vamos?",
     title: "¿Dónde nos vamos?",
-    text: "Marca el país al que quieres llevar a los tuyos. Puedes elegir varios y cambiar de idea luego, pero al menos uno tiene que ser.",
-    rule: { label: "Un destino como mínimo", hint: ["Puedes marcar cualquier país.", "Los de cian son los que mejor conocemos."] },
-    legend: ["Proyección Equal Earth · cualquier país es válido · 12 recomendados", "Pulsa para marcar · vuelve a pulsar para quitarlo"],
-    list: { label: "Tu lista", empty: "Todavía no has marcado nada", cta: "¡Te lo organizamos!", ctaHref: "/como-viajas", needOne: "Marca al menos un país para seguir" },
+    text: "Escribe el país o la ciudad a la que quieres llevar a los tuyos y el mapa te llevará hasta allí. Puedes añadir varios sitios y cambiar de idea luego, pero al menos uno tiene que ser.",
+    rule: { label: "Un destino como mínimo", hint: ["Vale cualquier país o ciudad del mundo.", "Los de cian son los que mejor conocemos."] },
+    search: { placeholder: "¿A dónde? Un país o una ciudad…", hint: "Escribe y elige una sugerencia · Enter añade la primera" },
+    legend: ["Proyección Equal Earth · 12 destinos recomendados en cian", "Escribe un destino arriba para acercar el mapa"],
+    list: { label: "Tu lista", empty: "Todavía no has añadido ningún sitio", cta: "¡Te lo organizamos!", ctaHref: "/como-viajas", needOne: "Añade al menos un destino para seguir" },
     recurrent: {
       kicker: "Nuestros más recurrentes",
       title: ["Doce sitios que nos", "piden una y otra vez."],

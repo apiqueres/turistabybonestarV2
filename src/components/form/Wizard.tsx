@@ -9,7 +9,7 @@ import { KEYS, readJSON, removeKey, usePersistedState, writeJSON } from "@/lib/s
 import { ArrowRight } from "@/components/ui/icons";
 import { Brand } from "@/components/layout/Brand";
 import { StepView } from "./StepView";
-import { countryName } from "./DestinationsStep";
+import { placeLabel } from "@/lib/geo/places";
 import { STATIC_DEMO } from "@/lib/config";
 import { buildPrompt } from "@/lib/prompt";
 import type { EmailBrand } from "@/lib/email-shell";
@@ -100,7 +100,7 @@ export function Wizard({ content, destinations, brand }: Props) {
     }
     const ids = Array.isArray(answers.destinos) ? (answers.destinos as string[]) : [];
     const payload = {
-      destinos: ids.map((id) => ({ id, nombre: destinations.find((d) => d.id === id)?.name ?? countryName(id) })),
+      destinos: ids.map((id) => ({ id, nombre: destinations.find((d) => d.id === id)?.name ?? placeLabel(id) })),
       respuestas,
       contacto: { nombre, email, telefono, canal: "", privacidad: true as const },
     };
@@ -129,6 +129,7 @@ export function Wizard({ content, destinations, brand }: Props) {
       }
       removeKey(KEYS.form);
       removeKey(KEYS.selection);
+      removeKey(KEYS.places);
       // Branded confirmation to the client, from the browser, when EmailJS is configured.
       if (emailJsConfigured) {
         const mail = clientConfirmationEmail(id, payload, brand);

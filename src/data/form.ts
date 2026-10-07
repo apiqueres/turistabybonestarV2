@@ -9,7 +9,7 @@ export const formContent: FormContent = {
     next: "Siguiente",
     enterHint: "",
     missing: "Faltan los campos con *",
-    missingDestination: "Marca al menos un destino para seguir",
+    missingDestination: "Añade al menos un destino para seguir",
     submit: "Enviar mi solicitud",
   },
   summary: { title: "Tu viaje", empty: "Sin respuesta" },

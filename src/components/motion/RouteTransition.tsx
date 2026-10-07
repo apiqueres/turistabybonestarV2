@@ -91,8 +91,10 @@ export function RouteTransition() {
       if (url.origin !== window.location.origin) return;
       if (url.pathname === window.location.pathname) return; // same page (anchor or reload)
       if (mode.current) return;
-      e.preventDefault();
       const path = BASE_PATH && url.pathname.startsWith(BASE_PATH) ? url.pathname.slice(BASE_PATH.length) || "/" : url.pathname;
+      // The admin panel navigates plainly: no veil between its sections.
+      if (path.startsWith("/admin") && window.location.pathname.includes("/admin")) return;
+      e.preventDefault();
       start(path + url.search + url.hash);
     };
     document.addEventListener("click", onClick, true);

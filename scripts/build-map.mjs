@@ -26,7 +26,8 @@ const list = countries.features
     if (n > 0 || id === "-99") id = `${id}-${n}`;
     const en = (f.properties && f.properties.name) || "";
     const [cx, cy] = path.centroid(f);
-    return { id, name: names[en] || en, d: path(f), cx: +cx.toFixed(1), cy: +cy.toFixed(1) };
+    const [[x0, y0], [x1, y1]] = path.bounds(f);
+    return { id, name: names[en] || en, d: path(f), cx: +cx.toFixed(1), cy: +cy.toFixed(1), bbox: [x0, y0, x1, y1].map((v) => +v.toFixed(1)) };
   })
   .filter((c) => c.d);
 
@@ -35,5 +36,7 @@ const points = destinations.map((d) => {
   const [x, y] = projection([d.lon, d.lat]);
   return { id: d.id, x: +x.toFixed(1), y: +y.toFixed(1) };
 });
-writeFileSync("src/generated/world-map.json", JSON.stringify({ width, height, countries: list, points }));
+// Projection parameters so the client can project any lon/lat (see src/lib/geo/equal-earth.ts).
+const proj = { scale: +projection.scale().toFixed(4), translate: projection.translate().map((v) => +v.toFixed(2)) };
+writeFileSync("src/generated/world-map.json", JSON.stringify({ width, height, projection: proj, countries: list, points }));
 console.log("map ok", list.length, "countries,", points.length, "points");

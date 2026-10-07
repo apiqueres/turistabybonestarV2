@@ -1,6 +1,6 @@
 import type { Answers, FormContent, FormStep } from "@/types/form";
 import type { Destination } from "@/types/content";
-import { countryName } from "./DestinationsStep";
+import { placeLabel } from "@/lib/geo/places";
 
 interface Props {
   steps: FormStep[];
@@ -13,7 +13,7 @@ interface Props {
 export function Summary({ steps, answers, destinations, content }: Props) {
   const rows: [string, string][] = [];
   const sel = Array.isArray(answers.destinos) ? (answers.destinos as string[]) : [];
-  const names = sel.map((id) => destinations.find((d) => d.id === id)?.name ?? countryName(id));
+  const names = sel.map((id) => destinations.find((d) => d.id === id)?.name ?? placeLabel(id));
   if (names.length) rows.push(["Ubicaciones", names.join(", ")]);
 
   for (const step of steps.slice(1, -1)) {

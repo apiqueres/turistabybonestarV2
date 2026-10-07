@@ -127,6 +127,7 @@ export interface SiteContent {
     title: string;
     text: string;
     rule: { label: string; hint: [string, string] };
+    search: { placeholder: string; hint: string };
     legend: [string, string];
     list: { label: string; empty: string; cta: string; ctaHref: string; needOne: string };
     recurrent: { kicker: string; title: [string, string]; text: string };

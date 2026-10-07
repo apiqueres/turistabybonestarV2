@@ -5,10 +5,12 @@ import { useSearchParams } from "next/navigation";
 import type { Destination, SiteContent } from "@/types/content";
 import { KEYS, usePersistedState } from "@/lib/storage";
 import { useMotion } from "@/lib/useMotion";
+import type { Place } from "@/lib/geo/places";
+import { getPlace, rememberPlace } from "@/lib/geo/places";
 import { ScrubHeading } from "@/components/motion/ScrubHeading";
 import { SectionLabel } from "@/components/layout/SectionLabel";
-import map from "@/generated/world-map.json";
-import { CountryMap } from "./CountryMap";
+import { ZoomMap } from "./ZoomMap";
+import { PlaceSearch } from "./PlaceSearch";
 import { SelectionBar } from "./SelectionBar";
 import { DestinationTabs } from "./DestinationTabs";
 
@@ -18,22 +20,45 @@ interface Props {
 }
 
 const NONE: string[] = [];
-const baseNames = new Map(map.countries.map((c) => [c.id, c.name]));
+const fromDestination = (d: Destination): Place => ({ id: d.id, name: d.name, kind: "country", lon: d.lon, lat: d.lat });
 
-/** Holds the selection state shared by the map, the list bar and the destination cards. */
+/** Search box + zooming map + the list of chosen places, shared with the wizard through localStorage. */
 export function MapExperience({ content, destinations }: Props) {
   const params = useSearchParams();
   const initialTab = params.get("pais");
   const recommended = useMemo(() => new Map(destinations.map((d) => [d.id, d.name])), [destinations]);
-  const countryNames = useMemo(() => new Map([...baseNames, ...recommended]), [recommended]);
 
-  const [stored, setSelected] = usePersistedState<string[]>(KEYS.selection, NONE);
-  const selected = useMemo(() => stored.filter((id) => countryNames.has(id)), [stored, countryNames]);
+  const [stored, setStored, hydrated] = usePersistedState<string[]>(KEYS.selection, NONE);
+  const selected = useMemo(() => stored.map((id) => getPlace(id)).filter((p): p is Place => !!p), [stored]);
+  // `undefined` = nothing chosen on this visit yet: show the ?pais=<id> destination (from the home or the
+  // offers) or, failing that, the last place in the stored list.
+  const [chosen, setFocus] = useState<Place | null | undefined>(undefined);
+  const initialDestination = destinations.find((x) => x.id === initialTab);
+  const focus: Place | null =
+    chosen !== undefined ? chosen : initialDestination ? fromDestination(initialDestination) : hydrated && selected.length ? selected[selected.length - 1] : null;
   const [tab, setTab] = useState<string>(initialTab && recommended.has(initialTab) ? initialTab : destinations[0].id);
 
-  const toggle = (id: string) => setSelected((s) => (s.includes(id) ? s.filter((x) => x !== id) : [...s, id]));
-  const selectedSet = useMemo(() => new Set(selected), [selected]);
-  const selectedItems = selected.map((id) => ({ id, name: countryNames.get(id) ?? id }));
+  const add = (p: Place) => {
+    rememberPlace(p);
+    setStored((s) => (s.includes(p.id) ? s : [...s, p.id]));
+    setFocus(p);
+  };
+  const remove = (id: string) => {
+    setStored((s) => s.filter((x) => x !== id));
+    if (focus?.id === id) {
+      const rest = selected.filter((p) => p.id !== id);
+      setFocus(rest.length ? rest[rest.length - 1] : null);
+    }
+  };
+  const toggleDestination = (id: string) => {
+    const d = destinations.find((x) => x.id === id);
+    if (!d) return;
+    if (stored.includes(id)) remove(id);
+    else add(fromDestination(d));
+  };
+
+  const selectedSet = useMemo(() => new Set(stored), [stored]);
+  const selectedItems = selected.map((p) => ({ id: p.id, name: p.kind === "city" && p.country ? `${p.name}, ${p.country}` : p.name }));
 
   const top = useRef<HTMLElement>(null);
   const bottom = useRef<HTMLElement>(null);
@@ -45,7 +70,7 @@ export function MapExperience({ content, destinations }: Props) {
       <section ref={top} data-section className="section">
         <SectionLabel name="¿Dónde nos vamos?" />
         <div className="section-inner gutter">
-          <div className="flex flex-col gap-8 md:flex-row md:items-start md:justify-between mb-12">
+          <div className="flex flex-col gap-8 md:flex-row md:items-start md:justify-between mb-10">
             <div>
               <ScrubHeading as="h1" lines={[content.title]} className="t-h2" />
               <p className="t-body mt-5 max-w-[44ch]" data-reveal>
@@ -63,8 +88,11 @@ export function MapExperience({ content, destinations }: Props) {
               </div>
             </div>
           </div>
-          <CountryMap recommended={recommended} selected={selectedSet} onToggle={toggle} legend={content.legend} />
-          <SelectionBar list={content.list} selected={selectedItems} onRemove={toggle} />
+          <div className="mb-8" data-reveal>
+            <PlaceSearch placeholder={content.search.placeholder} hint={content.search.hint} onPick={add} />
+          </div>
+          <ZoomMap focus={focus} selected={selected} recommended={recommended} legend={content.legend} />
+          <SelectionBar list={content.list} selected={selectedItems} onRemove={remove} />
         </div>
       </section>
 
@@ -81,7 +109,7 @@ export function MapExperience({ content, destinations }: Props) {
               </p>
             </div>
           </div>
-          <DestinationTabs content={content} items={destinations} activeId={tab} onSelectTab={setTab} selected={selectedSet} onToggle={toggle} />
+          <DestinationTabs content={content} items={destinations} activeId={tab} onSelectTab={setTab} selected={selectedSet} onToggle={toggleDestination} />
         </div>
       </section>
     </>

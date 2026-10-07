@@ -9,6 +9,7 @@ import { useCallback, useMemo, useSyncExternalStore } from "react";
 
 export const KEYS = {
   selection: "tb:seleccion",
+  places: "tb:lugares",
   form: "tb:formulario",
 } as const;
 
