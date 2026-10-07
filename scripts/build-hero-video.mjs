@@ -26,7 +26,7 @@ for (let i = 1; i < clips.length; i++) {
   prev = out;
 }
 const filter = [...norm, ...chain].join(";");
-execFileSync(ffmpeg, ["-y", ...inputs, "-filter_complex", filter, "-map", "[vout]", "-an", "-c:v", "libx264", "-preset", "slow", "-crf", "24", "-movflags", "+faststart", "-pix_fmt", "yuv420p", "public/media/hero.mp4"], { stdio: "inherit" });
+execFileSync(ffmpeg, ["-y", ...inputs, "-filter_complex", filter, "-map", "[vout]", "-an", "-c:v", "libx264", "-preset", "slow", "-crf", "26", "-movflags", "+faststart", "-pix_fmt", "yuv420p", "public/media/hero.mp4"], { stdio: "inherit" });
 
 // Poster: first frame of the montage.
 execFileSync(ffmpeg, ["-y", "-i", "public/media/hero.mp4", "-frames:v", "1", "-q:v", "2", `${dir}/poster.png`], { stdio: "inherit" });
