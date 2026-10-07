@@ -5,24 +5,29 @@ import Image from "next/image";
 import Link from "next/link";
 import type { SiteContent } from "@/types/content";
 import { useMotion } from "@/lib/useMotion";
+import type { Offer } from "@/types/content";
 import { useOffers } from "@/lib/admin/data";
-import { asset } from "@/lib/config";
+import { asset, STATIC_DEMO } from "@/lib/config";
 import { ScrubHeading } from "@/components/motion/ScrubHeading";
 import { SectionLabel } from "@/components/layout/SectionLabel";
 import { ArrowRight } from "@/components/ui/icons";
 
 interface Props {
   content: SiteContent["offers"];
+  /** Ofertas del servidor (base de datos). En la demo estática se usan las editadas en el navegador. */
+  offers: Offer[];
   communityHref: string;
 }
 
 const src = (s: string) => (s.startsWith("data:") ? s : asset(s));
 
 /** Seasonal offers in the same layout as the featured destinations, with prices. */
-export function OffersGrid({ content, communityHref }: Props) {
+export function OffersGrid({ content, offers: serverOffers, communityHref }: Props) {
   const ref = useRef<HTMLElement>(null);
   useMotion(ref);
-  const { offers, hydrated } = useOffers();
+  const demo = useOffers();
+  const offers = STATIC_DEMO ? demo.offers : serverOffers;
+  const hydrated = STATIC_DEMO ? demo.hydrated : true;
   const active = offers.filter((o) => o.active);
 
   return (

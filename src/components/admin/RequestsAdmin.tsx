@@ -1,33 +1,36 @@
 "use client";
 
-import { Fragment, useMemo, useState } from "react";
-import type { RequestStatus } from "@/data/mock-solicitudes";
+import { Fragment, useState } from "react";
+import type { FormStep } from "@/types/form";
 import type { EmailBrand } from "@/lib/email-shell";
-import { useRequests, useFormSteps } from "@/lib/admin/data";
+import type { RequestFilter, RequestsStore } from "./sources";
 import { RequestDetail, STATUS } from "./RequestDetail";
-import { Pager, paginate } from "./Pager";
+import { Pager } from "./Pager";
+import type { RequestStatus } from "@/types/admin";
 
 const fmtDate = (iso: string) => new Date(iso).toLocaleString("es-ES", { dateStyle: "medium", timeStyle: "short" });
 
-/** Paginated list of requests (10 per page); clicking a row opens its detail inline, below the row. */
-export function RequestsAdmin({ brand }: { brand: EmailBrand }) {
-  const { requests, update } = useRequests();
-  const { steps } = useFormSteps();
+interface Props {
+  store: RequestsStore;
+  steps: FormStep[];
+  brand: EmailBrand;
+}
+
+/** Paginated list of requests (10 per page) with status and text filters; clicking a row opens its detail inline. */
+export function RequestsAdmin({ store, steps, brand }: Props) {
   const [openId, setOpenId] = useState<string | null>(null);
-  const [filter, setFilterState] = useState<RequestStatus | "todas">("todas");
-  const [page, setPage] = useState(1);
+  const [q, setQ] = useState(store.q);
+  const [prevQ, setPrevQ] = useState(store.q);
+  if (store.q !== prevQ) {
+    // La URL cambió (navegación): el cuadro de búsqueda se alinea con ella.
+    setPrevQ(store.q);
+    setQ(store.q);
+  }
 
-  const filtered = useMemo(() => (filter === "todas" ? requests : requests.filter((r) => r.status === filter)), [requests, filter]);
-  const { rows, current } = paginate(filtered, page);
-
-  const setFilter = (f: RequestStatus | "todas") => {
-    setFilterState(f);
-    setPage(1);
+  const submitSearch = (e: React.FormEvent) => {
+    e.preventDefault();
     setOpenId(null);
-  };
-  const goTo = (p: number) => {
-    setPage(p);
-    setOpenId(null);
+    store.setQuery(q.trim());
   };
 
   return (
@@ -37,17 +40,18 @@ export function RequestsAdmin({ brand }: { brand: EmailBrand }) {
           <div className="kicker">Administración</div>
           <h1 className="t-h2 mt-2">Solicitudes</h1>
         </div>
-        <div className="flex items-center gap-3">
+        <form className="flex items-center gap-3 flex-wrap" onSubmit={submitSearch}>
+          <input className="input" style={{ width: 220 }} placeholder="Buscar nombre, correo, destino…" aria-label="Buscar" value={q} onChange={(e) => setQ(e.target.value)} />
           <label className="lbl mb-0" htmlFor="flt">Estado</label>
-          <select id="flt" className="select" style={{ width: "auto" }} value={filter} onChange={(e) => setFilter(e.target.value as RequestStatus | "todas")}>
-            <option value="todas">Todas ({requests.length})</option>
+          <select id="flt" className="select" style={{ width: "auto" }} value={store.filter} onChange={(e) => { setOpenId(null); store.setFilter(e.target.value as RequestFilter); }}>
+            <option value="todas">Todas ({store.counts.todas})</option>
             {(Object.keys(STATUS) as RequestStatus[]).map((s) => (
               <option key={s} value={s}>
-                {STATUS[s]} ({requests.filter((r) => r.status === s).length})
+                {STATUS[s]} ({store.counts[s]})
               </option>
             ))}
           </select>
-        </div>
+        </form>
       </div>
 
       <div className="card overflow-x-auto">
@@ -58,7 +62,7 @@ export function RequestsAdmin({ brand }: { brand: EmailBrand }) {
             </tr>
           </thead>
           <tbody>
-            {rows.map((r) => {
+            {store.rows.map((r) => {
               const isOpen = r.id === openId;
               return (
                 <Fragment key={r.id}>
@@ -76,19 +80,19 @@ export function RequestsAdmin({ brand }: { brand: EmailBrand }) {
                   {isOpen && (
                     <tr className="detail-row">
                       <td colSpan={6}>
-                        <RequestDetail request={r} steps={steps} brand={brand} update={update} />
+                        <RequestDetail request={r} steps={steps} brand={brand} store={store} onDeleted={() => setOpenId(null)} />
                       </td>
                     </tr>
                   )}
                 </Fragment>
               );
             })}
-            {rows.length === 0 && (
-              <tr><td colSpan={6} className="t-muted">No hay solicitudes con ese estado.</td></tr>
+            {store.rows.length === 0 && (
+              <tr><td colSpan={6} className="t-muted">No hay solicitudes con ese filtro.</td></tr>
             )}
           </tbody>
         </table>
-        <Pager total={filtered.length} page={current} onPage={goTo} />
+        <Pager total={store.total} page={store.page} onPage={(p) => { setOpenId(null); store.setPage(p); }} />
       </div>
     </>
   );

@@ -4,17 +4,18 @@ import { useMemo } from "react";
 import type { Destination, Offer } from "@/types/content";
 import type { FormStep } from "@/types/form";
 import type { SolicitudInput } from "@/lib/validation";
+import type { StoredRequest } from "@/types/admin";
 import { usePersistedState } from "@/lib/storage";
 import { KEYS_ADMIN } from "./keys";
-import { mockSolicitudes, type StoredRequest } from "@/data/mock-solicitudes";
+import { mockSolicitudes } from "@/data/mock-solicitudes";
 import baseDestinations from "@/data/destinations.json";
 import baseOffers from "@/data/ofertas.json";
 import { formContent } from "@/data/form";
 
 /**
- * Admin data sources for the mock. Each collection starts from the static data of the site
- * and keeps the admin's edits in localStorage. Swap these hooks for API calls when the
- * database exists; the components only depend on their return shape.
+ * Fuentes de datos del admin en la DEMO estática (GitHub Pages, NEXT_PUBLIC_STATIC_DEMO=1):
+ * parten de los datos estáticos del sitio y guardan los cambios en localStorage.
+ * En el VPS los componentes reciben los datos del servidor y llaman a /api/admin/* (ver sources.tsx).
  */
 
 interface DemoSubmission {
@@ -23,22 +24,24 @@ interface DemoSubmission {
   data: SolicitudInput;
 }
 
+type Override = Partial<StoredRequest> & { deleted?: boolean };
 const NO_DEMO: DemoSubmission[] = [];
-const NO_OVERRIDES: Record<string, Partial<StoredRequest>> = {};
+const NO_OVERRIDES: Record<string, Override> = {};
 
-/** Sample requests + the ones submitted in this browser (static demo), with status/notes overrides. */
+/** Solicitudes de muestra + las enviadas en este navegador, con estado/notas guardados aquí. */
 export function useRequests() {
   const [demo] = usePersistedState<DemoSubmission[]>("tb:demo-solicitudes", NO_DEMO);
-  const [overrides, setOverrides] = usePersistedState<Record<string, Partial<StoredRequest>>>(KEYS_ADMIN.requests, NO_OVERRIDES);
+  const [overrides, setOverrides] = usePersistedState<Record<string, Override>>(KEYS_ADMIN.requests, NO_OVERRIDES);
 
   const requests = useMemo(() => {
     const fromDemo: StoredRequest[] = demo.map((d) => ({ id: d.id, createdAt: d.createdAt, data: d.data, status: "nueva" as const }));
-    const all = [...fromDemo, ...mockSolicitudes].map((r) => ({ ...r, ...(overrides[r.id] ?? {}) }));
+    const all = [...fromDemo, ...mockSolicitudes].map((r) => ({ ...r, ...(overrides[r.id] ?? {}) })).filter((r) => !r.deleted);
     return all.sort((a, b) => (a.createdAt < b.createdAt ? 1 : -1));
   }, [demo, overrides]);
 
   const update = (id: string, patch: Partial<StoredRequest>) => setOverrides((o) => ({ ...o, [id]: { ...(o[id] ?? {}), ...patch } }));
-  return { requests, update };
+  const remove = (id: string) => setOverrides((o) => ({ ...o, [id]: { ...(o[id] ?? {}), deleted: true } }));
+  return { requests, update, remove };
 }
 
 const BASE_DESTINATIONS = baseDestinations as Destination[];
@@ -65,7 +68,7 @@ export function useFormSteps() {
 
 const BASE_OFFERS = baseOffers as Offer[];
 
-/** Offers with admin edits applied. Also used by the public /ofertas page so the demo reflects edits. */
+/** Offers with admin edits applied. Also used by the public /ofertas page in the demo so it reflects edits. */
 export function useOffers() {
   const [stored, setStored, hydrated] = usePersistedState<Offer[] | null>(KEYS_ADMIN.offers, null);
   const offers = stored ?? BASE_OFFERS;

@@ -67,7 +67,7 @@ export function StepEditor({ step, onChange }: Props) {
           )}
         </div>
       ))}
-      <div className="t-small t-muted">Los cambios se guardan automáticamente en este navegador.</div>
+      <div className="t-small t-muted">Pulsa «Guardar cambios» arriba cuando termines.</div>
     </div>
   );
 }

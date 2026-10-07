@@ -15,12 +15,13 @@ interface Props {
   onSave: (o: Offer) => void;
   onDelete?: () => void;
   onCancel: () => void;
+  onMove?: (dir: -1 | 1) => void;
 }
 
 const slug = (s: string) => s.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "");
 
 /** Inline editor for one seasonal offer. */
-export function OfferEditor({ initial, destinations, isNew, onSave, onDelete, onCancel }: Props) {
+export function OfferEditor({ initial, destinations, isNew, onSave, onDelete, onCancel, onMove }: Props) {
   const [o, setO] = useState<Offer>({ ...initial, includes: [...initial.includes] });
   const [msg, setMsg] = useState<string | null>(null);
   const k = initial.id || "new";
@@ -106,6 +107,12 @@ export function OfferEditor({ initial, destinations, isNew, onSave, onDelete, on
           <button type="button" className="btn btn-primary btn-sm" onClick={save}>{isNew ? "Crear oferta" : "Guardar"}<ArrowRight className="btn-icon" /></button>
           <button type="button" className="btn btn-secondary btn-sm" onClick={onCancel}>Cancelar</button>
           {onDelete && <button type="button" className="btn btn-secondary btn-sm" onClick={onDelete}>Eliminar</button>}
+          {onMove && (
+            <span className="flex gap-2 items-center">
+              <button type="button" className="btn btn-secondary btn-sm" onClick={() => onMove(-1)} aria-label="Subir en el orden">↑</button>
+              <button type="button" className="btn btn-secondary btn-sm" onClick={() => onMove(1)} aria-label="Bajar en el orden">↓</button>
+            </span>
+          )}
           {msg && <span className="form-status">{msg}</span>}
         </div>
       </div>

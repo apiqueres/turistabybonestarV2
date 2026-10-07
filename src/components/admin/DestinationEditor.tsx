@@ -15,6 +15,8 @@ interface Props {
   onSave: (d: Destination) => void;
   onDelete?: () => void;
   onCancel: () => void;
+  /** Mueve la ficha una posición arriba (-1) o abajo (1) en el orden de la web. */
+  onMove?: (dir: -1 | 1) => void;
 }
 
 const FIELDS: [keyof Destination, string][] = [
@@ -23,7 +25,7 @@ const FIELDS: [keyof Destination, string][] = [
 ];
 
 /** Inline editor for one destination (rendered under its row). */
-export function DestinationEditor({ initial, isNew, onSave, onDelete, onCancel }: Props) {
+export function DestinationEditor({ initial, isNew, onSave, onDelete, onCancel, onMove }: Props) {
   const [d, setD] = useState<Destination>({ ...initial, includes: [...initial.includes] });
   const [msg, setMsg] = useState<string | null>(null);
   const field = <K extends keyof Destination>(k: K, v: Destination[K]) => setD((x) => ({ ...x, [k]: v }));
@@ -90,6 +92,12 @@ export function DestinationEditor({ initial, isNew, onSave, onDelete, onCancel }
           </button>
           <button type="button" className="btn btn-secondary btn-sm" onClick={onCancel}>Cancelar</button>
           {onDelete && <button type="button" className="btn btn-secondary btn-sm" onClick={onDelete}>Eliminar</button>}
+          {onMove && (
+            <span className="flex gap-2 items-center">
+              <button type="button" className="btn btn-secondary btn-sm" onClick={() => onMove(-1)} aria-label="Subir en el orden">↑</button>
+              <button type="button" className="btn btn-secondary btn-sm" onClick={() => onMove(1)} aria-label="Bajar en el orden">↓</button>
+            </span>
+          )}
           {msg && <span className="form-status">{msg}</span>}
         </div>
       </div>

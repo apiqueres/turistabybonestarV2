@@ -2,35 +2,55 @@
 
 import { Fragment, useState } from "react";
 import type { Destination, Offer } from "@/types/content";
-import { useDestinations, useOffers } from "@/lib/admin/data";
+import type { ListStore } from "./sources";
 import { OfferEditor, EMPTY_OFFER } from "./OfferEditor";
 import { imgSrc } from "./DestinationEditor";
 import { Pager, paginate } from "./Pager";
 
 /** Seasonal offers as a paginated table; each row opens its editor inline. */
-export function OffersAdmin() {
-  const { offers, save, reset, dirty, hydrated } = useOffers();
-  const { destinations } = useDestinations();
+export function OffersAdmin({ store, destinations }: { store: ListStore<Offer>; destinations: Destination[] }) {
+  const offers = store.items;
   const [openId, setOpenId] = useState<string | null>(null);
   const [adding, setAdding] = useState(false);
   const [page, setPage] = useState(1);
   const [msg, setMsg] = useState<string | null>(null);
   const { rows, current } = paginate(offers, page);
   const destName = (slug: string) => destinations.find((d: Destination) => d.slug === slug)?.name ?? slug;
+  const where = store.mode === "demo" ? " en este navegador" : "";
 
-  const persist = (o: Offer) => {
-    const exists = offers.some((x) => x.id === o.id);
-    save(exists ? offers.map((x) => (x.id === o.id ? o : x)) : [o, ...offers]);
-    setOpenId(null);
-    setAdding(false);
-    setMsg(`«${o.title}» guardada en este navegador. La página de ofertas ya la muestra.`);
+  const persist = async (o: Offer) => {
+    try {
+      await store.save(o);
+      setOpenId(null);
+      setAdding(false);
+      setMsg(`«${o.title}» guardada${where}. La página de ofertas ya la muestra.`);
+    } catch (err) {
+      setMsg(err instanceof Error ? err.message : "No se pudo guardar.");
+    }
   };
-  const remove = (id: string) => {
-    save(offers.filter((x) => x.id !== id));
-    setOpenId(null);
+  const remove = async (o: Offer) => {
+    if (!window.confirm(`¿Eliminar la oferta «${o.title}»?`)) return;
+    try {
+      await store.remove(o.id);
+      setOpenId(null);
+      setMsg(`«${o.title}» eliminada${where}.`);
+    } catch (err) {
+      setMsg(err instanceof Error ? err.message : "No se pudo eliminar.");
+    }
+  };
+  const move = async (id: string, dir: -1 | 1) => {
+    const ids = offers.map((x) => x.id);
+    const i = ids.indexOf(id);
+    const j = i + dir;
+    if (i < 0 || j < 0 || j >= ids.length) return;
+    [ids[i], ids[j]] = [ids[j], ids[i]];
+    try {
+      await store.reorder(ids);
+    } catch (err) {
+      setMsg(err instanceof Error ? err.message : "No se pudo reordenar.");
+    }
   };
 
-  if (!hydrated) return null;
   return (
     <>
       <div className="admin-head">
@@ -43,7 +63,7 @@ export function OffersAdmin() {
           <button type="button" className="btn btn-primary btn-sm" onClick={() => { setAdding((v) => !v); setOpenId(null); }}>
             {adding ? "Cancelar alta" : "Nueva oferta"}
           </button>
-          {dirty && <button type="button" className="btn btn-secondary btn-sm" onClick={() => { reset(); setOpenId(null); setMsg("Restablecidas las ofertas originales."); }}>Restablecer</button>}
+          {store.dirty && store.reset && <button type="button" className="btn btn-secondary btn-sm" onClick={() => { store.reset?.(); setOpenId(null); setMsg("Restablecidas las ofertas originales."); }}>Restablecer</button>}
         </div>
       </div>
       <div className="card overflow-x-auto">
@@ -75,7 +95,7 @@ export function OffersAdmin() {
                   {isOpen && (
                     <tr className="detail-row">
                       <td colSpan={6}>
-                        <OfferEditor key={o.id} initial={o} destinations={destinations} onSave={persist} onDelete={() => remove(o.id)} onCancel={() => setOpenId(null)} />
+                        <OfferEditor key={o.id} initial={o} destinations={destinations} onSave={persist} onDelete={() => remove(o)} onCancel={() => setOpenId(null)} onMove={(dir) => move(o.id, dir)} />
                       </td>
                     </tr>
                   )}

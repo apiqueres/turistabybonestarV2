@@ -1,16 +1,8 @@
-import type { SolicitudInput } from "@/lib/validation";
+import type { RequestStatus, StoredRequest } from "@/types/admin";
 
-export type RequestStatus = "nueva" | "en-curso" | "cerrada";
+export type { RequestStatus, StoredRequest };
 
-export interface StoredRequest {
-  id: string;
-  createdAt: string;
-  data: SolicitudInput;
-  status: RequestStatus;
-  notes?: string;
-}
-
-/** Sample requests for the admin demo (same shape as data/solicitudes/*.json plus a status). */
+/** Sample requests for the admin DEMO (GitHub Pages). On the VPS the panel reads the database. */
 export const mockSolicitudes: StoredRequest[] = [
   {
     id: "2026-09-30T09-12-40-120Z_a1b2c3d4",

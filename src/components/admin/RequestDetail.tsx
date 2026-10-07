@@ -1,21 +1,25 @@
 "use client";
 
 import { useState } from "react";
-import type { StoredRequest, RequestStatus } from "@/data/mock-solicitudes";
+import type { RequestStatus, StoredRequest } from "@/types/admin";
 import type { FormStep } from "@/types/form";
 import type { EmailBrand } from "@/lib/email-shell";
 import { buildPrompt } from "@/lib/prompt";
 import { clientConfirmationEmail, openPreview } from "@/lib/email-templates";
 import { ArrowRight } from "@/components/ui/icons";
 import { MessageComposer } from "./MessageComposer";
+import type { RequestsStore } from "./sources";
 
 export const STATUS: Record<RequestStatus, string> = { nueva: "Nueva", "en-curso": "En curso", cerrada: "Cerrada" };
+const KIND: Record<string, string> = { confirmacion: "Confirmación al cliente", admin: "Mensaje del gestor", "aviso-agencia": "Aviso a la agencia" };
+const fmt = (iso: string) => new Date(iso).toLocaleString("es-ES", { dateStyle: "short", timeStyle: "short" });
 
 interface Props {
   request: StoredRequest;
   steps: FormStep[];
   brand: EmailBrand;
-  update: (id: string, patch: Partial<StoredRequest>) => void;
+  store: RequestsStore;
+  onDeleted: () => void;
 }
 
 function labelFor(steps: FormStep[], qid: string, value: unknown): [string, string] {
@@ -31,10 +35,31 @@ function labelFor(steps: FormStep[], qid: string, value: unknown): [string, stri
   return [qid, String(value)];
 }
 
-/** Everything about one request, rendered inline under its row: status, notes, answers, brief and the composer. */
-export function RequestDetail({ request: r, steps, brand, update }: Props) {
+/** Everything about one request, rendered inline under its row: status, notes, answers, brief, e-mails and the composer. */
+export function RequestDetail({ request: r, steps, brand, store, onDeleted }: Props) {
   const [composing, setComposing] = useState(false);
-  const brief = buildPrompt(r.id, r.createdAt, r.data);
+  const [notes, setNotes] = useState(r.notes ?? "");
+  const [savedNotes, setSavedNotes] = useState(r.notes ?? "");
+  const [state, setState] = useState<string | null>(null);
+  if ((r.notes ?? "") !== savedNotes) {
+    // Notas recargadas del servidor.
+    setSavedNotes(r.notes ?? "");
+    setNotes(r.notes ?? "");
+  }
+  const brief = r.prompt ?? buildPrompt(r.id, r.createdAt, r.data);
+
+  const run = async (fn: () => Promise<void>, ok?: string) => {
+    try {
+      await fn();
+      setState(ok ?? null);
+    } catch (err) {
+      setState(err instanceof Error ? err.message : "No se pudo guardar.");
+    }
+  };
+  const saveNotes = () => {
+    if (notes === (r.notes ?? "")) return;
+    void run(() => store.update(r.id, { notes }), "Notas guardadas.");
+  };
   const download = () => {
     const url = URL.createObjectURL(new Blob([brief], { type: "text/plain;charset=utf-8" }));
     const a = document.createElement("a");
@@ -43,6 +68,13 @@ export function RequestDetail({ request: r, steps, brand, update }: Props) {
     a.click();
     URL.revokeObjectURL(url);
   };
+  const remove = () => {
+    if (!window.confirm(`¿Eliminar definitivamente la solicitud de ${r.data.contacto.nombre}? Se borran sus datos personales y los correos registrados.`)) return;
+    void run(async () => {
+      await store.remove(r.id);
+      onDeleted();
+    });
+  };
 
   return (
     <div className="detail">
@@ -50,7 +82,7 @@ export function RequestDetail({ request: r, steps, brand, update }: Props) {
         <div className="grid grid-cols-2 gap-4">
           <div>
             <label className="lbl" htmlFor={`st-${r.id}`}>Estado</label>
-            <select id={`st-${r.id}`} className="select" value={r.status} onChange={(e) => update(r.id, { status: e.target.value as RequestStatus })}>
+            <select id={`st-${r.id}`} className="select" value={r.status} onChange={(e) => void run(() => store.update(r.id, { status: e.target.value as RequestStatus }))}>
               {(Object.keys(STATUS) as RequestStatus[]).map((s) => (
                 <option key={s} value={s}>{STATUS[s]}</option>
               ))}
@@ -64,8 +96,8 @@ export function RequestDetail({ request: r, steps, brand, update }: Props) {
           </div>
         </div>
         <div>
-          <label className="lbl" htmlFor={`nt-${r.id}`}>Notas internas</label>
-          <textarea id={`nt-${r.id}`} className="textarea" value={r.notes ?? ""} onChange={(e) => update(r.id, { notes: e.target.value })} placeholder="Seguimiento, llamadas, acuerdos…" />
+          <label className="lbl" htmlFor={`nt-${r.id}`}>Notas internas (se guardan al salir del campo)</label>
+          <textarea id={`nt-${r.id}`} className="textarea" value={notes} onChange={(e) => setNotes(e.target.value)} onBlur={saveNotes} placeholder="Seguimiento, llamadas, acuerdos…" />
         </div>
         <div>
           <span className="lbl">Destinos</span>
@@ -84,6 +116,20 @@ export function RequestDetail({ request: r, steps, brand, update }: Props) {
             })}
           </dl>
         </div>
+        {r.messages && r.messages.length > 0 && (
+          <div>
+            <span className="lbl">Correos enviados</span>
+            <ul className="t-small flex flex-col gap-1">
+              {r.messages.map((m) => (
+                <li key={m.id} className="flex gap-3 flex-wrap">
+                  <span className="t-muted whitespace-nowrap">{fmt(m.createdAt)}</span>
+                  <span>{KIND[m.kind] ?? m.kind} · {m.subject}</span>
+                  <span className={`badge ${m.status === "sent" ? "nueva" : "cerrada"}`}>{m.status === "sent" ? "Enviado" : m.status === "skipped" ? "Sin SMTP" : "Error"}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
       </div>
 
       <div className="flex flex-col gap-5 min-w-0">
@@ -96,14 +142,11 @@ export function RequestDetail({ request: r, steps, brand, update }: Props) {
           <button type="button" className="btn btn-secondary btn-sm" onClick={() => openPreview(clientConfirmationEmail(r.id, r.data, brand))}>
             Ver correo de confirmación
           </button>
+          <button type="button" className="btn btn-secondary btn-sm" onClick={remove}>Eliminar solicitud</button>
+          {state && <span className="form-status">{state}</span>}
         </div>
         {composing ? (
-          <MessageComposer
-            key={r.id}
-            request={r}
-            brand={brand}
-            onSent={(line) => update(r.id, { notes: `${r.notes ? `${r.notes}\n` : ""}Correo enviado · ${line}` })}
-          />
+          <MessageComposer key={r.id} request={r} brand={brand} mode={store.mode} send={(msg) => store.sendMessage(r, msg, brand)} />
         ) : (
           <div>
             <span className="lbl">Brief para el gestor</span>
