@@ -89,8 +89,9 @@ export function ZoomMap({ focus, selected, recommended, legend }: Props) {
   return (
     <div>
       <div ref={scroll} className="map-scroll">
-        <div className="map-canvas" style={{ aspectRatio: `${map.width} / ${map.height}` }}>
-          <svg viewBox={`0 0 ${map.width} ${map.height}`} className="w-full h-full zoom-map" role="img" aria-label={focus ? `Mapa centrado en ${focus.name}` : "Mapa del mundo"}>
+        <div className="map-canvas">
+          {/* Full width, cropped top and bottom (polar edges) so the map stays low: see .map-canvas */}
+          <svg viewBox={`0 0 ${map.width} ${map.height}`} preserveAspectRatio="xMidYMid slice" className="w-full h-full zoom-map" role="img" aria-label={focus ? `Mapa centrado en ${focus.name}` : "Mapa del mundo"}>
             <g ref={group} transform={transformOf(WORLD)}>
               {map.countries.map((c) => (
                 <path
