@@ -1098,7 +1098,7 @@ html.reduced-motion .hero-el {
   position: relative;
   width: 100%;
   /* wide band: the 2:1 projection fills the width and the polar edges are cropped */
-  aspect-ratio: 2.75 / 1;
+  aspect-ratio: 3 / 1;
   overflow: hidden;
 }
 @media (max-width: 900px) {
