@@ -10,6 +10,6 @@ scratch
 .env.*
 !.env.example
 .seed
-src/generated
+src/generated/prisma
 *.log
 .claude
