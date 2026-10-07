@@ -2,22 +2,31 @@
 
 Web de la agencia de viajes a medida TuristaByBonestar (Sueca, Valencia). Estilo editorial premium en tema claro (blanco, negro y cian), con animaciones GSAP + ScrollTrigger. Las fotografías de los destinos son reales (Wikimedia Commons, licencias libres, ver `/creditos`); el vídeo hero, la foto de «Sobre nosotros», la del cierre y los retratos del equipo se generaron con Higgsfield.
 
+El backend vive **dentro del mismo proyecto Next.js** (Route Handlers + componentes de servidor) sobre **PostgreSQL + Prisma**, con el panel `/admin` protegido por **Auth.js** y el correo enviado por **SMTP desde el servidor**. El plan original está en [`docs/PLAN-BACKEND.md`](docs/PLAN-BACKEND.md) y la guía de operación en [`docs/OPERACION.md`](docs/OPERACION.md).
+
 ## Rutas
 
 | Ruta | Qué hay |
 | --- | --- |
 | `/` | Inicio: hero con vídeo, el método en 3 pasos, 6 destinos destacados, sobre nosotros con cifras, las 10 dimensiones que preguntamos, cómo se come + testimonio, equipo con panel lateral y cierre con doble CTA. |
 | `/donde-nos-vamos` | Mapa mundial donde **cualquier país es seleccionable** (los 12 recomendados van en cian con marcador), barra "Tu lista" con chips y las 12 fichas de destino en pestañas. Al menos un país es obligatorio para continuar. Acepta `?pais=<id>` para abrir una ficha. |
-| `/como-viajas` | Asistente de **8 pasos** a pantalla completa (ubicaciones, estilo, transporte, ritmo/alojamiento, mesa, cultura, fechas/presupuesto/viajeros, contacto). Progreso arriba, Intro para avanzar, resumen en el último paso, validación (destino obligatorio, nombre, correo y privacidad) y pantalla de confirmación con referencia. Acepta `?paso=<n>`. |
+| `/como-viajas` | Asistente de **2 páginas** a pantalla completa (el viaje y tus datos). Progreso arriba, Intro para avanzar, resumen, validación y pantalla de confirmación con referencia. Acepta `?paso=<n>`. |
+| `/ofertas` | Ofertas de temporada activas y la comunidad de WhatsApp. |
 | `/contacto` | Datos de contacto, horario y formulario corto de 4 campos. |
-| `/aviso-legal`, `/privacidad`, `/cookies` | Páginas legales (placeholders). |
-| `/admin/login` | Acceso al panel (mock: `admin` / `turista2026`, sesión en el navegador). |
-| `/admin/solicitudes` | Solicitudes registradas: listado con filtro por estado, detalle con respuestas, notas internas, brief `.txt` y envío por correo al cliente. |
-| `/admin/destinos` | Editor de los destinos predeterminados (textos, coordenadas, portada e imagen subida desde el ordenador). |
-| `/admin/preguntas` | Editor de los pasos del asistente: títulos, textos, etiquetas, máximo de opciones y las opciones que puede elegir el usuario. |
-| `POST /api/solicitudes` | Recibe el asistente, valida con zod y guarda `data/solicitudes/<id>.json` **y `<id>.txt`**, un brief legible para el gestor (prompt) con todas las respuestas en texto. |
-| `/creditos` | Autoría y licencia de cada fotografía real. |
-| `POST /api/contacto` | Recibe el formulario corto y guarda `data/contacto/<id>.json`. |
+| `/aviso-legal`, `/privacidad`, `/cookies`, `/creditos` | Páginas legales y créditos fotográficos. |
+| `/admin/login` | Acceso al panel (usuario y contraseña de la base de datos; sesión de 12 h). |
+| `/admin/solicitudes` | Solicitudes del asistente: listado paginado (10) con filtro por estado y búsqueda, detalle en línea con estado, notas, respuestas, brief `.txt`, correos enviados, redactor que envía por SMTP y botón de **eliminar** (RGPD). |
+| `/admin/contactos` | Mensajes del formulario corto: marcar atendido, responder, eliminar. |
+| `/admin/destinos` | Destinos: textos, coordenadas, portada, imagen (subida al servidor), orden. |
+| `/admin/ofertas` | Ofertas: alta, edición, activar/ocultar, orden, imagen. |
+| `/admin/preguntas` | Páginas del asistente: títulos, textos, etiquetas, máximo de opciones y opciones. |
+| `/admin/textos` | Bloques de texto de la web: marca y contacto (teléfono, WhatsApp, comunidad), menú, portada, método, equipo, cierre, mapa, contacto, ofertas, pie. |
+| `/admin/cuenta` | Cambio de contraseña. |
+| `POST /api/solicitudes` | Recibe el asistente, valida con zod, guarda la solicitud y su brief en la base de datos y envía la confirmación al cliente y el aviso a la agencia. |
+| `POST /api/contacto` | Recibe el formulario corto, lo guarda y avisa a la agencia. |
+| `/api/admin/*` | API del panel (requiere sesión): solicitudes, contactos, destinos, ofertas, preguntas, textos, media (subida de imágenes), cuenta. |
+| `/api/auth/*` | Auth.js (login/logout). |
+| `GET /api/health` | Comprobación de salud (web + base de datos). |
 
 La selección del mapa y las respuestas del asistente se guardan en `localStorage` (`tb:seleccion`, `tb:formulario`) hasta que se envían, así el usuario no pierde nada al recargar o al ir del mapa al formulario.
 
@@ -25,81 +34,92 @@ La selección del mapa y las respuestas del asistente se guardan en `localStorag
 
 | Capa | Tecnología | Por qué |
 | --- | --- | --- |
-| Front | **Next.js 16** (App Router) + **React 19** + **TypeScript** | Un solo proyecto para la web pública, las rutas de API y, más adelante, el panel `/admin`. |
+| Front y backend | **Next.js 16** (App Router, Route Handlers) + **React 19** + **TypeScript** | Un solo proyecto y un solo contenedor: web pública, API y panel comparten tipos y validación. |
+| Base de datos | **PostgreSQL 16** + **Prisma 7** (`@prisma/adapter-pg`) | Migraciones versionadas, cliente tipado, JSONB para respuestas y bloques de texto. |
+| Autenticación | **Auth.js v5** (Credentials + bcryptjs, sesión JWT en cookie) | Uno o pocos administradores, sin OAuth. `src/proxy.ts` protege `/admin/**` y `/api/admin/**`. |
+| Correo | **Nodemailer** por SMTP (Brevo, Resend, Gmail…) | Las plantillas HTML con la marca ya existían; ahora las envía el servidor. |
+| Imágenes | **sharp** | Las subidas se convierten a WebP (máx. 1600 px) y se guardan en `data/uploads`. |
 | Estilos | **Tailwind CSS 4** + CSS propio (`src/app/globals.css`) | Tokens del sistema visual en variables CSS; utilidades solo para layout. |
-| Animación | **GSAP 3 + ScrollTrigger** | Scrub de titulares, parallax, contadores, cascadas y el avión de transición (también entre rutas y entre pasos del asistente). |
-| Validación | **zod** | Mismo esquema en cliente y servidor (`src/lib/validation.ts`). |
+| Animación | **GSAP 3 + ScrollTrigger** | Scrub de titulares, parallax, contadores, cascadas y el avión de transición. |
+| Validación | **zod** | Mismo esquema en cliente y servidor (`src/lib/validation.ts`, `src/lib/validation-admin.ts`). |
 | Mapa | `world-atlas` + `d3-geo` (solo en build) | `scripts/build-map.mjs` pre-proyecta un path por país y los marcadores; el bundle no incluye d3. |
-| Despliegue | **Docker** (imagen `standalone`) + **Nginx** + certbot | Un contenedor en tu VPS detrás de Nginx, con `./data` montado como volumen. |
+| Despliegue | **Docker Compose** (`db` + `web`) + **Nginx** + certbot | `docker compose up -d --build`; el contenedor aplica las migraciones y el seed al arrancar. |
 
-## Panel de administración (mockup)
+## Cómo fluye el contenido
 
-Todavía no hay base de datos, así que el panel es un **mockup estático**: el login comprueba unas credenciales de demostración en el navegador, y las tres secciones parten de los datos estáticos del sitio (`src/data/*`) y guardan los cambios en `localStorage` (claves `tb:admin-*`). Las solicitudes mostradas son ejemplos (`src/data/mock-solicitudes.ts`) más las que se envíen desde la demo en ese mismo navegador. Los botones «Restablecer» vuelven a los datos originales.
+- `src/lib/content.ts` es el único punto por el que las páginas leen contenido (`getSiteContent()`, `getFormContent()`). Con `DATABASE_URL` lee de la base de datos (destinos, ofertas, páginas del formulario y bloques de texto) y lo fusiona sobre los estáticos de `src/data/*`; el resultado se cachea con la etiqueta `content` y el admin la invalida al guardar. Sin `DATABASE_URL` (demo de GitHub Pages, desarrollo sin base de datos) devuelve los estáticos tal cual.
+- `src/data/*` sigue siendo la **fuente del seed** y el valor por defecto de cada bloque. Para cambiar textos en producción se usa el panel; para cambiar los valores iniciales de un despliegue nuevo, los ficheros.
+- Las páginas públicas se renderizan por petición (`connection()` en el layout) y los datos salen de la caché, así cualquier cambio del admin se ve al recargar.
 
-Para pasar a producción: sustituir `src/lib/admin/auth.ts` por Auth.js y los hooks de `src/lib/admin/data.ts` por llamadas a la API; los componentes no cambian.
+## Panel de administración
 
-## Correo desde el front (demo)
+- Login con Auth.js (`src/auth.ts`): correo y contraseña de la tabla `AdminUser` (bcrypt, coste 12). La cookie es `httpOnly`, `sameSite=lax`, `secure` con HTTPS, y caduca a las 12 h. El usuario inicial lo crea el seed con `ADMIN_EMAIL`/`ADMIN_PASSWORD`; cámbiala desde **Cuenta**.
+- Cada página del panel carga los datos en el servidor (`src/lib/repo/*`) y los componentes (`src/components/admin/*`) hablan con `/api/admin/*` a través de `src/lib/admin/api.ts`. `src/components/admin/sources.tsx` define la «fuente» de cada sección: base de datos (VPS) o `localStorage` (demo estática).
+- Las mutaciones van por Route Handlers y no por Server Actions porque la demo de GitHub Pages es una exportación estática, donde las Server Actions no compilan.
+- Cada ruta de `/api/admin/*` comprueba la sesión en el servidor (no basta el proxy) y valida la entrada con zod.
 
-`src/lib/email.ts` envía correo **sin pasar por el backend**:
+## Correo
 
-- Por defecto abre el programa de correo del visitante con un `mailto:` ya relleno (asunto y brief). Sirve para la demo en GitHub Pages sin configurar nada.
-- Si se definen `NEXT_PUBLIC_EMAILJS_SERVICE`, `NEXT_PUBLIC_EMAILJS_TEMPLATE` y `NEXT_PUBLIC_EMAILJS_PUBLIC_KEY` (cuenta gratuita de EmailJS, plantilla con los campos `to_email`, `subject`, `message`, `reply_to`, `from_name`), el envío se hace desde el navegador a través de la API pública de EmailJS, sin servidor propio.
+`src/lib/mailer.ts` envía por SMTP con las variables `SMTP_*` y `MAIL_FROM`/`MAIL_AGENCY`:
 
-Plantillas (`src/lib/email-shell.ts` y `src/lib/email-templates.ts`): correo HTML con el estilo de la web (serif, monoespaciada, cian), con versión en texto plano para `mailto:`.
+- **Confirmación al cliente** (`clientConfirmationEmail`) y **aviso a la agencia** (`agencyRequestEmail`, con el brief completo en la versión de texto) al recibir una solicitud; **aviso a la agencia** (`agencyContactEmail`) al recibir un contacto. Se envían después de responder al navegador (`after()`), así el formulario no espera al SMTP.
+- **Mensaje del gestor** (`clientMessageEmail`) desde la ficha de cada solicitud en el panel, con vista previa en vivo.
+- Todo envío deja traza en `MessageLog` (enviado / error / sin SMTP). Sin `SMTP_HOST` la web funciona igual y los correos quedan registrados como «skipped».
 
-- **Confirmación al cliente** (`clientConfirmationEmail`): se envía al terminar el asistente si EmailJS está configurado; en la pantalla final siempre hay «Ver el correo que recibirás» para abrir la vista previa.
-- **Mensaje del gestor** (`clientMessageEmail`): desde el panel, en la ficha de cada solicitud, «Escribir al cliente» abre un compositor con asunto, mensaje, firma, resumen opcional de la solicitud y vista previa en vivo.
-- El brief interno `.txt` (`buildPrompt`) tiene formato alineado con reglas y columnas, pensado para leerse en texto plano.
+En la demo estática no hay servidor: los botones de correo abren el programa de correo del visitante con un `mailto:` (`src/lib/mailto.ts`).
 
-Para enviar HTML con EmailJS, la plantilla del servicio debe imprimir `{{{message_html}}}` (triple llave) en el cuerpo.
+## Base de datos
 
-## Dónde se guardan las solicitudes
+Modelos (`prisma/schema.prisma`): `AdminUser`, `Destination`, `Offer`, `FormStep`, `SiteSetting`, `Solicitud`, `Contacto`, `MessageLog`, `MediaAsset`. Las respuestas del asistente van en JSONB tal cual (`Solicitud.data`), con el brief en `Solicitud.prompt` y copias desnormalizadas de nombre/correo/teléfono para buscar.
 
-Mientras no exista el backend, cada envío es un fichero JSON:
-
+```bash
+npm run db:generate   # cliente Prisma (src/generated/prisma, ignorado por git)
+npm run db:migrate    # crea/aplica migraciones en desarrollo (prisma migrate dev)
+npm run db:deploy     # aplica migraciones en producción (lo hace el contenedor al arrancar)
+npm run db:seed       # destinos, ofertas, formulario, textos, admin inicial e importación de data/*.json
+npm run db:studio     # Prisma Studio
 ```
-data/
-  solicitudes/2026-09-28T12-00-00-000Z_ab12cd34.json   ← asistente "Cómo viajas" (datos)
-  solicitudes/2026-09-28T12-00-00-000Z_ab12cd34.txt    ← el mismo envío como brief/prompt legible
-  contacto/2026-09-28T12-05-00-000Z_ef56gh78.json      ← formulario corto
-```
 
-Estructura del JSON: `{ id, createdAt, data: { destinos[{id, nombre}], respuestas{...}, contacto{...} }, prompt }`. El `.txt` (también incluido como `prompt` en el JSON) lo genera `src/lib/prompt.ts` traduciendo ids a etiquetas. Las claves de `respuestas` son los ids de pregunta de `src/data/form.ts`. La carpeta se configura con `DATA_DIR` (por defecto `./data`; en Docker, `/app/data` montado desde `./data`). Está en `.gitignore`.
-
-Cuando llegue el admin, `src/lib/store.ts` es el único sitio que hay que sustituir por una base de datos (PostgreSQL + Prisma recomendado); los ficheros existentes se pueden importar tal cual.
+El seed es idempotente: solo crea lo que falta. Si existen ficheros `data/solicitudes/*.json` o `data/contacto/*.json` de la versión sin base de datos, los importa.
 
 ## Estructura
 
 ```
 src/
-  app/                       rutas: /, /donde-nos-vamos, /como-viajas, /contacto, legales, api/*
+  app/                       rutas: /, /donde-nos-vamos, /como-viajas, /ofertas, /contacto, legales, admin/*, api/*
+  auth.ts, auth.config.ts    Auth.js (credenciales + sesión JWT)
+  proxy.ts                   puerta de /admin/** y /api/admin/** (en Next 16 el middleware se llama proxy)
   components/
-    layout/                  Navbar (por rutas), Footer, SiteShell, SectionLabel, LegalPage
-    motion/                  Loader, PlaneTransition, ScrubHeading
-    sections/                secciones de la home
-    map/                     CountryMap, SelectionBar, DestinationTabs, MapExperience
-    form/                    Wizard, StepView, QuestionField, DestinationsStep, Summary, SuccessView
-    contact/                 ContactForm
-  data/site.ts               textos de todas las rutas
-  data/destinations.json     los 12 destinos (id ISO numérico, ficha sin precios, lon/lat, imagen)
-  data/form.ts               los 8 pasos del asistente
-  generated/world-map.json   mapa pre-proyectado (no editar a mano)
-  lib/                       content.ts (capa de datos), storage.ts, validation.ts, store.ts, gsap.ts, motion.ts, useMotion.ts
-  types/                     content.ts, form.ts
-public/brand/                logo blanco y fuente original
-public/media/                vídeo hero y fotografías (Higgsfield)
-scripts/                     build-logo.mjs, build-map.mjs, fetch-media.mjs
-deploy/nginx.conf            ejemplo de proxy inverso
+    layout/ motion/ sections/ map/ form/ contact/
+    admin/                   panel: AdminShell/AdminNav, *Admin (listas), *Editor, sources.tsx (fuentes de datos)
+  data/                      site.ts, destinations.json, ofertas.json, form.ts (valores iniciales y seed)
+  lib/
+    content.ts               capa de contenido (BD con caché por etiqueta, o estáticos)
+    db.ts                    cliente Prisma (singleton)
+    repo/                    acceso a datos: solicitudes, contactos, destinos, ofertas, form, settings, media, users
+    mailer.ts                envío SMTP + traza en MessageLog
+    rate-limit.ts            límite por IP y campo trampa de las rutas públicas
+    uploads.ts               rutas de las imágenes subidas
+    validation*.ts           esquemas zod (público y admin)
+    admin/                   api.ts (cliente de /api/admin), session.ts, data.ts (demo), image.ts (subida)
+  types/                     content.ts, form.ts, admin.ts
+prisma/                      schema.prisma, migrations/, seed.ts
+deploy/                      nginx.conf, docker-entrypoint.sh, backup.sh
+docs/                        PLAN-BACKEND.md, OPERACION.md
 ```
 
 ## Desarrollo
 
 ```bash
 npm install
-npm run dev        # http://localhost:3000
-npm run lint
+cp .env.example .env         # DATABASE_URL de un PostgreSQL local, AUTH_SECRET, ADMIN_EMAIL/ADMIN_PASSWORD…
+npm run db:migrate && npm run db:seed
+npm run dev                  # http://localhost:3000  (admin en /admin/login)
+npm run lint && npx tsc --noEmit
 npm run build && npm start
 ```
+
+Sin `DATABASE_URL` la web arranca con los datos estáticos y sin panel operativo. Para probar el correo en local sin un proveedor, cualquier servidor SMTP de pruebas sirve (`SMTP_HOST=127.0.0.1`, `SMTP_PORT=2525`).
 
 Scripts auxiliares:
 
@@ -107,45 +127,43 @@ Scripts auxiliares:
 node scripts/build-logo.mjs   # regenera el logo blanco y el icono desde public/brand/logo-source.png
 node scripts/build-map.mjs    # regenera src/generated/world-map.json tras tocar src/data/destinations.json
 node scripts/fetch-media.mjs scripts/mi-manifiesto.json   # descarga y convierte a WebP un manifiesto {nombre: url}
-node scripts/build-hero-video.mjs   # une los clips de scratch/hero (01-*.mp4 … 05-*.mp4) en public/media/hero.mp4 con fundidos y genera el poster
+node scripts/build-hero-video.mjs   # une los clips de scratch/hero en public/media/hero.mp4 y genera el poster
 ```
 
 ## Editar contenido
 
-- Fotografías reales de destinos: `scripts/commons-queries.json` define la búsqueda en Wikimedia Commons de cada una; `node scripts/fetch-commons.mjs scripts/commons-queries.json` las descarga, convierte a WebP y actualiza `public/media/credits.json`. Para usar fotos propias basta con sustituir `public/media/real-<slug>.webp`.
+- En producción, desde el panel: **Destinos**, **Ofertas**, **Preguntas** y **Textos**. Las imágenes subidas van a `data/uploads/AAAA/MM/` y se sirven en `/uploads/…`; las 12 fotos originales siguen en `public/media/real-*.webp`.
+- Valores iniciales (seed) y demo estática: `src/data/site.ts` (textos), `src/data/destinations.json` (+ `node scripts/build-map.mjs`), `src/data/ofertas.json`, `src/data/form.ts`.
+- Fotografías reales de destinos: `scripts/commons-queries.json` + `node scripts/fetch-commons.mjs scripts/commons-queries.json` actualiza `public/media/credits.json`.
 - Nombres de países en español para el mapa: `src/data/country-names.es.json`.
-
-- Textos de todas las rutas: `src/data/site.ts`.
-- Destinos (añadir o quitar países disponibles): `src/data/destinations.json` y después `node scripts/build-map.mjs`. El `id` es el código ISO 3166-1 numérico del país.
-- Preguntas del asistente: `src/data/form.ts`.
-- Contacto, horario y año del copyright: `siteContent.brand`.
 
 ## Demo en GitHub Pages
 
 El workflow [`.github/workflows/pages.yml`](.github/workflows/pages.yml) publica una versión **estática de demostración** en `https://<usuario>.github.io/<repo>/` con cada push a `main`. Activa una vez en el repositorio: *Settings → Pages → Source: GitHub Actions*.
 
-En esa versión no hay servidor: las rutas de API se excluyen del build (`DEPLOY_TARGET=pages`) y los formularios funcionan en modo demo (`NEXT_PUBLIC_STATIC_DEMO=1`): la solicitud se guarda solo en el navegador y la pantalla final ofrece descargar el brief `.txt`. Los enlaces y recursos llevan el prefijo del repositorio (`NEXT_PUBLIC_BASE_PATH`).
+En esa versión no hay servidor: el workflow elimina `src/app/api` y `src/proxy.ts` antes del build (`DEPLOY_TARGET=pages`) y los formularios y el panel funcionan en modo demo (`NEXT_PUBLIC_STATIC_DEMO=1`): la solicitud se guarda solo en el navegador, la pantalla final ofrece descargar el brief `.txt`, y el panel (`admin` / `turista2026`) guarda los cambios en `localStorage`. Los enlaces y recursos llevan el prefijo del repositorio (`NEXT_PUBLIC_BASE_PATH`).
 
-Para probar la exportación en local:
+Para probar la exportación en local, aparta temporalmente `src/app/api` y `src/proxy.ts` (por ejemplo moviéndolos a `/tmp`), ejecuta
 
 ```bash
-rm -rf .next && mv src/app/api /tmp/api
 DEPLOY_TARGET=pages NEXT_PUBLIC_BASE_PATH=/turistabybonestarV2 NEXT_PUBLIC_STATIC_DEMO=1 npm run build
-mv /tmp/api src/app/api   # el resultado queda en out/
 ```
 
-## Despliegue en el VPS (Docker + Nginx)
+y devuélvelos a su sitio; el resultado queda en `out/`.
 
-1. Instala Docker y Nginx en el servidor y apunta el dominio a su IP.
-2. Clona el proyecto, crea `.env` a partir de `.env.example` y crea la carpeta `data/`.
-3. Construye y arranca: `docker compose up -d --build` (escucha solo en `127.0.0.1:3000`).
-4. Copia `deploy/nginx.conf` a `/etc/nginx/sites-available/`, ajusta el dominio, enlázalo en `sites-enabled` y recarga Nginx.
-5. Certificado TLS: `sudo certbot --nginx -d turistabybonestar.com -d www.turistabybonestar.com`.
+## Despliegue en el VPS (Docker Compose + Nginx)
 
-Para actualizar: `git pull && docker compose up -d --build`. Los JSON de `data/` sobreviven a los redespliegues.
+1. Instala Docker (con el plugin Compose) y Nginx en el servidor y apunta el dominio a su IP.
+2. Clona el proyecto en `/opt/turistabybonestar` y crea `.env` a partir de `.env.example`: `POSTGRES_PASSWORD`, `DATABASE_URL` (con esa misma contraseña y host `db`), `AUTH_SECRET` (`openssl rand -base64 32`), `ADMIN_EMAIL`/`ADMIN_PASSWORD` (solo para el primer arranque), `SMTP_*`, `MAIL_FROM`, `MAIL_AGENCY`, `NEXT_PUBLIC_SITE_URL`, `AUTH_URL`.
+3. Si tienes solicitudes de la versión anterior, deja sus JSON en `data/solicitudes/` y `data/contacto/`: el seed los importa.
+4. Construye y arranca: `docker compose up -d --build`. El contenedor `web` espera a que `db` esté sano, ejecuta `prisma migrate deploy`, el seed (idempotente) y arranca Next en `127.0.0.1:3000`. Comprueba `curl localhost:3000/api/health`.
+5. Copia `deploy/nginx.conf` a `/etc/nginx/sites-available/`, ajusta el dominio y la ruta del `alias` de `/uploads/`, enlázalo en `sites-enabled` y recarga Nginx.
+6. Certificado TLS: `sudo certbot --nginx -d turistabybonestar.com -d www.turistabybonestar.com`.
+7. Copias de seguridad: `crontab -e` → `15 3 * * * cd /opt/turistabybonestar && ./deploy/backup.sh >> backups/backup.log 2>&1` (volcado diario de PostgreSQL + tar de `data/uploads`, retención 14 días).
+8. Entra en `https://turistabybonestar.com/admin/login` con `ADMIN_EMAIL`/`ADMIN_PASSWORD` y cambia la contraseña en **Cuenta**.
 
-## Fase 2: administración + backend (recomendación)
+Para actualizar: `git pull && docker compose up -d --build`. La base de datos (volumen `pgdata`) y `data/uploads` sobreviven a los redespliegues y a los reinicios del servidor (`restart: unless-stopped`). Registro: `docker compose logs -f web`.
 
-- Admin en `src/app/admin/**` en este mismo proyecto, protegido con **Auth.js**.
-- API con Route Handlers (o **NestJS** aparte) sobre **PostgreSQL + Prisma**. Modelos iniciales: `Destination`, `Solicitud`, `Contacto`, `TeamMember`, `SiteSettings`.
-- El front ya consume `SiteContent` y `FormContent` a través de `src/lib/content.ts`: basta con sustituir esas funciones por llamadas a la API para que todo sea editable desde el admin.
+Cabeceras de seguridad (`next.config.ts`): `Content-Security-Policy` básica (recursos propios + WhatsApp + Nominatim), `Referrer-Policy`, `X-Content-Type-Options`, `X-Frame-Options` (`DENY` en el panel). Las rutas públicas limitan a 5 envíos por IP cada 10 minutos y llevan un campo trampa para bots.
+
+La guía de operación (entrar al admin, copias, restaurar, tareas de mantenimiento) está en [`docs/OPERACION.md`](docs/OPERACION.md).

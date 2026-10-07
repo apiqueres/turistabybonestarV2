@@ -1,15 +1,43 @@
 services:
+  db:
+    image: postgres:16-alpine
+    container_name: tbb-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-tbb}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Define POSTGRES_PASSWORD en .env}
+      POSTGRES_DB: ${POSTGRES_DB:-turistabybonestar}
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-tbb} -d ${POSTGRES_DB:-turistabybonestar}"]
+      interval: 5s
+      timeout: 5s
+      retries: 12
+
   web:
     build: .
     image: turistabybonestar/web:latest
     container_name: tbb-web
     restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
     ports:
       - "127.0.0.1:3000:3000"
     env_file:
       - .env
+    environment:
+      DATA_DIR: /app/data
     volumes:
-      # Solicitudes y mensajes de contacto en JSON (data/solicitudes, data/contacto)
+      # Imágenes subidas (data/uploads) y JSON antiguos que importa el seed (data/solicitudes, data/contacto)
       - ./data:/app/data
-    # Cuando exista el backend, añade aquí los servicios `api` y `db` (PostgreSQL)
-    # y apúntalos desde API_URL en .env.
+    healthcheck:
+      test: ["CMD", "node", "-e", "fetch('http://127.0.0.1:3000/api/health').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 30s
+
+volumes:
+  pgdata:

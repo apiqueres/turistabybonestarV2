@@ -11,7 +11,8 @@
     "db:migrate": "prisma migrate dev",
     "db:deploy": "prisma migrate deploy",
     "db:seed": "prisma db seed",
-    "db:studio": "prisma studio"
+    "db:studio": "prisma studio",
+    "db:seed:bundle": "esbuild prisma/seed.ts --bundle --platform=node --format=esm --outfile=.seed/seed.mjs --external:@prisma/client --external:pg --log-level=warning --banner:js=\"import { createRequire } from 'node:module'; const require = createRequire(import.meta.url);\""
   },
   "dependencies": {
     "@prisma/adapter-pg": "^7.10.0",
