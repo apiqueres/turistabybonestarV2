@@ -1479,6 +1479,14 @@ html.reduced-motion .hero-el {
   align-items: flex-end;
   gap: 10px;
 }
+/* The fixed wrapper spans the hidden menu too: it must never swallow clicks meant for the page. */
+.wa {
+  pointer-events: none;
+}
+.wa-btn,
+.wa.is-open .wa-menu {
+  pointer-events: auto;
+}
 .wa-btn {
   width: 58px;
   height: 58px;
