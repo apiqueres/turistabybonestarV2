@@ -853,6 +853,9 @@ html.reduced-motion .hero-el {
 .wiz-footer {
   border-top: 1px solid var(--line);
   padding: 22px var(--gutter);
+  /* keep the primary button clear of the floating WhatsApp button */
+  padding-right: calc(var(--gutter) + 72px);
+  padding-bottom: 40px;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -1515,4 +1518,26 @@ html.reduced-motion .hero-el {
     right: 14px;
     bottom: 14px;
   }
+}
+
+/* ---------- Gold nav link (Ofertas) ---------- */
+.nav-link.is-gold,
+.nav-gold-text {
+  color: var(--gold-dark);
+  font-weight: 500;
+}
+.nav-link.is-gold.is-active {
+  color: var(--gold-dark);
+  text-decoration: underline;
+  text-underline-offset: 6px;
+}
+.offer-price {
+  font-family: var(--font-serif), Georgia, serif;
+  font-size: 34px;
+  line-height: 1;
+}
+.offer-badge {
+  background: var(--gold);
+  color: var(--ink);
+  border-color: var(--gold);
 }

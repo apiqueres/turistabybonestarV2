@@ -1,6 +1,6 @@
 import type { FormContent } from "@/types/form";
 
-/** Single-screen form: destinations, the six questions the agency needs and how to reach the client. */
+/** Two pages: the trip (destinations + six questions) and how to reach the client. */
 export const formContent: FormContent = {
   header: { stepLabel: "Paso", exit: "Salir" },
   nav: {
@@ -12,11 +12,11 @@ export const formContent: FormContent = {
     missingDestination: "Marca al menos un destino para seguir",
     submit: "Enviar mi solicitud",
   },
-  summary: { title: "Tu resumen", empty: "Sin respuesta" },
+  summary: { title: "Tu viaje", empty: "Sin respuesta" },
   success: {
     kicker: "Recibido",
     title: ["Ya lo tenemos.", "Ahora nos toca a nosotros."],
-    text: "Un gestor revisa tus respuestas y te escribe con la primera propuesta en 48 horas laborables. Tú solo tendrás que decir que sí.",
+    text: "Un gestor revisa tus respuestas y te llama o te escribe con la primera propuesta en 48 horas laborables. Tú solo tendrás que decir que sí.",
     reference: "Referencia",
     home: { label: "Volver al inicio", href: "/" },
     map: { label: "Volver al mapa", href: "/donde-nos-vamos" },
@@ -25,10 +25,10 @@ export const formContent: FormContent = {
   steps: [
     {
       id: "viaje",
-      kicker: "Cómo viajas",
+      kicker: "01 — Tu viaje",
       title: ["Lo básico", "y nada más."],
-      text: "Seis preguntas y tus datos. Lo que no nos digas lo decidimos nosotros y te lo explicamos en la propuesta.",
-      hint: "Dos minutos · solo el destino, nombre y correo son obligatorios",
+      text: "Unas pocas preguntas y, en la siguiente página, tus datos. Lo que no nos digas lo decidimos nosotros y te lo explicamos en la propuesta.",
+      hint: "Dos minutos · destino, correo y teléfono obligatorios",
       questions: [
         { id: "destinos", kind: "destinations" },
         { id: "salida", kind: "date", label: "Fecha de salida" },
@@ -84,22 +84,24 @@ export const formContent: FormContent = {
             { id: "playa", label: "Playa", text: "Mar, sol y un buen hotel para desconectar del todo." },
           ],
         },
+      ],
+    },
+    {
+      id: "contacto",
+      kicker: "02 — Tus datos",
+      title: ["¿A quién le", "contestamos?"],
+      text: "Lo último. Un gestor te llama o te escribe con la primera propuesta en 48 horas laborables; no te metemos en ninguna lista de correo.",
+      hint: "Nombre, correo y teléfono, obligatorios",
+      questions: [
         { id: "nombre", kind: "text", label: "Nombre y apellidos", required: true },
         { id: "email", kind: "text", label: "Correo electrónico", inputType: "email", required: true },
-        { id: "telefono", kind: "text", label: "Teléfono (opcional)", inputType: "tel" },
+        { id: "telefono", kind: "text", label: "Teléfono", inputType: "tel", required: true },
         {
-          id: "canal",
-          kind: "single",
-          label: "¿Por dónde te escribimos?",
-          layout: "chips",
-          options: [
-            { id: "whatsapp", label: "WhatsApp" },
-            { id: "telefono", label: "Teléfono" },
-            { id: "correo", label: "Correo" },
-            { id: "igual", label: "Me da igual" },
-          ],
+          id: "privacidad",
+          kind: "toggle",
+          label: "He leído y acepto los términos y condiciones y la política de privacidad, y autorizo a la agencia a contactarme por teléfono",
+          required: true,
         },
-        { id: "privacidad", kind: "toggle", label: "He leído y acepto la política de privacidad", required: true },
       ],
     },
   ],

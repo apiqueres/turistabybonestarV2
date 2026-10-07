@@ -15,9 +15,9 @@ export const solicitudSchema = z.object({
   contacto: z.object({
     nombre: z.string().trim().min(2, "Escribe tu nombre").max(120),
     email: z.string().trim().email("Revisa el correo").max(200),
-    telefono: z.string().trim().max(40).optional().or(z.literal("")),
+    telefono: z.string().trim().min(6, "Escribe tu teléfono").max(40),
     canal: z.string().max(40).optional().or(z.literal("")),
-    privacidad: z.literal(true, { message: "Tienes que aceptar la política de privacidad" }),
+    privacidad: z.literal(true, { message: "Tienes que aceptar los términos y condiciones" }),
   }),
 });
 

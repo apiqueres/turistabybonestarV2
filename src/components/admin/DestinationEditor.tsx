@@ -6,7 +6,7 @@ import { fileToDataUrl } from "@/lib/admin/image";
 import { asset } from "@/lib/config";
 import { ArrowRight } from "@/components/ui/icons";
 
-export const EMPTY_DESTINATION: Destination = { id: "", slug: "", name: "", code: "", region: "", lon: 0, lat: 0, tagline: "", bestSeason: "", flight: "", duration: "", includes: [], image: { src: "", alt: "" }, featured: false };
+export const EMPTY_DESTINATION: Destination = { id: "", slug: "", name: "", code: "", region: "", lon: 0, lat: 0, tagline: "", bestSeason: "", duration: "", idealFor: "", badge: "", includes: [], image: { src: "", alt: "" }, featured: false };
 export const imgSrc = (src: string) => (src.startsWith("data:") || !src ? src : asset(src));
 
 interface Props {
@@ -19,7 +19,7 @@ interface Props {
 
 const FIELDS: [keyof Destination, string][] = [
   ["name", "Nombre"], ["id", "Id (ISO numérico)"], ["code", "Código"], ["region", "Región"],
-  ["bestSeason", "Mejor época"], ["flight", "Vuelo desde Valencia"], ["duration", "Duración sugerida"], ["slug", "Slug"],
+  ["bestSeason", "Cuándo ir"], ["duration", "Duración ideal"], ["idealFor", "Perfecto para"], ["badge", "Etiqueta (opcional)"], ["slug", "Slug"],
 ];
 
 /** Inline editor for one destination (rendered under its row). */

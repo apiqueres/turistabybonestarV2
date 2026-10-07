@@ -93,12 +93,11 @@ export function buildPrompt(id: string, createdAt: string, s: SolicitudInput): s
     kv("Nombre", s.contacto.nombre),
     kv("Correo", s.contacto.email),
     kv("Teléfono", s.contacto.telefono || "No indicado"),
-    kv("Contactar por", canalLabel(s.contacto.canal)),
   ]);
   const prefs = summarize(s).map((sec) => section(sec.title, sec.rows.map(([k, v]) => kv(k, v)))).join("\n");
   const cierre = section("Encargo para el gestor", [
     wrap(
-      `Preparar una propuesta de viaje a ${destinos} para ${s.contacto.nombre} respetando las preferencias anteriores. Lo no indicado queda a criterio del gestor y debe justificarse en la propuesta. Primera respuesta en 48 horas laborables por ${canalLabel(s.contacto.canal)}.`,
+      `Preparar una propuesta de viaje a ${destinos} para ${s.contacto.nombre} respetando las preferencias anteriores. Lo no indicado queda a criterio del gestor y debe justificarse en la propuesta. Primera respuesta en 48 horas laborables por teléfono o correo.`,
       0,
     ),
   ]);

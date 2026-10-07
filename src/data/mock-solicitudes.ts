@@ -19,7 +19,7 @@ export const mockSolicitudes: StoredRequest[] = [
     data: {
       destinos: [{ id: "392", nombre: "Japón" }],
       respuestas: { salida: "2027-04-02", vuelta: "2027-04-16", adultos: 2, ninos: 0, presupuesto: "7000-12000", pension: "media", extras: ["maletas", "traslados"], estilo: ["cultural", "relax"] },
-      contacto: { nombre: "Marta Ruiz", email: "marta.ruiz@example.com", telefono: "+34 600 111 222", canal: "whatsapp", privacidad: true },
+      contacto: { nombre: "Marta Ruiz", email: "marta.ruiz@example.com", telefono: "+34 600 111 222", canal: "", privacidad: true },
     },
   },
   {
@@ -30,7 +30,7 @@ export const mockSolicitudes: StoredRequest[] = [
     data: {
       destinos: [{ id: "604", nombre: "Perú" }, { id: "068", nombre: "Bolivia" }],
       respuestas: { salida: "2027-02-10", vuelta: "2027-02-24", adultos: 2, ninos: 2, presupuesto: "4000-7000", pension: "sin", extras: ["traslados"], estilo: ["aventurero", "familiar"] },
-      contacto: { nombre: "Familia Soler", email: "soler@example.com", telefono: "", canal: "correo", privacidad: true },
+      contacto: { nombre: "Familia Soler", email: "soler@example.com", telefono: "+34 600 222 333", canal: "", privacidad: true },
     },
   },
   {
@@ -40,7 +40,7 @@ export const mockSolicitudes: StoredRequest[] = [
     data: {
       destinos: [{ id: "352", nombre: "Islandia" }],
       respuestas: { salida: "2027-02-12", vuelta: "2027-02-19", adultos: 2, ninos: 0, presupuesto: "mas-12000", pension: "completa", extras: ["maletas"], estilo: ["relax", "romantico"] },
-      contacto: { nombre: "Jorge y Ana", email: "jorge.ana@example.com", telefono: "+34 611 222 333", canal: "telefono", privacidad: true },
+      contacto: { nombre: "Jorge y Ana", email: "jorge.ana@example.com", telefono: "+34 611 222 333", canal: "", privacidad: true },
     },
   },
   {
@@ -51,7 +51,7 @@ export const mockSolicitudes: StoredRequest[] = [
     data: {
       destinos: [{ id: "504", nombre: "Marruecos" }, { id: "620", nombre: "Portugal" }],
       respuestas: { salida: "2026-12-26", vuelta: "2027-01-03", adultos: 2, ninos: 3, presupuesto: "2000-4000", pension: "media", extras: ["maletas", "traslados"], estilo: ["familiar", "playa"] },
-      contacto: { nombre: "Carlos Pérez", email: "carlos.perez@example.com", telefono: "+34 622 333 444", canal: "igual", privacidad: true },
+      contacto: { nombre: "Carlos Pérez", email: "carlos.perez@example.com", telefono: "+34 622 333 444", canal: "", privacidad: true },
     },
   },
 ];
@@ -88,7 +88,7 @@ EXTRA.forEach(([nombre, email, telefono, destinos, status, day], i) => {
         extras: i % 2 ? ["maletas", "traslados"] : ["traslados"],
         estilo: [["relax", "playa"], ["aventurero"], ["cultural", "familiar"], ["romantico"]][i % 4],
       },
-      contacto: { nombre, email, telefono, canal: ["correo", "whatsapp", "telefono", "igual"][i % 4], privacidad: true },
+      contacto: { nombre, email, telefono: telefono || `+34 6${String(10 + i).padStart(2, "0")} 000 ${String(100 + i)}`, canal: "", privacidad: true },
     },
   });
 });

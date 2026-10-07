@@ -18,9 +18,9 @@ export function DestinationTabs({ content, items, activeId, onSelectTab, selecte
   const active = items.find((d) => d.id === activeId) ?? items[0];
   const isSel = selected.has(active.id);
   const rows: [string, string][] = [
-    ["Mejor época", active.bestSeason],
-    ["Vuelo desde Valencia", active.flight],
-    ["Duración sugerida", active.duration],
+    ["Cuándo ir", active.bestSeason],
+    ["Duración ideal", active.duration],
+    ["Perfecto para", active.idealFor],
   ];
 
   return (
@@ -50,7 +50,10 @@ export function DestinationTabs({ content, items, activeId, onSelectTab, selecte
           </div>
         </div>
         <div className="md:pl-16 pt-10 md:pt-0">
-          <h3 className="t-h2">{active.name}</h3>
+          <div className="flex items-center gap-4 flex-wrap">
+            <h3 className="t-h2">{active.name}</h3>
+            {active.badge && <span className="badge nueva">{active.badge}</span>}
+          </div>
           <p className="t-body text-[18px] mt-3 max-w-[40ch]">{active.tagline}</p>
           <dl className="rule mt-8">
             {rows.map(([k, v]) => (
@@ -61,8 +64,8 @@ export function DestinationTabs({ content, items, activeId, onSelectTab, selecte
             ))}
           </dl>
           <p className="t-body mt-8 max-w-[52ch]">
-            Nos encargamos de la ruta completa: vuelos, trenes, alojamientos, traslados y las reservas que hay que pelear con
-            meses de antelación.
+            Vuelos, hoteles, traslados, excursiones y seguro en un mismo presupuesto, con una persona de Sueca al otro lado del
+            WhatsApp antes, durante y después del viaje.
           </p>
           <ul className="mt-6 flex flex-col gap-2 t-body t-small">
             {active.includes.map((i) => (

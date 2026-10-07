@@ -1,5 +1,5 @@
 import type { SolicitudInput } from "./validation";
-import { canalLabel, summarize } from "./prompt";
+import { summarize } from "./prompt";
 import { renderEmailHtml, renderEmailText, type EmailBlock, type EmailBrand, type EmailSpec } from "./email-shell";
 import { BASE_PATH } from "./config";
 
@@ -38,7 +38,7 @@ export function clientConfirmationEmail(id: string, s: SolicitudInput, brand: Em
         title: "Qué pasa ahora",
         items: [
           "Un gestor revisa tus respuestas y diseña una primera propuesta: ruta, alojamientos, traslados y mesa.",
-          `Te escribimos en 48 horas laborables por ${canalLabel(s.contacto.canal)}.`,
+          "Te llamamos o te escribimos en 48 horas laborables.",
           "La apruebas o la corriges las veces que haga falta. Solo entonces reservamos.",
         ],
       },

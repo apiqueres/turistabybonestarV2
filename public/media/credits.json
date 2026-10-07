@@ -5,35 +5,11 @@
     "license": "CC BY-SA 4.0",
     "source": "https://commons.wikimedia.org/wiki/File:Torii_path_with_lantern_at_Fushimi_Inari_Taisha_Shrine,_Kyoto,_Japan.jpg"
   },
-  "real-peru": {
-    "title": "File:Machu Picchu, Perú, 2015-07-30, DD 40.JPG",
-    "author": "Diego Delso",
-    "license": "CC BY-SA 4.0",
-    "source": "https://commons.wikimedia.org/wiki/File:Machu_Picchu,_Per%C3%BA,_2015-07-30,_DD_40.JPG"
-  },
-  "real-islandia": {
-    "title": "File:Skógafoss July 2014.JPG",
-    "author": "Martin Falbisoner",
-    "license": "CC BY-SA 4.0",
-    "source": "https://commons.wikimedia.org/wiki/File:Sk%C3%B3gafoss_July_2014.JPG"
-  },
   "real-marruecos": {
     "title": "File:Cavalier de chameaux au passage dans une dune de sable au Maroc.jpg",
     "author": "Merzougaloisirs",
     "license": "CC BY-SA 4.0",
     "source": "https://commons.wikimedia.org/wiki/File:Cavalier_de_chameaux_au_passage_dans_une_dune_de_sable_au_Maroc.jpg"
-  },
-  "real-portugal": {
-    "title": "File:Lisbon May 2013-16.jpg",
-    "author": "Alvesgaspar",
-    "license": "CC BY-SA 3.0",
-    "source": "https://commons.wikimedia.org/wiki/File:Lisbon_May_2013-16.jpg"
-  },
-  "real-italia": {
-    "title": "File:Drei-Zinnen-Hütte.jpg",
-    "author": "High Contrast",
-    "license": "CC BY 2.0 de",
-    "source": "https://commons.wikimedia.org/wiki/File:Drei-Zinnen-H%C3%BCtte.jpg"
   },
   "real-grecia": {
     "title": "File:1000 Three domes of Oia in Santorini Photo by Giles Laurent.jpg",
@@ -41,34 +17,58 @@
     "license": "CC BY-SA 4.0",
     "source": "https://commons.wikimedia.org/wiki/File:1000_Three_domes_of_Oia_in_Santorini_Photo_by_Giles_Laurent.jpg"
   },
-  "real-vietnam": {
-    "title": "File:View of sea from Titov Island, Ha Long Bay, Vietnam, 20240128 1337 3732.jpg",
-    "author": "Jakub Hałun",
-    "license": "CC BY 4.0",
-    "source": "https://commons.wikimedia.org/wiki/File:View_of_sea_from_Titov_Island,_Ha_Long_Bay,_Vietnam,_20240128_1337_3732.jpg"
+  "real-tailandia": {
+    "title": "File:The sculptures of two mythical giant demons, Thotsakan and Sahatsadecha, guarding the eastern gate of the main chapel of Wat Arun, Bangkok.jpg",
+    "author": "BerryJ",
+    "license": "CC BY-SA 4.0",
+    "source": "https://commons.wikimedia.org/wiki/File:The_sculptures_of_two_mythical_giant_demons,_Thotsakan_and_Sahatsadecha,_guarding_the_eastern_gate_of_the_main_chapel_of_Wat_Arun,_Bangkok.jpg"
   },
-  "real-noruega": {
-    "title": "File:Reine i Lofoten LC0148.jpg",
-    "author": "Jörg Hempel",
-    "license": "CC BY-SA 2.0 de",
-    "source": "https://commons.wikimedia.org/wiki/File:Reine_i_Lofoten_LC0148.jpg"
-  },
-  "real-mexico": {
-    "title": "File:Santo Domingo de Guzman Convent.JPG",
-    "author": "El Ágora",
-    "license": "Public domain",
-    "source": "https://commons.wikimedia.org/wiki/File:Santo_Domingo_de_Guzman_Convent.JPG"
-  },
-  "real-jordania": {
-    "title": "File:The Treasury, Petra, Jordan1.jpg",
-    "author": "Diego Delso",
+  "real-turquia": {
+    "title": "File:Hot air balloon ride at sunrise in Cappadocia.JPG",
+    "author": "This Photo was taken by Wolfgang Moroder.  \n\nFeel free to use my photos, but please mention me as the author and send me a  message. \n\n\n\nThis image is not in the public domain. Please respect the copyright protection. It may only be used according to the rules mentioned here. This specifically excludes use in social media, if applicable terms of the licenses listed here not appropriate.\n\n\n\nPlease do not upload an updated image here without consultation with the Author. The author would like to make corrections only at his own source. This ensures that the changes are preserved.Please if you think that any changes should be required, please inform the author.Otherwise you can upload a new image with a new name. Please use one of the templates derivative or extract.",
     "license": "CC BY-SA 3.0",
-    "source": "https://commons.wikimedia.org/wiki/File:The_Treasury,_Petra,_Jordan1.jpg"
+    "source": "https://commons.wikimedia.org/wiki/File:Hot_air_balloon_ride_at_sunrise_in_Cappadocia.JPG"
   },
-  "real-namibia": {
-    "title": "File:Baum mit Nest Deadvlei Sossusvlei.JPG",
-    "author": "Harald Süpfle",
-    "license": "CC BY-SA 2.5",
-    "source": "https://commons.wikimedia.org/wiki/File:Baum_mit_Nest_Deadvlei_Sossusvlei.JPG"
+  "real-maldivas": {
+    "title": "File:Diamonds Thudufushi Beach and Water Villas, May 2017 -02.jpg",
+    "author": "Martin Falbisoner",
+    "license": "CC BY-SA 4.0",
+    "source": "https://commons.wikimedia.org/wiki/File:Diamonds_Thudufushi_Beach_and_Water_Villas,_May_2017_-02.jpg"
+  },
+  "real-riviera-maya": {
+    "title": "File:Tulum - God of the Winds Temple 03.JPG",
+    "author": "Martin Falbisoner",
+    "license": "CC BY-SA 4.0",
+    "source": "https://commons.wikimedia.org/wiki/File:Tulum_-_God_of_the_Winds_Temple_03.JPG"
+  },
+  "real-punta-cana": {
+    "title": "File:Playa Bavaro.JPG",
+    "author": "Andreas Volkmer",
+    "license": "CC BY 2.5",
+    "source": "https://commons.wikimedia.org/wiki/File:Playa_Bavaro.JPG"
+  },
+  "real-egipto": {
+    "title": "File:All Gizah Pyramids.jpg",
+    "author": "Ricardo Liberato",
+    "license": "CC BY-SA 2.0",
+    "source": "https://commons.wikimedia.org/wiki/File:All_Gizah_Pyramids.jpg"
+  },
+  "real-tanzania": {
+    "title": "File:African bush elephant (Loxodonta africana) with calf Serengeti.jpg",
+    "author": "Charles J. Sharp",
+    "license": "CC BY-SA 4.0",
+    "source": "https://commons.wikimedia.org/wiki/File:African_bush_elephant_(Loxodonta_africana)_with_calf_Serengeti.jpg"
+  },
+  "real-cabo-verde": {
+    "title": "File:Sal Sta Maria beach hotel.jpg",
+    "author": "Cayambe",
+    "license": "CC BY-SA 3.0",
+    "source": "https://commons.wikimedia.org/wiki/File:Sal_Sta_Maria_beach_hotel.jpg"
+  },
+  "real-nueva-york": {
+    "title": "File:Brooklyn Bridge from 60 water.jpg",
+    "author": "ThibautRe",
+    "license": "CC BY-SA 4.0",
+    "source": "https://commons.wikimedia.org/wiki/File:Brooklyn_Bridge_from_60_water.jpg"
   }
 }

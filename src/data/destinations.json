@@ -1,272 +1,86 @@
 [
   {
-    "id": "392",
-    "slug": "japon",
-    "name": "Japón",
-    "code": "JP",
-    "region": "Asia oriental",
-    "lon": 138,
-    "lat": 36,
-    "tagline": "Del neón de Shinjuku al silencio de un templo en Kōya",
-    "bestSeason": "Mar–abr · oct–nov",
-    "flight": "≈ 15 h · 1 escala",
-    "duration": "12–16 días",
-    "includes": [
-      "Japan Rail Pass activado y validado antes de salir",
-      "Dos noches de ryokan con cena kaiseki incluida",
-      "Mesa reservada en tres barras de Osaka con 60 días de antelación"
-    ],
-    "image": {
-      "src": "/media/real-japon.webp",
-      "alt": "Camino de torii en Fushimi Inari, Kioto"
-    },
-    "featured": true
+    "id": "764", "slug": "tailandia", "name": "Tailandia", "code": "TH", "region": "Asia", "lon": 101, "lat": 15, "badge": "Viaje estrella",
+    "tagline": "Templos por la mañana, playa por la tarde. Nuestro viaje estrella.",
+    "bestSeason": "Noviembre a marzo", "duration": "12–15 días", "idealFor": "Parejas y familias",
+    "includes": ["Bangkok, el Gran Palacio y los mercados flotantes", "Chiang Mai y un santuario ético de elefantes", "Cierre de playa en Phuket, Krabi o Koh Samui"],
+    "image": { "src": "/media/real-tailandia.webp", "alt": "Gran Palacio de Bangkok" }, "featured": true
   },
   {
-    "id": "604",
-    "slug": "peru",
-    "name": "Perú",
-    "code": "PE",
-    "region": "Andes · Sudamérica",
-    "lon": -75.5,
-    "lat": -10,
-    "tagline": "Altura, mercado y un tren que llega donde no llega la carretera",
-    "bestSeason": "May–sep",
-    "flight": "≈ 14 h · 1 escala",
-    "duration": "11–14 días",
-    "includes": [
-      "Entradas a Machu Picchu compradas en cuanto abre el cupo",
-      "Días de aclimatación en el Valle Sagrado antes de subir",
-      "Tren panorámico y guía local en quechua y castellano"
-    ],
-    "image": {
-      "src": "/media/real-peru.webp",
-      "alt": "Machu Picchu"
-    },
-    "featured": true
+    "id": "792", "slug": "turquia", "name": "Turquía", "code": "TR", "region": "Europa / Asia", "lon": 35, "lat": 39,
+    "tagline": "Estambul, Capadocia en globo y el Egeo en un solo viaje.",
+    "bestSeason": "Abril a junio y septiembre–octubre", "duration": "8–10 días", "idealFor": "Parejas y amigos",
+    "includes": ["Santa Sofía, el Gran Bazar y un paseo por el Bósforo", "Vuelo en globo al amanecer sobre Capadocia", "Playas de Bodrum, Kusadasi o Esmirna"],
+    "image": { "src": "/media/real-turquia.webp", "alt": "Globos sobre Capadocia al amanecer" }, "featured": true
   },
   {
-    "id": "352",
-    "slug": "islandia",
-    "name": "Islandia",
-    "code": "IS",
-    "region": "Atlántico norte",
-    "lon": -19,
-    "lat": 65,
-    "tagline": "La isla entera en un 4×4 y sin cruzarte con nadie",
-    "bestSeason": "Jun–ago · sep–oct (auroras)",
-    "flight": "≈ 5 h · directo",
-    "duration": "8–10 días",
-    "includes": [
-      "4×4 con seguro completo y ruta cargada en el navegador",
-      "Alojamientos fuera de la Ring Road en las etapas clave",
-      "Baño geotermal reservado el día de llegada"
-    ],
-    "image": {
-      "src": "/media/real-islandia.webp",
-      "alt": "Cascada Skógafoss"
-    },
-    "featured": true
+    "id": "392", "slug": "japon", "name": "Japón", "code": "JP", "region": "Asia", "lon": 138, "lat": 36,
+    "tagline": "El viaje que todo el mundo dice que hará algún día.",
+    "bestSeason": "Marzo–mayo y octubre–noviembre", "duration": "11–14 días", "idealFor": "Viajeros curiosos",
+    "includes": ["Tokio de día y de noche", "Kioto, sus templos y el barrio de las geishas", "Tren bala hasta Hiroshima y Nara"],
+    "image": { "src": "/media/real-japon.webp", "alt": "Camino de torii en Fushimi Inari, Kioto" }, "featured": true
   },
   {
-    "id": "504",
-    "slug": "marruecos",
-    "name": "Marruecos",
-    "code": "MA",
-    "region": "Magreb",
-    "lon": -6.5,
-    "lat": 32,
-    "tagline": "Medina, Atlas y una noche en el desierto que sí merece la pena",
-    "bestSeason": "Mar–may · oct–nov",
-    "flight": "≈ 2 h · directo",
-    "duration": "7–10 días",
-    "includes": [
-      "Riad en la medina con desayuno en la azotea",
-      "Conductor privado para cruzar el Atlas sin prisa",
-      "Campamento en Merzouga alejado de los grupos grandes"
-    ],
-    "image": {
-      "src": "/media/real-marruecos.webp",
-      "alt": "Dunas de Erg Chebbi"
-    },
-    "featured": true
+    "id": "462", "slug": "maldivas", "name": "Maldivas", "code": "MV", "region": "Océano Índico", "lon": 73.5, "lat": 3.2, "badge": "Luna de miel",
+    "tagline": "Una villa sobre el agua y ningún plan más.",
+    "bestSeason": "Noviembre a abril", "duration": "7–10 días", "idealFor": "Lunas de miel y desconectar",
+    "includes": ["Villas sobre el agua con todo incluido", "Snorkel con mantas y tortugas", "Combinable con unos días en Dubái"],
+    "image": { "src": "/media/real-maldivas.webp", "alt": "Villas sobre el agua en Maldivas" }, "featured": true
   },
   {
-    "id": "620",
-    "slug": "portugal",
-    "name": "Portugal",
-    "code": "PT",
-    "region": "Península ibérica",
-    "lon": -8,
-    "lat": 39.5,
-    "tagline": "Lisboa despacio, el Alentejo entero y volver por la costa",
-    "bestSeason": "Abr–jun · sep–oct",
-    "flight": "≈ 1 h · directo o en coche",
-    "duration": "5–8 días",
-    "includes": [
-      "Apartamento en Alfama con vistas al Tajo",
-      "Coche de alquiler y paradas de bodega en el Alentejo",
-      "Mesa en dos tascas que no aparecen en las guías"
-    ],
-    "image": {
-      "src": "/media/real-portugal.webp",
-      "alt": "Vista de Lisboa al atardecer desde el Miradouro da Senhora do Monte"
-    },
-    "featured": true
+    "id": "484", "slug": "riviera-maya", "name": "Riviera Maya", "code": "MX", "region": "México", "lon": -87.5, "lat": 20.5,
+    "tagline": "Caribe, cenotes y pirámides mayas.",
+    "bestSeason": "Noviembre a abril", "duration": "9 días", "idealFor": "Familias",
+    "includes": ["Chichén Itzá y las ruinas de Tulum frente al mar", "Baño en cenotes", "Hoteles todo incluido con club infantil"],
+    "image": { "src": "/media/real-riviera-maya.webp", "alt": "Ruinas de Tulum frente al mar Caribe" }, "featured": true
   },
   {
-    "id": "380",
-    "slug": "italia",
-    "name": "Italia",
-    "code": "IT",
-    "region": "Europa mediterránea",
-    "lon": 12.5,
-    "lat": 42.5,
-    "tagline": "Dolomitas arriba, Emilia abajo y nada en medio por obligación",
-    "bestSeason": "May–jun · sep",
-    "flight": "≈ 2 h · directo",
-    "duration": "9–12 días",
-    "includes": [
-      "Refugio de montaña con media pensión en los Dolomitas",
-      "Visita a una quesería y una acetaia en Módena",
-      "Trenes regionales reservados y coche solo donde hace falta"
-    ],
-    "image": {
-      "src": "/media/real-italia.webp",
-      "alt": "Refugio bajo las Tres Cimas de Lavaredo, Dolomitas"
-    },
-    "featured": true
+    "id": "214", "slug": "punta-cana", "name": "Punta Cana", "code": "DO", "region": "República Dominicana", "lon": -68.4, "lat": 18.6,
+    "tagline": "Vuelo directo, pulsera de todo incluido y a la arena.",
+    "bestSeason": "Todo el año (mejor de diciembre a abril)", "duration": "9 días", "idealFor": "Familias y parejas",
+    "includes": ["Excursión en catamarán a Isla Saona", "Playas de Bávaro y Bayahíbe", "Opciones para niños y solo adultos"],
+    "image": { "src": "/media/real-punta-cana.webp", "alt": "Playa de Bávaro, Punta Cana" }, "featured": true
   },
   {
-    "id": "300",
-    "slug": "grecia",
-    "name": "Grecia",
-    "code": "GR",
-    "region": "Egeo",
-    "lon": 22.5,
-    "lat": 39,
-    "tagline": "Atenas un día y medio, y después islas donde no llega el ferry rápido",
-    "bestSeason": "May–jun · sep–oct",
-    "flight": "≈ 3 h · directo",
-    "duration": "8–11 días",
-    "includes": [
-      "Ferries reservados con cabina en los trayectos largos",
-      "Casa con terraza en Naxos o Folegandros",
-      "Cena en una taberna con mesa a pie de playa"
-    ],
-    "image": {
-      "src": "/media/real-grecia.webp",
-      "alt": "Cúpulas azules de Oia, Santorini"
-    }
+    "id": "818", "slug": "egipto", "name": "Egipto", "code": "EG", "region": "África", "lon": 30, "lat": 27,
+    "tagline": "Las pirámides en directo y un crucero por el Nilo.",
+    "bestSeason": "Octubre a abril", "duration": "8 días", "idealFor": "Primer gran viaje",
+    "includes": ["El Cairo, Giza y la Esfinge", "Crucero de Luxor a Asuán", "Ampliable a Abu Simbel o al mar Rojo"],
+    "image": { "src": "/media/real-egipto.webp", "alt": "Pirámides de Giza" }
   },
   {
-    "id": "704",
-    "slug": "vietnam",
-    "name": "Vietnam",
-    "code": "VN",
-    "region": "Sudeste asiático",
-    "lon": 106,
-    "lat": 16,
-    "tagline": "De norte a sur en tren nocturno y comiendo en cada parada",
-    "bestSeason": "Nov–abr",
-    "flight": "≈ 16 h · 1 escala",
-    "duration": "12–15 días",
-    "includes": [
-      "Cabina en el tren de la Reunificación",
-      "Noche en junco privado en la bahía de Ha Long",
-      "Ruta gastronómica en moto por Hanói con guía local"
-    ],
-    "image": {
-      "src": "/media/real-vietnam.webp",
-      "alt": "Juncos en la bahía de Ha Long"
-    }
+    "id": "300", "slug": "islas-griegas", "name": "Islas griegas", "code": "GR", "region": "Grecia", "lon": 25, "lat": 37,
+    "tagline": "Casas blancas, mar azul y ferry de isla en isla.",
+    "bestSeason": "Mayo a octubre", "duration": "7–10 días", "idealFor": "Parejas y amigos",
+    "includes": ["Atardecer en Oia, Santorini", "Mykonos y sus calles de noche", "Creta o Atenas para completar"],
+    "image": { "src": "/media/real-grecia.webp", "alt": "Cúpulas azules de Oia, Santorini" }
   },
   {
-    "id": "578",
-    "slug": "noruega",
-    "name": "Noruega",
-    "code": "NO",
-    "region": "Escandinavia",
-    "lon": 9,
-    "lat": 61,
-    "tagline": "Fiordos, carreteras panorámicas y cabañas junto al agua",
-    "bestSeason": "Jun–ago",
-    "flight": "≈ 4 h · directo",
-    "duration": "8–10 días",
-    "includes": [
-      "Cabaña con sauna a orillas de un fiordo",
-      "Ferries y tramos de la Ruta Atlántica planificados",
-      "Kayak al amanecer en Lofoten"
-    ],
-    "image": {
-      "src": "/media/real-noruega.webp",
-      "alt": "Reine, islas Lofoten"
-    }
+    "id": "834", "slug": "tanzania-zanzibar", "name": "Tanzania y Zanzíbar", "code": "TZ", "region": "África", "lon": 35, "lat": -6,
+    "tagline": "Safari en el Serengeti y playa en el Índico.",
+    "bestSeason": "Junio–octubre y diciembre–febrero", "duration": "10–12 días", "idealFor": "El viaje de tu vida",
+    "includes": ["Safari en Serengeti y el cráter del Ngorongoro", "Stone Town, patrimonio de la humanidad", "Playas de Nungwi para descansar"],
+    "image": { "src": "/media/real-tanzania.webp", "alt": "Elefantes en el Serengeti" }
   },
   {
-    "id": "484",
-    "slug": "mexico",
-    "name": "México",
-    "code": "MX",
-    "region": "Norteamérica",
-    "lon": -102,
-    "lat": 23.5,
-    "tagline": "Ciudad de México, Oaxaca y la costa, sin el todo incluido",
-    "bestSeason": "Nov–abr",
-    "flight": "≈ 12 h · directo",
-    "duration": "12–15 días",
-    "includes": [
-      "Mesa en las taquerías y fondas que de verdad importan",
-      "Taller de mezcal en Oaxaca con un productor",
-      "Casa frente al mar en la costa oaxaqueña"
-    ],
-    "image": {
-      "src": "/media/real-mexico.webp",
-      "alt": "Templo de Santo Domingo, Oaxaca"
-    }
+    "id": "504", "slug": "marruecos", "name": "Marruecos", "code": "MA", "region": "África", "lon": -6.5, "lat": 32, "badge": "Puentes",
+    "tagline": "A hora y media de avión y parece otro mundo.",
+    "bestSeason": "Marzo–mayo y septiembre–diciembre", "duration": "5–8 días", "idealFor": "Escapadas y puentes",
+    "includes": ["Marrakech y la plaza Jemaa el-Fna", "Noche en jaima en el desierto de Merzouga", "Salidas especiales en el puente de diciembre y Navidad"],
+    "image": { "src": "/media/real-marruecos.webp", "alt": "Caravana en las dunas de Erg Chebbi" }
   },
   {
-    "id": "400",
-    "slug": "jordania",
-    "name": "Jordania",
-    "code": "JO",
-    "region": "Oriente Próximo",
-    "lon": 36.5,
-    "lat": 31,
-    "tagline": "Petra sin prisa, Wadi Rum de noche y el mar Muerto para acabar",
-    "bestSeason": "Mar–may · sep–nov",
-    "flight": "≈ 5 h · directo",
-    "duration": "7–9 días",
-    "includes": [
-      "Dos días en Petra con entrada anticipada",
-      "Campamento beduino en Wadi Rum lejos de la carretera",
-      "Conductor privado durante todo el viaje"
-    ],
-    "image": {
-      "src": "/media/real-jordania.webp",
-      "alt": "El Tesoro de Petra"
-    }
+    "id": "132", "slug": "cabo-verde", "name": "Cabo Verde", "code": "CV", "region": "Isla de Sal", "lon": -22.9, "lat": 16.7,
+    "tagline": "Sol todo el año a menos de cuatro horas.",
+    "bestSeason": "Todo el año", "duration": "7 días", "idealFor": "Escapada de sol y playa",
+    "includes": ["Playa de Santa María", "Flotar en las salinas de Pedra de Lume", "Kitesurf y buceo"],
+    "image": { "src": "/media/real-cabo-verde.webp", "alt": "Playa de Santa María, isla de Sal" }
   },
   {
-    "id": "516",
-    "slug": "namibia",
-    "name": "Namibia",
-    "code": "NA",
-    "region": "África austral",
-    "lon": 17.5,
-    "lat": -22,
-    "tagline": "Dunas, costa de los esqueletos y noches con más estrellas que nunca",
-    "bestSeason": "May–oct",
-    "flight": "≈ 14 h · 1 escala",
-    "duration": "12–14 días",
-    "includes": [
-      "4×4 equipado con tienda de techo y depósito extra",
-      "Amanecer en Sossusvlei con acceso antes de la apertura",
-      "Lodge en Etosha junto a una charca de animales"
-    ],
-    "image": {
-      "src": "/media/real-namibia.webp",
-      "alt": "Árbol seco en Deadvlei, Sossusvlei"
-    }
+    "id": "840", "slug": "nueva-york", "name": "Nueva York", "code": "US", "region": "Estados Unidos", "lon": -74, "lat": 40.7,
+    "tagline": "La ciudad de las películas, en persona.",
+    "bestSeason": "Abril–junio y septiembre–diciembre", "duration": "6–7 días", "idealFor": "Ciudad, compras y Navidad",
+    "includes": ["Manhattan, Times Square y Central Park", "Cruzar el puente de Brooklyn a pie", "Navidad en el Rockefeller Center"],
+    "image": { "src": "/media/real-nueva-york.webp", "alt": "Skyline de Manhattan desde Brooklyn" }
   }
 ]

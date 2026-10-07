@@ -46,7 +46,7 @@ export function DestinationsGrid({ data, items }: Props) {
                 <p className="t-body t-small mt-3 max-w-[38ch]">{d.tagline}</p>
                 <div className="flex items-baseline justify-between gap-4 mt-6">
                   <span className="kicker">{d.region}</span>
-                  <span className="kicker">{d.code}</span>
+                  {d.badge ? <span className="badge nueva">{d.badge}</span> : <span className="kicker">{d.idealFor}</span>}
                 </div>
               </div>
             </Link>

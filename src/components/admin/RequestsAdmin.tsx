@@ -4,7 +4,6 @@ import { Fragment, useMemo, useState } from "react";
 import type { RequestStatus } from "@/data/mock-solicitudes";
 import type { EmailBrand } from "@/lib/email-shell";
 import { useRequests, useFormSteps } from "@/lib/admin/data";
-import { canalLabel } from "@/lib/prompt";
 import { RequestDetail, STATUS } from "./RequestDetail";
 import { Pager, paginate } from "./Pager";
 
@@ -55,7 +54,7 @@ export function RequestsAdmin({ brand }: { brand: EmailBrand }) {
         <table className="table">
           <thead>
             <tr>
-              <th>Fecha</th><th>Cliente</th><th>Destinos</th><th>Viajeros</th><th>Canal</th><th>Estado</th>
+              <th>Fecha</th><th>Cliente</th><th>Destinos</th><th>Viajeros</th><th>Teléfono</th><th>Estado</th>
             </tr>
           </thead>
           <tbody>
@@ -70,8 +69,8 @@ export function RequestsAdmin({ brand }: { brand: EmailBrand }) {
                       <div className="t-muted">{r.data.contacto.email}</div>
                     </td>
                     <td>{r.data.destinos.map((d) => d.nombre).join(", ")}</td>
-                    <td>{String(r.data.respuestas.viajeros ?? "—")}</td>
-                    <td>{canalLabel(r.data.contacto.canal)}</td>
+                    <td>{Number(r.data.respuestas.adultos ?? 0) + Number(r.data.respuestas.ninos ?? 0) || "—"}</td>
+                    <td className="whitespace-nowrap">{r.data.contacto.telefono || "—"}</td>
                     <td><span className={`badge ${r.status}`}>{STATUS[r.status]}</span></td>
                   </tr>
                   {isOpen && (

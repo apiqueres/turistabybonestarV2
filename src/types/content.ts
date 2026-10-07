@@ -17,6 +17,8 @@ export interface Link {
 export interface NavLink extends Link {
   /** Route path used to mark the active link. */
   key: string;
+  /** Highlighted in gold (e.g. Ofertas). */
+  accent?: boolean;
 }
 
 export interface Stat {
@@ -42,11 +44,29 @@ export interface Destination {
   lat: number;
   tagline: string;
   bestSeason: string;
-  flight: string;
   duration: string;
+  idealFor: string;
+  /** Small highlight such as "Viaje estrella" or "Puentes". */
+  badge?: string;
   includes: string[];
   image: Media;
   featured?: boolean;
+}
+
+export interface Offer {
+  id: string;
+  title: string;
+  /** Destination slug the offer belongs to (for the link to its card). */
+  destinationId: string;
+  price: string;
+  priceNote: string;
+  dates: string;
+  duration: string;
+  text: string;
+  includes: string[];
+  image: Media;
+  badge?: string;
+  active: boolean;
 }
 
 export interface TeamMember {
@@ -129,5 +149,14 @@ export interface SiteContent {
     legalLinks: Link[];
     credits: Link;
   };
+  offers: {
+    kicker: string;
+    title: [string, string];
+    text: string;
+    community: { kicker: string; title: string; text: string; cta: string };
+    empty: string;
+    cta: string;
+  };
   destinations: Destination[];
+  offersList: Offer[];
 }

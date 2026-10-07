@@ -1,14 +1,14 @@
 {
+  "real-tailandia": { "q": "Wat Arun Bangkok sunset", "minRatio": 0.8, "maxRatio": 2.0 },
+  "real-turquia": { "q": "Cappadocia hot air balloons sunrise", "minRatio": 0.8, "maxRatio": 2.0 },
   "real-japon": { "q": "Fushimi Inari torii path", "minRatio": 0.6 },
-  "real-peru": { "q": "Machu Picchu", "pick": 2, "minRatio": 1.0, "maxRatio": 2.0 },
-  "real-islandia": { "q": "Skogafoss waterfall", "minRatio": 0.6 },
-  "real-marruecos": { "q": "Erg Chebbi", "pick": 1, "minRatio": 0.8 },
-  "real-portugal": { "q": "Alfama Lisbon", "minRatio": 0.8, "maxRatio": 1.9 },
-  "real-italia": { "q": "Tre Cime di Lavaredo", "minRatio": 0.6 },
+  "real-maldivas": { "q": "Maldives water villas", "minRatio": 0.8, "maxRatio": 2.0 },
+  "real-riviera-maya": { "q": "Tulum ruins beach", "minRatio": 0.8, "maxRatio": 2.0 },
+  "real-punta-cana": { "q": "Bavaro beach Punta Cana", "minRatio": 0.8, "maxRatio": 2.0 },
+  "real-egipto": { "q": "Giza pyramids", "minRatio": 0.8, "maxRatio": 2.0 },
   "real-grecia": { "q": "Oia Santorini blue dome", "minRatio": 0.6 },
-  "real-vietnam": { "q": "Ha Long Bay", "pick": 4, "minRatio": 0.8, "maxRatio": 2.0 },
-  "real-noruega": { "q": "Reine Lofoten village", "minRatio": 0.6 },
-  "real-mexico": { "q": "Templo de Santo Domingo Oaxaca facade", "minRatio": 0.6 },
-  "real-jordania": { "q": "Al-Khazneh", "pick": 2, "minRatio": 0.6, "maxRatio": 2.0 },
-  "real-namibia": { "q": "Deadvlei dead trees dunes", "minRatio": 0.6 }
+  "real-tanzania": { "q": "Serengeti elephants", "minRatio": 0.8, "maxRatio": 2.0 },
+  "real-marruecos": { "q": "Erg Chebbi", "pick": 1, "minRatio": 0.8 },
+  "real-cabo-verde": { "q": "Santa Maria beach Sal Cape Verde", "minRatio": 0.8, "maxRatio": 2.0 },
+  "real-nueva-york": { "q": "Manhattan skyline Brooklyn Bridge", "minRatio": 0.8, "maxRatio": 2.0 }
 }

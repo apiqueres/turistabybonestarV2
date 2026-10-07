@@ -1,13 +1,14 @@
 "use client";
 
 import { useMemo } from "react";
-import type { Destination } from "@/types/content";
+import type { Destination, Offer } from "@/types/content";
 import type { FormStep } from "@/types/form";
 import type { SolicitudInput } from "@/lib/validation";
 import { usePersistedState } from "@/lib/storage";
 import { KEYS_ADMIN } from "./keys";
 import { mockSolicitudes, type StoredRequest } from "@/data/mock-solicitudes";
 import baseDestinations from "@/data/destinations.json";
+import baseOffers from "@/data/ofertas.json";
 import { formContent } from "@/data/form";
 
 /**
@@ -60,4 +61,15 @@ export function useFormSteps() {
   const save = (next: FormStep[]) => setStored(next);
   const reset = () => setStored(null);
   return { steps, save, reset, dirty: stored !== null, hydrated };
+}
+
+const BASE_OFFERS = baseOffers as Offer[];
+
+/** Offers with admin edits applied. Also used by the public /ofertas page so the demo reflects edits. */
+export function useOffers() {
+  const [stored, setStored, hydrated] = usePersistedState<Offer[] | null>(KEYS_ADMIN.offers, null);
+  const offers = stored ?? BASE_OFFERS;
+  const save = (next: Offer[]) => setStored(next);
+  const reset = () => setStored(null);
+  return { offers, save, reset, dirty: stored !== null, hydrated };
 }

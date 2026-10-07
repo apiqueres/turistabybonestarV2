@@ -44,6 +44,7 @@ export function WhatsAppFab({ phone, communityName, communityUrl }: Props) {
         <a className="wa-item" role="menuitem" href={community} target="_blank" rel="noreferrer" onClick={() => setOpen(false)}>
           <span className="wa-item-title">Abrir la comunidad</span>
           <span className="wa-item-sub">{communityName}</span>
+          <span className="wa-item-sub" style={{ color: "var(--gold-dark)" }}>Al unirte, itinerario gratuito</span>
         </a>
       </div>
       <button type="button" className="wa-btn" aria-expanded={open} aria-label={open ? "Cerrar WhatsApp" : "Contactar por WhatsApp"} onClick={() => setOpen((v) => !v)}>

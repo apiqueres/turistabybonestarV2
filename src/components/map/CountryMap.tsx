@@ -4,7 +4,8 @@ import { useEffect, useRef, useState } from "react";
 import map from "@/generated/world-map.json";
 
 interface Props {
-  recommended: Set<string>;
+  /** Recommended destinations by id, with their names (some have no polygon, e.g. islands). */
+  recommended: Map<string, string>;
   selected: Set<string>;
   onToggle: (id: string) => void;
   legend: [string, string];
@@ -16,7 +17,14 @@ interface Props {
  */
 export function CountryMap({ recommended, selected, onToggle, legend }: Props) {
   const [hover, setHover] = useState<string | null>(null);
-  const hoverCountry = hover ? map.countries.find((c) => c.id === hover) : undefined;
+  const hoverCountry = hover
+    ? (map.countries.find((c) => c.id === hover) ??
+      (() => {
+        const p = map.points.find((pt) => pt.id === hover);
+        return p ? { id: p.id, name: recommended.get(p.id) ?? p.id, cx: p.x, cy: p.y } : undefined;
+      })())
+    : undefined;
+  const polygons = new Set(map.countries.map((c) => c.id));
   const scroll = useRef<HTMLDivElement>(null);
 
   // On narrow screens the map is wider than the viewport: start centred on Europe/Africa.
@@ -57,12 +65,29 @@ export function CountryMap({ recommended, selected, onToggle, legend }: Props) {
               />
             );
           })}
-          {map.points.map((p) => (
-            <g key={p.id} className={`map-dot is-lit ${selected.has(p.id) ? "is-selected" : ""}`} transform={`translate(${p.x} ${p.y})`} pointerEvents="none">
-              <circle className="halo" r="14" />
-              <circle className="dot-core" r="3.5" fill="var(--accent)" />
-            </g>
-          ))}
+          {map.points.map((p) => {
+            const island = !polygons.has(p.id);
+            return (
+              <g
+                key={p.id}
+                className={`map-dot is-lit ${selected.has(p.id) ? "is-selected" : ""} ${island ? "is-island" : ""}`}
+                transform={`translate(${p.x} ${p.y})`}
+                pointerEvents={island ? "auto" : "none"}
+                role={island ? "button" : undefined}
+                tabIndex={island ? 0 : undefined}
+                aria-pressed={island ? selected.has(p.id) : undefined}
+                aria-label={island ? recommended.get(p.id) : undefined}
+                onClick={island ? () => onToggle(p.id) : undefined}
+                onKeyDown={island ? (e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); onToggle(p.id); } } : undefined}
+                onMouseEnter={island ? () => setHover(p.id) : undefined}
+                onMouseLeave={island ? () => setHover(null) : undefined}
+              >
+                <circle className="halo" r="14" />
+                {island && <circle r="12" fill="transparent" />}
+                <circle className="dot-core" r={island ? 5 : 3.5} fill="var(--accent)" />
+              </g>
+            );
+          })}
         </svg>
         {hoverCountry && (
           <div className="map-tooltip" style={{ left: `${(hoverCountry.cx / map.width) * 100}%`, top: `${(hoverCountry.cy / map.height) * 100}%` }}>

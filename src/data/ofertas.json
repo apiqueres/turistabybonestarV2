@@ -1,0 +1,57 @@
+[
+  {
+    "id": "punta-cana-noviembre",
+    "title": "Punta Cana todo incluido",
+    "destinationId": "punta-cana",
+    "price": "1.290 €",
+    "priceNote": "por persona, vuelo directo y todo incluido",
+    "dates": "Salidas del 8 al 22 de noviembre",
+    "duration": "9 días · 7 noches",
+    "text": "Hotel de cinco estrellas en Bávaro con pulsera de todo incluido, traslados y seguro. Opción solo adultos o con club infantil.",
+    "includes": ["Vuelo directo desde Valencia o Madrid", "Hotel 5* todo incluido en Bávaro", "Traslados y seguro de viaje"],
+    "image": { "src": "/media/real-punta-cana.webp", "alt": "Playa de Bávaro, Punta Cana" },
+    "badge": "Temporada",
+    "active": true
+  },
+  {
+    "id": "marruecos-puente-diciembre",
+    "title": "Marrakech y desierto en el puente de diciembre",
+    "destinationId": "marruecos",
+    "price": "690 €",
+    "priceNote": "por persona, del 5 al 9 de diciembre",
+    "dates": "Salida especial del 5 al 9 de diciembre",
+    "duration": "5 días · 4 noches",
+    "text": "Riad en la medina, excursión al Atlas y una noche en jaima en Merzouga. Grupo reducido con salida garantizada.",
+    "includes": ["Vuelo directo y traslados", "Riad en la medina y jaima en el desierto", "Guía en castellano todo el viaje"],
+    "image": { "src": "/media/real-marruecos.webp", "alt": "Caravana en las dunas de Erg Chebbi" },
+    "badge": "Puentes",
+    "active": true
+  },
+  {
+    "id": "egipto-enero",
+    "title": "Egipto con crucero por el Nilo",
+    "destinationId": "egipto",
+    "price": "1.450 €",
+    "priceNote": "por persona, pensión completa en el crucero",
+    "dates": "Del 12 al 19 de enero",
+    "duration": "8 días · 7 noches",
+    "text": "El Cairo, Giza y cuatro noches de crucero de Luxor a Asuán con todas las visitas incluidas y guía egiptólogo.",
+    "includes": ["Vuelos y traslados", "Crucero 5* de Luxor a Asuán en pensión completa", "Visitas con guía egiptólogo"],
+    "image": { "src": "/media/real-egipto.webp", "alt": "Pirámides de Giza" },
+    "active": true
+  },
+  {
+    "id": "tailandia-febrero",
+    "title": "Tailandia, templos y playa",
+    "destinationId": "tailandia",
+    "price": "1.890 €",
+    "priceNote": "por persona, vuelos y hoteles 4*",
+    "dates": "Salidas en febrero y marzo",
+    "duration": "13 días · 11 noches",
+    "text": "Bangkok, Chiang Mai con santuario de elefantes y cierre de playa en Krabi. Nuestro viaje estrella a precio de temporada.",
+    "includes": ["Vuelos internacionales e internos", "Hoteles 4* con desayuno", "Excursiones principales y traslados"],
+    "image": { "src": "/media/real-tailandia.webp", "alt": "Gran Palacio de Bangkok" },
+    "badge": "Viaje estrella",
+    "active": true
+  }
+]

@@ -4,4 +4,5 @@ export const KEYS_ADMIN = {
   requests: "tb:admin-solicitudes",
   destinations: "tb:admin-destinos",
   form: "tb:admin-preguntas",
+  offers: "tb:admin-ofertas",
 } as const;

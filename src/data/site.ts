@@ -1,25 +1,26 @@
 import type { SiteContent } from "@/types/content";
 import destinations from "./destinations.json";
+import ofertas from "./ofertas.json";
 
 export const siteContent: SiteContent = {
   brand: {
     name: "TuristaByBonestar",
     tagline: "Viajes a medida para quien no tiene tiempo de organizarlos.",
-    city: "Sueca, Valencia",
-    phone: "+34 961 00 00 00",
-    whatsapp: "+34 623 37 59 98",
+    city: "Bonestar's Bistro · Passeig de l'Estació 11, Sueca",
+    phone: "+34 623 375 998",
+    whatsapp: "+34 623 375 998",
     communityName: "Turista by Bonestar✈️ Comunidad Privada1",
     communityUrl: "",
-    email: "hola@turistabybonestar.com",
+    email: "turistasinlicenciabook@gmail.com",
     hours: "L–V · 10:00–19:00",
-    instagram: "https://instagram.com",
+    instagram: "https://instagram.com/turistabyb",
     year: 2026,
   },
   nav: {
     links: [
       { label: "Inicio", href: "/", key: "/" },
       { label: "¿Dónde nos vamos?", href: "/donde-nos-vamos", key: "/donde-nos-vamos" },
-      { label: "Cómo viajas", href: "/como-viajas", key: "/como-viajas" },
+      { label: "Ofertas", href: "/ofertas", key: "/ofertas", accent: true },
       { label: "Contacto", href: "/contacto", key: "/contacto" },
     ],
     cta: { label: "Empezar", href: "/donde-nos-vamos" },
@@ -73,7 +74,7 @@ export const siteContent: SiteContent = {
     },
     dimensions: {
       kicker: "Lo que te preguntamos",
-      text: "Seis preguntas en una sola pantalla. Lo que no nos digas, lo decidimos nosotros y te lo explicamos en la propuesta.",
+      text: "Unas pocas preguntas en dos pantallas: el viaje y tus datos. Lo que no nos digas, lo decidimos nosotros y te lo explicamos en la propuesta.",
       items: [
         { label: "Fechas", step: 0 },
         { label: "Viajeros", step: 0 },
@@ -187,6 +188,19 @@ export const siteContent: SiteContent = {
     success: { title: "Recibido.", text: "Te escribimos en menos de 24 horas laborables." },
     mapNudge: { text: "¿Ya sabes dónde vas? Márcalo en el mapa.", cta: { label: "¿Dónde nos vamos?", href: "/donde-nos-vamos" } },
   },
+  offers: {
+    kicker: "Ofertas de temporada",
+    title: ["Viajes a buen precio", "cuando toca ir."],
+    text: "Salidas que preparamos cuando la temporada lo merece: vuelos, hotel, traslados y seguro cerrados a un precio que no se repite. Cambian cada pocas semanas.",
+    community: {
+      kicker: "Comunidad de WhatsApp",
+      title: "Únete a la comunidad y recibe un itinerario gratuito.",
+      text: "Las ofertas salen primero en la comunidad privada de WhatsApp. Al entrar te regalamos un itinerario a medida del destino que elijas, sin compromiso.",
+      cta: "Unirme a la comunidad",
+    },
+    empty: "Ahora mismo no hay ofertas activas. Únete a la comunidad para enterarte de la próxima.",
+    cta: "Quiero esta oferta",
+  },
   footer: {
     sections: "Secciones",
     contact: "Contacto",
@@ -199,4 +213,5 @@ export const siteContent: SiteContent = {
     credits: { label: "Créditos fotográficos", href: "/creditos" },
   },
   destinations,
+  offersList: ofertas,
 };

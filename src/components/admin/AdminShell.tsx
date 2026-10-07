@@ -9,6 +9,7 @@ import { logout, useSession } from "@/lib/admin/auth";
 const NAV = [
   { href: "/admin/solicitudes", label: "Solicitudes" },
   { href: "/admin/destinos", label: "Destinos" },
+  { href: "/admin/ofertas", label: "Ofertas" },
   { href: "/admin/preguntas", label: "Preguntas" },
 ];
 

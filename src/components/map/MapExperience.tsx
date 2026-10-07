@@ -18,16 +18,17 @@ interface Props {
 }
 
 const NONE: string[] = [];
-const countryNames = new Map(map.countries.map((c) => [c.id, c.name]));
+const baseNames = new Map(map.countries.map((c) => [c.id, c.name]));
 
 /** Holds the selection state shared by the map, the list bar and the destination cards. */
 export function MapExperience({ content, destinations }: Props) {
   const params = useSearchParams();
   const initialTab = params.get("pais");
-  const recommended = useMemo(() => new Set(destinations.map((d) => d.id)), [destinations]);
+  const recommended = useMemo(() => new Map(destinations.map((d) => [d.id, d.name])), [destinations]);
+  const countryNames = useMemo(() => new Map([...baseNames, ...recommended]), [recommended]);
 
   const [stored, setSelected] = usePersistedState<string[]>(KEYS.selection, NONE);
-  const selected = useMemo(() => stored.filter((id) => countryNames.has(id)), [stored]);
+  const selected = useMemo(() => stored.filter((id) => countryNames.has(id)), [stored, countryNames]);
   const [tab, setTab] = useState<string>(initialTab && recommended.has(initialTab) ? initialTab : destinations[0].id);
 
   const toggle = (id: string) => setSelected((s) => (s.includes(id) ? s.filter((x) => x !== id) : [...s, id]));

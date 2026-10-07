@@ -88,7 +88,8 @@ export function Wizard({ content, destinations, brand }: Props) {
     }
     const nombre = String(answers.nombre ?? "").trim();
     const email = String(answers.email ?? "").trim();
-    if (nombre.length < 2 || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) || answers.privacidad !== true) {
+    const telefono = String(answers.telefono ?? "").trim();
+    if (nombre.length < 2 || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) || telefono.length < 6 || answers.privacidad !== true) {
       setStatus({ kind: "missing" });
       return;
     }
@@ -101,7 +102,7 @@ export function Wizard({ content, destinations, brand }: Props) {
     const payload = {
       destinos: ids.map((id) => ({ id, nombre: destinations.find((d) => d.id === id)?.name ?? countryName(id) })),
       respuestas,
-      contacto: { nombre, email, telefono: String(answers.telefono ?? ""), canal: String(answers.canal ?? ""), privacidad: true as const },
+      contacto: { nombre, email, telefono, canal: "", privacidad: true as const },
     };
     // Plane "processing" screen for at least PROCESSING_MS while the request is sent.
     window.dispatchEvent(new CustomEvent("tb:veil", { detail: { hold: PROCESSING_MS } }));
