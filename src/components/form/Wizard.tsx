@@ -172,6 +172,10 @@ export function Wizard({ content, destinations, brand }: Props) {
   if (status.kind === "done") return <SuccessView content={content.success} id={status.id} brand={brand} prompt={status.prompt} payload={status.payload} demo={STATIC_DEMO} />;
 
   const current = steps[step];
+  const destinoId = Array.isArray(answers.destinos) ? (answers.destinos as string[])[0] : undefined;
+  const destinoLabel = destinoId ? (destinations.find((d) => d.id === destinoId)?.name ?? placeLabel(destinoId)) : "";
+  // The destination is chosen on the map, never asked here: without one, send the visitor there first.
+  const gate = hydrated && !destinoId;
   return (
     <div className="wiz">
       <header className="wiz-header">
@@ -197,8 +201,37 @@ export function Wizard({ content, destinations, brand }: Props) {
         </div>
       )}
 
-      <StepView key={current.id} step={current} steps={steps} answers={answers} setAnswer={setAnswer} destinations={destinations} showSummary={lastStep && steps.length > 1} summary={content.summary} />
+      {gate ? (
+        <div className="wiz-body wiz-gate">
+          <div className="kicker">Antes de nada</div>
+          <h2 className="t-h2 mt-5">
+            ¿A dónde
+            <br />
+            nos vamos?
+          </h2>
+          <p className="t-body mt-6 max-w-[40ch]">Elige primero el destino en el mapa. Después volvemos aquí para contarte cómo lo montamos.</p>
+          <Link href="/donde-nos-vamos" className="btn btn-primary btn-sm mt-8 self-start">
+            Elegir el destino
+            <ArrowRight className="btn-icon" />
+          </Link>
+        </div>
+      ) : (
+        <>
+          {step === 0 && destinoId && (
+            <div className="wiz-dest">
+              <span className="kicker">Tu destino</span>
+              <span className="wiz-dest-name">{destinoLabel}</span>
+              <Link href="/donde-nos-vamos" className="link-arrow">
+                Cambiarlo en el mapa
+                <ArrowRight />
+              </Link>
+            </div>
+          )}
+          <StepView key={current.id} step={current} steps={steps} answers={answers} setAnswer={setAnswer} destinations={destinations} showSummary={lastStep && steps.length > 1} summary={content.summary} />
+        </>
+      )}
 
+      {!gate && (
       <footer className="wiz-footer">
         {step === 0 ? (
           <Link href="/donde-nos-vamos" className="t-muted hover:text-white transition-colors">
@@ -220,6 +253,7 @@ export function Wizard({ content, destinations, brand }: Props) {
           </button>
         </div>
       </footer>
+      )}
     </div>
   );
 }

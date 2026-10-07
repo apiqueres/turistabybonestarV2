@@ -850,6 +850,24 @@ html.reduced-motion .hero-el {
   flex: 1;
   padding: 72px var(--gutter) 56px;
 }
+.wiz-dest {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 10px 22px;
+  padding: 28px var(--gutter) 0;
+  border-top: 1px solid var(--line);
+}
+.wiz-dest-name {
+  font-family: var(--font-serif), Georgia, serif;
+  font-size: 28px;
+  line-height: 1;
+}
+.wiz-gate {
+  display: flex;
+  flex-direction: column;
+  max-width: 720px;
+}
 .wiz-footer {
   border-top: 1px solid var(--line);
   padding: 22px var(--gutter);
@@ -1546,6 +1564,11 @@ html.reduced-motion .hero-el {
 }
 
 /* ---------- Destination search + zooming map ---------- */
+/* the wrapper is a stacking context (reveal animation), so lift it above the map */
+.place-search-wrap {
+  position: relative;
+  z-index: 20;
+}
 .place-search {
   position: relative;
   max-width: 720px;
@@ -1685,5 +1708,45 @@ html.reduced-motion .hero-el {
 @media (max-width: 900px) {
   .place-search input {
     font-size: 24px;
+  }
+}
+
+/* ---------- Very wide screens (QHD and up): cap the content width, scale type a little ---------- */
+@media (min-width: 1900px) {
+  :root {
+    --gutter: 64px;
+    --content-max: 1920px;
+  }
+  .gutter,
+  .nav-menu-inner {
+    max-width: var(--content-max);
+    margin-left: auto;
+    margin-right: auto;
+  }
+  .section-label {
+    left: max(var(--gutter), calc((100% - var(--content-max)) / 2 + var(--gutter)));
+  }
+  /* full-width bars whose contents align with the capped content */
+  .nav,
+  .wiz-header,
+  .wiz-body,
+  .wiz-footer,
+  .wiz-dest {
+    padding-left: max(var(--gutter), calc((100% - var(--content-max)) / 2 + var(--gutter)));
+    padding-right: max(var(--gutter), calc((100% - var(--content-max)) / 2 + var(--gutter)));
+  }
+  .t-body {
+    font-size: 18px;
+  }
+  .t-h3 {
+    font-size: 36px;
+  }
+  .kicker,
+  .chip,
+  .btn {
+    font-size: 13px;
+  }
+  .place-search input {
+    font-size: 40px;
   }
 }

@@ -2,7 +2,6 @@
 
 import type { Answers, Question, SetAnswer } from "@/types/form";
 import type { Destination } from "@/types/content";
-import { DestinationsStep } from "./DestinationsStep";
 
 interface Props {
   question: Question;
@@ -12,12 +11,10 @@ interface Props {
 }
 
 /** Renders one question of the wizard according to its `kind`. */
-export function QuestionField({ question: q, answers, setAnswer, destinations }: Props) {
+export function QuestionField({ question: q, answers, setAnswer }: Props) {
   const value = answers[q.id];
 
-  if (q.kind === "destinations") {
-    return <DestinationsStep answers={answers} setAnswer={setAnswer} destinations={destinations} />;
-  }
+  if (q.kind === "destinations") return null; // the destination comes from the map, it is never asked here
 
   if (q.kind === "multi") {
     const arr = Array.isArray(value) ? value : [];

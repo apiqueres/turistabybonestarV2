@@ -3,7 +3,8 @@
 import Image from "next/image";
 import Link from "next/link";
 import type { Destination, SiteContent } from "@/types/content";
-import { ArrowRight } from "@/components/ui/icons";
+import { ArrowRight, WhatsApp } from "@/components/ui/icons";
+import { destinationMessage, waHref } from "@/lib/whatsapp";
 
 interface Props {
   content: SiteContent["map"];
@@ -12,9 +13,11 @@ interface Props {
   onSelectTab: (id: string) => void;
   selected: Set<string>;
   onToggle: (id: string) => void;
+  /** Agency WhatsApp number for the direct-message button. */
+  whatsapp: string;
 }
 
-export function DestinationTabs({ content, items, activeId, onSelectTab, selected, onToggle }: Props) {
+export function DestinationTabs({ content, items, activeId, onSelectTab, selected, onToggle, whatsapp }: Props) {
   const active = items.find((d) => d.id === activeId) ?? items[0];
   const isSel = selected.has(active.id);
   const rows: [string, string][] = [
@@ -76,6 +79,10 @@ export function DestinationTabs({ content, items, activeId, onSelectTab, selecte
             ))}
           </ul>
           <div className="mt-10 flex flex-wrap gap-4">
+            <a href={waHref(whatsapp, destinationMessage(active.name))} target="_blank" rel="noreferrer" className="btn btn-primary btn-sm">
+              Escribir por WhatsApp
+              <WhatsApp className="btn-icon" />
+            </a>
             <button type="button" className={`btn btn-sm ${isSel ? "btn-primary" : "btn-secondary"}`} onClick={() => onToggle(active.id)} aria-pressed={isSel}>
               {isSel ? content.remove : content.add}
             </button>

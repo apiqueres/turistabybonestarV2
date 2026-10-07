@@ -11,7 +11,7 @@ export default async function MapPage() {
   return (
     <SiteShell>
       <Suspense fallback={<div className="section" />}>
-        <MapExperience content={content.map} destinations={content.destinations} />
+        <MapExperience content={content.map} destinations={content.destinations} whatsapp={content.brand.whatsapp} />
       </Suspense>
     </SiteShell>
   );

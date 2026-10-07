@@ -10,7 +10,7 @@ export const siteContent: SiteContent = {
     phone: "+34 623 375 998",
     whatsapp: "+34 623 375 998",
     communityName: "Turista by Bonestar✈️ Comunidad Privada1",
-    communityUrl: "",
+    communityUrl: "https://chat.whatsapp.com/Dyx6BhsB5VUCuxqKqhAK81",
     email: "turistasinlicenciabook@gmail.com",
     hours: "L–V · 10:00–19:00",
     instagram: "https://instagram.com/turistabyb",
@@ -40,12 +40,12 @@ export const siteContent: SiteContent = {
         {
           number: "01",
           title: ["Eliges el destino.", "Tú decides dónde."],
-          text: "Marca en el mapa el país al que quieres llevar a los tuyos. Cualquiera vale, aunque de doce nos sabemos hasta los horarios.",
+          text: "Escribe el país o la ciudad a la que quieres llevar a los tuyos y el mapa te lleva hasta allí. Cualquiera vale, aunque de doce nos sabemos hasta los horarios.",
         },
         {
           number: "02",
           title: ["Nos cuentas", "lo básico."],
-          text: "Una sola pantalla: fechas, quiénes viajáis, presupuesto, pensión, maletas y traslados y el estilo de viaje. Dos minutos entre servicio y servicio.",
+          text: "Dos pantallas: fechas, quiénes viajáis, presupuesto, pensión, maletas y traslados y el estilo de viaje; después, tus datos. Dos minutos entre servicio y servicio.",
         },
         {
           number: "03",
@@ -187,7 +187,7 @@ export const siteContent: SiteContent = {
       submit: "Enviar",
     },
     success: { title: "Recibido.", text: "Te escribimos en menos de 24 horas laborables." },
-    mapNudge: { text: "¿Ya sabes dónde vas? Márcalo en el mapa.", cta: { label: "¿Dónde nos vamos?", href: "/donde-nos-vamos" } },
+    mapNudge: { text: "¿Ya sabes dónde vas? Búscalo en el mapa.", cta: { label: "¿Dónde nos vamos?", href: "/donde-nos-vamos" } },
   },
   offers: {
     kicker: "Ofertas de temporada",

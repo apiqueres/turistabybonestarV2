@@ -28,9 +28,8 @@ export const formContent: FormContent = {
       kicker: "01 — Tu viaje",
       title: ["Lo básico", "y nada más."],
       text: "Unas pocas preguntas y, en la siguiente página, tus datos. Lo que no nos digas lo decidimos nosotros y te lo explicamos en la propuesta.",
-      hint: "Dos minutos · destino, correo y teléfono obligatorios",
+      hint: "Dos minutos · correo y teléfono obligatorios",
       questions: [
-        { id: "destinos", kind: "destinations" },
         { id: "salida", kind: "date", label: "Fecha de salida" },
         { id: "vuelta", kind: "date", label: "Fecha de vuelta" },
         { id: "adultos", kind: "number", label: "Adultos", min: 1, max: 20 },

@@ -61,7 +61,8 @@ export async function searchPlaces(query: string, limit = 8): Promise<Place[]> {
       if (r >= 0 && (best < 0 || r < best)) best = r;
     }
     if (best < 0) continue;
-    hits.push({ r: best, pop, place: { id: `c${gid}`, name, kind: "city", country: idx.countries[cid] ?? cid, countryId: cid, lon, lat } });
+    // A tiny town that matches exactly ("San") must not beat big cities that start the same way.
+    hits.push({ r: Math.max(best, 1), pop, place: { id: `c${gid}`, name, kind: "city", country: idx.countries[cid] ?? cid, countryId: cid, lon, lat } });
   }
   hits.sort((a, b) => a.r - b.r || b.pop - a.pop);
   return hits.slice(0, limit).map((h) => h.place);

@@ -17,13 +17,14 @@ import { DestinationTabs } from "./DestinationTabs";
 interface Props {
   content: SiteContent["map"];
   destinations: Destination[];
+  whatsapp: string;
 }
 
 const NONE: string[] = [];
 const fromDestination = (d: Destination): Place => ({ id: d.id, name: d.name, kind: "country", lon: d.lon, lat: d.lat });
 
 /** Search box + zooming map + the list of chosen places, shared with the wizard through localStorage. */
-export function MapExperience({ content, destinations }: Props) {
+export function MapExperience({ content, destinations, whatsapp }: Props) {
   const params = useSearchParams();
   const initialTab = params.get("pais");
   const recommended = useMemo(() => new Map(destinations.map((d) => [d.id, d.name])), [destinations]);
@@ -90,7 +91,7 @@ export function MapExperience({ content, destinations }: Props) {
               </div>
             </div>
           </div>
-          <div className="mb-8" data-reveal>
+          <div className="mb-8 place-search-wrap" data-reveal>
             <PlaceSearch placeholder={content.search.placeholder} hint={content.search.hint} onPick={add} />
           </div>
           <ZoomMap focus={focus} selected={selected} recommended={recommended} legend={content.legend} />
@@ -111,7 +112,7 @@ export function MapExperience({ content, destinations }: Props) {
               </p>
             </div>
           </div>
-          <DestinationTabs content={content} items={destinations} activeId={tab} onSelectTab={setTab} selected={selectedSet} onToggle={toggleDestination} />
+          <DestinationTabs content={content} items={destinations} activeId={tab} onSelectTab={setTab} selected={selectedSet} onToggle={toggleDestination} whatsapp={whatsapp} />
         </div>
       </section>
     </>

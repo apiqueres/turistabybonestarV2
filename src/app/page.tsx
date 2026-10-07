@@ -17,7 +17,7 @@ export default async function Home() {
     <SiteShell>
       <Hero data={home.hero} />
       <Method data={home.method} />
-      <DestinationsGrid data={home.destinations} items={content.destinations} />
+      <DestinationsGrid data={home.destinations} items={content.destinations} whatsapp={content.brand.whatsapp} />
       <About data={home.about} />
       <Dimensions data={home.dimensions} />
       <Pain data={home.pain} />
