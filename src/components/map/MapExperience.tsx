@@ -33,10 +33,11 @@ export function MapExperience({ content, destinations }: Props) {
   // `undefined` = nothing chosen on this visit yet: show the ?pais=<id> destination (from the home or the
   // offers) or, failing that, the last place in the stored list.
   const [chosen, setFocus] = useState<Place | null | undefined>(undefined);
-  const initialDestination = destinations.find((x) => x.id === initialTab);
+  // ?pais= accepts the destination id (home) or its slug (offers).
+  const initialDestination = destinations.find((x) => x.id === initialTab || x.slug === initialTab);
   const focus: Place | null =
     chosen !== undefined ? chosen : initialDestination ? fromDestination(initialDestination) : hydrated && selected.length ? selected[selected.length - 1] : null;
-  const [tab, setTab] = useState<string>(initialTab && recommended.has(initialTab) ? initialTab : destinations[0].id);
+  const [tab, setTab] = useState<string>(initialDestination?.id ?? destinations[0].id);
 
   const add = (p: Place) => {
     rememberPlace(p);
