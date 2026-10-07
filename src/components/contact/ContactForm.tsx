@@ -5,7 +5,7 @@ import type { SiteContent } from "@/types/content";
 import { contactoSchema } from "@/lib/validation";
 import { STATIC_DEMO } from "@/lib/config";
 import { readJSON, writeJSON } from "@/lib/storage";
-import { mailtoLink } from "@/lib/email";
+import { mailtoLink } from "@/lib/mailto";
 import { ArrowRight } from "@/components/ui/icons";
 
 interface Props {

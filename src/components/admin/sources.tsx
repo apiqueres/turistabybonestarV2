@@ -9,7 +9,7 @@ import type { RequestStatus, StoredRequest } from "@/types/admin";
 import { api } from "@/lib/admin/api";
 import { useDestinations, useFormSteps, useOffers, useRequests } from "@/lib/admin/data";
 import { clientMessageEmail } from "@/lib/email-templates";
-import { sendDemoMail } from "@/lib/email";
+import { openMailto } from "@/lib/mailto";
 import { paginate } from "./Pager";
 import { DestinationsAdmin } from "./DestinationsAdmin";
 import { OffersAdmin } from "./OffersAdmin";
@@ -243,9 +243,9 @@ export function RequestsDemo({ brand }: { brand: EmailBrand }) {
     remove: async (id) => remove(id),
     sendMessage: async (request, msg, b) => {
       const email = clientMessageEmail(request.id, request.data, msg, b);
-      const how = await sendDemoMail({ to: request.data.contacto.email, subject: email.subject, text: email.text, html: email.html, replyTo: b.email, fromName: b.name });
+      openMailto({ to: request.data.contacto.email, subject: email.subject, text: email.text });
       update(request.id, { notes: `${request.notes ? `${request.notes}\n` : ""}Correo enviado · ${new Date().toLocaleString("es-ES")} · ${email.subject}` });
-      return how === "sent" ? `Correo enviado a ${request.data.contacto.email}.` : "Se ha abierto tu programa de correo con la versión en texto.";
+      return "Se ha abierto tu programa de correo con la versión en texto (demo sin servidor).";
     },
   };
   return <RequestsAdmin store={store} steps={steps} brand={brand} />;

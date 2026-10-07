@@ -4,8 +4,7 @@ import Link from "next/link";
 import type { FormContent } from "@/types/form";
 import { ArrowRight } from "@/components/ui/icons";
 import { Brand } from "@/components/layout/Brand";
-import { useState } from "react";
-import { sendDemoMail } from "@/lib/email";
+import { openMailto } from "@/lib/mailto";
 import type { EmailBrand } from "@/lib/email-shell";
 import type { SolicitudInput } from "@/lib/validation";
 import { clientConfirmationEmail, openPreview } from "@/lib/email-templates";
@@ -21,15 +20,9 @@ interface Props {
 }
 
 export function SuccessView({ content, id, brand, prompt, payload, demo }: Props) {
-  const [mailMsg, setMailMsg] = useState<string | null>(null);
-  const mail = async () => {
-    if (!prompt) return;
-    try {
-      const how = await sendDemoMail({ to: brand.email, subject: `Solicitud de viaje · ${id}`, text: prompt, fromName: "Web TuristaByBonestar" });
-      setMailMsg(how === "sent" ? "Correo enviado a la agencia." : "Se ha abierto tu programa de correo con la solicitud.");
-    } catch {
-      setMailMsg("No se pudo enviar el correo.");
-    }
+  // Demo estática: no hay servidor, así que el brief se manda desde el programa de correo del visitante.
+  const mail = () => {
+    if (prompt) openMailto({ to: brand.email, subject: `Solicitud de viaje · ${id}`, text: prompt });
   };
   const download = () => {
     if (!prompt) return;
@@ -68,7 +61,6 @@ export function SuccessView({ content, id, brand, prompt, payload, demo }: Props
               Versión de demostración: la solicitud no se ha enviado a ningún servidor. Puedes descargar el brief generado o enviarlo por correo.
             </p>
           )}
-          {mailMsg && <p className="form-status mt-4">{mailMsg}</p>}
           <div className="mt-10 flex flex-wrap gap-4">
             {prompt && (
               <button type="button" onClick={download} className="btn btn-primary btn-sm">
@@ -76,7 +68,7 @@ export function SuccessView({ content, id, brand, prompt, payload, demo }: Props
                 <ArrowRight className="btn-icon" />
               </button>
             )}
-            {prompt && (
+            {demo && prompt && (
               <button type="button" onClick={mail} className="btn btn-secondary btn-sm">
                 Enviar por correo
                 <ArrowRight className="btn-icon" />

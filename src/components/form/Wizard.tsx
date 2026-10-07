@@ -13,8 +13,6 @@ import { placeLabel } from "@/lib/geo/places";
 import { STATIC_DEMO } from "@/lib/config";
 import { buildPrompt } from "@/lib/prompt";
 import type { EmailBrand } from "@/lib/email-shell";
-import { clientConfirmationEmail } from "@/lib/email-templates";
-import { emailJsConfigured, sendDemoMail } from "@/lib/email";
 import { SuccessView } from "./SuccessView";
 
 interface Props {
@@ -131,11 +129,7 @@ export function Wizard({ content, destinations, brand }: Props) {
       removeKey(KEYS.form);
       removeKey(KEYS.selection);
       removeKey(KEYS.places);
-      // Branded confirmation to the client, from the browser, when EmailJS is configured.
-      if (emailJsConfigured) {
-        const mail = clientConfirmationEmail(id, payload, brand);
-        sendDemoMail({ to: email, subject: mail.subject, text: mail.text, html: mail.html, replyTo: brand.email, fromName: brand.name }).catch(() => {});
-      }
+      // La confirmación al cliente y el aviso a la agencia los envía el servidor (src/lib/mailer.ts).
       setStatus({ kind: "done", id, prompt, payload });
       window.scrollTo({ top: 0 });
     } catch {
