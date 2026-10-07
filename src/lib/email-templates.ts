@@ -83,7 +83,7 @@ export function defaultAdminMessage(s: SolicitudInput, brand: EmailBrand): Admin
     subject: `Tu propuesta para ${destinos}`,
     message: `Hola, ${firstName(s.contacto.nombre)}.\n\nHemos revisado lo que nos contaste y ya estamos trabajando en una primera propuesta para ${destinos}. Antes de cerrarla nos gustaría confirmar contigo un par de detalles.\n\n¿Te viene bien que te llamemos esta semana? Dinos qué día y franja te encaja.`,
     signature: `Un saludo,\nEl equipo de ${brand.name}`,
-    includeSummary: true,
+    includeSummary: false,
   };
 }
 
