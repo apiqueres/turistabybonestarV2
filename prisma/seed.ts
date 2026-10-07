@@ -5,7 +5,6 @@
  *
  *   npm run db:seed            (ADMIN_EMAIL / ADMIN_PASSWORD en .env)
  */
-import "dotenv/config";
 import { readdir, readFile } from "node:fs/promises";
 import path from "node:path";
 import bcrypt from "bcryptjs";
@@ -17,6 +16,11 @@ import { buildPrompt } from "../src/lib/prompt";
 import { contactoSchema, solicitudSchema } from "../src/lib/validation";
 import type { Destination, Offer } from "../src/types/content";
 
+try {
+  process.loadEnvFile(".env");
+} catch {
+  /* sin .env: variables del entorno (Docker) */
+}
 const url = process.env.DATABASE_URL;
 if (!url) throw new Error("DATABASE_URL no está definida");
 const prisma = new PrismaClient({ adapter: new PrismaPg({ connectionString: url }) });

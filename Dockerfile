@@ -17,9 +17,9 @@ RUN npm run build && npm run db:seed:bundle
 # CLI de Prisma (migraciones) con sus dependencias, aparte del bundle de Next.
 FROM node:22-bookworm-slim AS cli
 WORKDIR /cli
-COPY package.json ./
+COPY package.json /tmp/pkg.json
 RUN npm init -y >/dev/null \
-  && npm install --omit=dev --no-audit --no-fund "prisma@$(node -p "require('./package.json').devDependencies.prisma")" "dotenv@$(node -p "require('./package.json').devDependencies.dotenv")"
+  && npm install --no-audit --no-fund "prisma@$(node -p "require('/tmp/pkg.json').devDependencies.prisma")"
 
 # ---- runtime ----
 FROM node:22-bookworm-slim AS runner
