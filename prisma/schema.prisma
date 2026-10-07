@@ -1,0 +1,143 @@
+// Esquema de la base de datos (PostgreSQL 16). Ver docs/PLAN-BACKEND.md §2.
+// Cliente generado en src/generated/prisma (ignorado por git; `npm run db:generate`).
+
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model AdminUser {
+  id           String    @id @default(cuid())
+  email        String    @unique
+  name         String
+  passwordHash String
+  createdAt    DateTime  @default(now())
+  lastLoginAt  DateTime?
+}
+
+model Destination {
+  id         String   @id // ISO 3166-1 numérico ("392"), igual que en el front
+  slug       String   @unique
+  name       String
+  code       String
+  region     String
+  lon        Float
+  lat        Float
+  tagline    String
+  bestSeason String
+  duration   String
+  idealFor   String
+  badge      String?
+  includes   String[]
+  imageSrc   String
+  imageAlt   String
+  featured   Boolean  @default(false)
+  sortOrder  Int      @default(0)
+  active     Boolean  @default(true)
+  updatedAt  DateTime @updatedAt
+  offers     Offer[]
+
+  @@index([sortOrder])
+}
+
+model Offer {
+  id            String      @id
+  title         String
+  // Slug del destino (así lo usa el front: enlace a la ficha y selector del editor).
+  destinationId String
+  destination   Destination @relation(fields: [destinationId], references: [slug], onUpdate: Cascade, onDelete: Restrict)
+  price         String
+  priceNote     String
+  dates         String
+  duration      String
+  text          String
+  includes      String[]
+  imageSrc      String
+  imageAlt      String
+  badge         String?
+  active        Boolean     @default(true)
+  sortOrder     Int         @default(0)
+  updatedAt     DateTime    @updatedAt
+
+  @@index([sortOrder])
+  @@index([destinationId])
+}
+
+/// Páginas del asistente y sus preguntas (FormStep completo en `data`).
+model FormStep {
+  id        String   @id // "viaje", "contacto"
+  sortOrder Int
+  data      Json
+  updatedAt DateTime @updatedAt
+}
+
+/// Bloques de texto editables de SiteContent, con la misma forma que src/data/site.ts.
+model SiteSetting {
+  key       String   @id // "brand", "nav", "home.hero", "home.method", … "map", "contact", "offers", "footer"
+  data      Json
+  updatedAt DateTime @updatedAt
+}
+
+enum RequestStatus {
+  nueva
+  en_curso
+  cerrada
+}
+
+model Solicitud {
+  id        String        @id // <iso-fecha>_<8 hex>, igual que los ficheros JSON antiguos
+  createdAt DateTime      @default(now())
+  status    RequestStatus @default(nueva)
+  notes     String?
+  data      Json // SolicitudInput validado
+  prompt    String // brief .txt generado con buildPrompt()
+  email     String // copia desnormalizada para buscar
+  phone     String
+  name      String
+  messages  MessageLog[]
+
+  @@index([createdAt])
+  @@index([status])
+  @@index([email])
+}
+
+model Contacto {
+  id        String   @id
+  createdAt DateTime @default(now())
+  data      Json // ContactoInput
+  email     String
+  handled   Boolean  @default(false)
+
+  @@index([createdAt])
+  @@index([handled])
+}
+
+/// Correos enviados desde el servidor (confirmaciones, avisos a la agencia y mensajes del gestor).
+model MessageLog {
+  id          String     @id @default(cuid())
+  createdAt   DateTime   @default(now())
+  solicitudId String?
+  solicitud   Solicitud? @relation(fields: [solicitudId], references: [id], onDelete: Cascade)
+  to          String
+  subject     String
+  kind        String // "confirmacion" | "admin" | "aviso-agencia"
+  status      String // "sent" | "error" | "skipped"
+  error       String?
+
+  @@index([solicitudId])
+  @@index([createdAt])
+}
+
+model MediaAsset {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+  path      String   @unique // "/uploads/2026/10/xxxx.webp"
+  width     Int
+  height    Int
+  bytes     Int
+  alt       String?
+}
