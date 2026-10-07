@@ -93,3 +93,56 @@ export function openPreview(email: RenderedEmail) {
   window.open(url, "_blank", "noopener");
   window.setTimeout(() => URL.revokeObjectURL(url), 60_000);
 }
+
+/* ---------- Avisos a la agencia (se envían desde el servidor) ---------- */
+
+/** Nueva solicitud del asistente: resumen en HTML y el brief completo en el texto plano. */
+export function agencyRequestEmail(id: string, createdAt: string, s: SolicitudInput, prompt: string, brand: EmailBrand): RenderedEmail {
+  const destinos = s.destinos.map((d) => d.nombre).join(", ");
+  const spec: EmailSpec = {
+    preheader: `${s.contacto.nombre} quiere ir a ${destinos}.`,
+    kicker: `Nueva solicitud · Ref. ${id}`,
+    title: `${s.contacto.nombre} · ${destinos}`,
+    blocks: [
+      {
+        kind: "rows",
+        title: "Cliente",
+        rows: [
+          ["Nombre", s.contacto.nombre],
+          ["Correo", s.contacto.email],
+          ["Teléfono", s.contacto.telefono || "No indicado"],
+          ["Recibida", createdAt],
+        ],
+      },
+      ...requestBlocks(s),
+      { kind: "p", text: "El brief completo va en la versión de texto de este correo y en el panel de administración." },
+    ],
+    brand,
+    siteUrl: siteUrl(),
+  };
+  return { subject: `Solicitud de viaje · ${destinos} · ${s.contacto.nombre}`, html: renderEmailHtml(spec), text: prompt };
+}
+
+/** Mensaje del formulario corto de contacto. */
+export function agencyContactEmail(id: string, c: { nombre: string; email: string; telefono?: string; mensaje: string }, brand: EmailBrand): RenderedEmail {
+  const spec: EmailSpec = {
+    preheader: c.mensaje.slice(0, 120),
+    kicker: `Contacto web · Ref. ${id}`,
+    title: `${c.nombre} ha escrito desde la web`,
+    blocks: [
+      { kind: "p", text: c.mensaje },
+      {
+        kind: "rows",
+        title: "Datos",
+        rows: [
+          ["Nombre", c.nombre],
+          ["Correo", c.email],
+          ["Teléfono", c.telefono || "No indicado"],
+        ],
+      },
+    ],
+    brand,
+    siteUrl: siteUrl(),
+  };
+  return { subject: `Contacto web · ${c.nombre}`, html: renderEmailHtml(spec), text: renderEmailText(spec) };
+}

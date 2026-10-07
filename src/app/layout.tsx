@@ -4,7 +4,9 @@ import "./globals.css";
 import { Loader } from "@/components/motion/Loader";
 import { RouteTransition } from "@/components/motion/RouteTransition";
 import { WhatsAppFab } from "@/components/layout/WhatsAppFab";
+import { connection } from "next/server";
 import { getSiteContent } from "@/lib/content";
+import { STATIC_DEMO } from "@/lib/config";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -47,6 +49,9 @@ export const metadata: Metadata = {
 };
 
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
+  // Con servidor, las páginas se renderizan por petición (los datos van cacheados por etiqueta
+  // en content.ts); en la demo estática de Pages se exportan en el build.
+  if (!STATIC_DEMO) await connection();
   const { brand } = await getSiteContent();
   return (
     <html lang="es" className={`${inter.variable} ${serif.variable} ${mono.variable} is-loading`}>
