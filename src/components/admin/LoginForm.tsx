@@ -57,8 +57,8 @@ export function LoginForm() {
           <h1 className="t-h3 mt-2">Acceso</h1>
         </div>
         <div className="field">
-          <label htmlFor="adm-user">{STATIC_DEMO ? "Usuario" : "Correo electrónico"}</label>
-          <input id="adm-user" type={STATIC_DEMO ? "text" : "email"} autoComplete={STATIC_DEMO ? "username" : "email"} value={user} onChange={(e) => setUser(e.target.value)} placeholder={STATIC_DEMO ? "admin" : "tu@correo.com"} />
+          <label htmlFor="adm-user">{STATIC_DEMO ? "Usuario" : "Usuario o correo"}</label>
+          <input id="adm-user" type="text" autoComplete="username" value={user} onChange={(e) => setUser(e.target.value)} placeholder={STATIC_DEMO ? "admin" : "usuario o correo"} />
         </div>
         <div className="field">
           <label htmlFor="adm-pass">Contraseña</label>

@@ -5,7 +5,7 @@ Cómo se maneja la web en el VPS en el día a día. Todo se ejecuta desde la car
 ## Entrar al panel
 
 1. `https://turistabybonestar.com/admin/login`.
-2. Usuario: el correo de `ADMIN_EMAIL` en `.env` (por defecto `turistasinlicenciabook@gmail.com`). Contraseña: la que se puso en `ADMIN_PASSWORD` la primera vez; después, la que se haya cambiado en **Cuenta**.
+2. Usuario: el valor de `ADMIN_EMAIL` en `.env` (puede ser un correo o un nombre de usuario; se guarda en minúsculas). Contraseña: la que se puso en `ADMIN_PASSWORD` la primera vez; después, la que se haya cambiado en **Cuenta**.
 3. La sesión dura 12 horas. **Salir** cierra la sesión en ese navegador.
 
 Secciones:
