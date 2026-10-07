@@ -1,6 +1,9 @@
 "use client";
 
+import { useState } from "react";
 import { Close, ArrowRight } from "@/components/ui/icons";
+import { uploadImage } from "@/lib/admin/image";
+import { asset } from "@/lib/config";
 
 /**
  * Editor genérico de un bloque de texto de la web (JSON con la forma de src/data/site.ts):
@@ -31,8 +34,38 @@ interface NodeProps {
   path: string;
 }
 
+const IMAGE_KEYS = new Set(["src", "poster"]);
+
+/** Campo de imagen: ruta editable + subida al servidor + miniatura. */
+function ImageField({ id, name, value, onChange }: { id: string; name: string; value: string; onChange: (v: string) => void }) {
+  const [state, setState] = useState<string | null>(null);
+  const upload = async (file?: File) => {
+    if (!file) return;
+    setState("Subiendo…");
+    try {
+      onChange((await uploadImage(file)).path);
+      setState(null);
+    } catch (err) {
+      setState(err instanceof Error ? err.message : "No se pudo subir la imagen.");
+    }
+  };
+  return (
+    <div className="md:col-span-2 flex gap-4 items-start">
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      {value && /\.(webp|jpe?g|png|gif|avif)$/i.test(value) ? <img src={asset(value)} alt="" style={{ width: 64, height: 64, objectFit: "cover" }} /> : <div style={{ width: 64, height: 64, background: "var(--bg-alt)" }} />}
+      <div className="flex-1 flex flex-col gap-2">
+        <label className="lbl" htmlFor={id}>{label(name)}</label>
+        <input id={id} className="input" value={value} onChange={(e) => onChange(e.target.value)} />
+        <input type="file" accept="image/*" className="t-small" aria-label="Subir imagen" onChange={(e) => upload(e.target.files?.[0])} />
+        {state && <span className="t-small t-muted">{state}</span>}
+      </div>
+    </div>
+  );
+}
+
 function Node({ value, onChange, name, path }: NodeProps) {
   const id = `blk-${path.replace(/[^a-z0-9]+/gi, "-")}`;
+  if (typeof value === "string" && IMAGE_KEYS.has(name)) return <ImageField id={id} name={name} value={value} onChange={onChange} />;
   if (typeof value === "string") {
     const long = value.length > 70 || value.includes("\n");
     return (

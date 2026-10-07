@@ -67,7 +67,7 @@ export function OffersAdmin({ store, destinations }: { store: ListStore<Offer>; 
         </div>
       </div>
       <div className="card overflow-x-auto">
-        {adding && <OfferEditor key="new" initial={EMPTY_OFFER} destinations={destinations} isNew onSave={persist} onCancel={() => setAdding(false)} />}
+        {adding && <OfferEditor key="new" initial={EMPTY_OFFER} destinations={destinations} isNew mode={store.mode} onSave={persist} onCancel={() => setAdding(false)} />}
         <table className="table">
           <thead>
             <tr>
@@ -95,7 +95,7 @@ export function OffersAdmin({ store, destinations }: { store: ListStore<Offer>; 
                   {isOpen && (
                     <tr className="detail-row">
                       <td colSpan={6}>
-                        <OfferEditor key={o.id} initial={o} destinations={destinations} onSave={persist} onDelete={() => remove(o)} onCancel={() => setOpenId(null)} onMove={(dir) => move(o.id, dir)} />
+                        <OfferEditor key={o.id} initial={o} destinations={destinations} mode={store.mode} onSave={persist} onDelete={() => remove(o)} onCancel={() => setOpenId(null)} onMove={(dir) => move(o.id, dir)} />
                       </td>
                     </tr>
                   )}

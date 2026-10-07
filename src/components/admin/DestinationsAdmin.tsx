@@ -66,7 +66,7 @@ export function DestinationsAdmin({ store }: { store: ListStore<Destination> }) 
       </div>
       <div className="card overflow-x-auto">
         {adding && (
-          <DestinationEditor key="new" initial={EMPTY_DESTINATION} isNew onSave={(d) => persist(d)} onCancel={() => setAdding(false)} />
+          <DestinationEditor key="new" initial={EMPTY_DESTINATION} isNew mode={store.mode} onSave={(d) => persist(d)} onCancel={() => setAdding(false)} />
         )}
         <table className="table">
           <thead>
@@ -98,6 +98,7 @@ export function DestinationsAdmin({ store }: { store: ListStore<Destination> }) 
                         <DestinationEditor
                           key={d.id}
                           initial={d}
+                          mode={store.mode}
                           onSave={(next) => persist(next, d.id)}
                           onDelete={() => remove(d)}
                           onCancel={() => setOpenId(null)}

@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import type { Destination, Offer } from "@/types/content";
-import { fileToDataUrl } from "@/lib/admin/image";
+import { pickImage } from "@/lib/admin/image";
 import { imgSrc } from "./DestinationEditor";
 import { ArrowRight } from "@/components/ui/icons";
 
@@ -16,12 +16,13 @@ interface Props {
   onDelete?: () => void;
   onCancel: () => void;
   onMove?: (dir: -1 | 1) => void;
+  mode?: "db" | "demo";
 }
 
 const slug = (s: string) => s.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "");
 
 /** Inline editor for one seasonal offer. */
-export function OfferEditor({ initial, destinations, isNew, onSave, onDelete, onCancel, onMove }: Props) {
+export function OfferEditor({ initial, destinations, isNew, onSave, onDelete, onCancel, onMove, mode = "demo" }: Props) {
   const [o, setO] = useState<Offer>({ ...initial, includes: [...initial.includes] });
   const [msg, setMsg] = useState<string | null>(null);
   const k = initial.id || "new";
@@ -30,12 +31,17 @@ export function OfferEditor({ initial, destinations, isNew, onSave, onDelete, on
     const d = destinations.find((x) => x.slug === slugId);
     setO((x) => ({ ...x, destinationId: slugId, image: x.image.src || !d ? x.image : { ...d.image } }));
   };
+  const [uploading, setUploading] = useState(false);
   const onImage = async (file?: File) => {
     if (!file) return;
+    setUploading(true);
     try {
-      field("image", { ...o.image, src: await fileToDataUrl(file) });
-    } catch {
-      setMsg("No se pudo cargar la imagen.");
+      field("image", { ...o.image, src: await pickImage(file, mode, o.image.alt || o.title) });
+      setMsg(null);
+    } catch (err) {
+      setMsg(err instanceof Error ? err.message : "No se pudo cargar la imagen.");
+    } finally {
+      setUploading(false);
     }
   };
   const save = () => {
@@ -50,7 +56,8 @@ export function OfferEditor({ initial, destinations, isNew, onSave, onDelete, on
         {o.image.src ? <img className="thumb" src={imgSrc(o.image.src)} alt={o.image.alt} /> : <div className="thumb" />}
         <div>
           <label className="lbl" htmlFor={`oimg-${k}`}>Imagen (si no subes ninguna se usa la del destino)</label>
-          <input id={`oimg-${k}`} type="file" accept="image/*" onChange={(e) => onImage(e.target.files?.[0])} className="t-small" />
+          <input id={`oimg-${k}`} type="file" accept="image/*" disabled={uploading} onChange={(e) => onImage(e.target.files?.[0])} className="t-small" />
+          {uploading && <span className="t-small t-muted">Subiendo…</span>}
         </div>
         <div>
           <label className="lbl" htmlFor={`oalt-${k}`}>Texto alternativo</label>

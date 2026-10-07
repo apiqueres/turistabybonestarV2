@@ -10,6 +10,9 @@ const nextConfig: NextConfig = {
   basePath: basePath || undefined,
   trailingSlash: isPages,
   images: isPages ? { unoptimized: true } : { formats: ["image/avif", "image/webp"] },
+  // Imágenes subidas desde el admin: en el VPS las sirve Nginx (alias /uploads/); sin Nginx
+  // (desarrollo, Docker solo) las sirve el Route Handler /api/uploads/*.
+  rewrites: isPages ? undefined : async () => [{ source: "/uploads/:path*", destination: "/api/uploads/:path*" }],
 };
 
 export default nextConfig;

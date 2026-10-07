@@ -1,6 +1,6 @@
 "use client";
 
-/** Reads an image file and returns a resized JPEG data URL (max 1000 px) so it fits in localStorage. */
+/** Reads an image file and returns a resized JPEG data URL (max 1000 px): vista previa y, en la demo, almacenamiento. */
 export function fileToDataUrl(file: File, max = 1000): Promise<string> {
   return new Promise((resolve, reject) => {
     const img = new Image();
@@ -20,4 +20,26 @@ export function fileToDataUrl(file: File, max = 1000): Promise<string> {
     };
     img.src = url;
   });
+}
+
+export interface UploadedImage {
+  path: string;
+  width: number;
+  height: number;
+}
+
+/** Sube la imagen al servidor (/api/admin/media): se procesa con sharp y se guarda como WebP en /uploads/. */
+export async function uploadImage(file: File, alt?: string): Promise<UploadedImage> {
+  const form = new FormData();
+  form.append("file", file);
+  if (alt) form.append("alt", alt);
+  const res = await fetch("/api/admin/media", { method: "POST", body: form });
+  const json = (await res.json().catch(() => ({}))) as { ok?: boolean; error?: string; path?: string; width?: number; height?: number };
+  if (!res.ok || !json.ok || !json.path) throw new Error(json.error ?? "No se pudo subir la imagen");
+  return { path: json.path, width: json.width ?? 0, height: json.height ?? 0 };
+}
+
+/** En el VPS sube al servidor; en la demo estática devuelve un data: URL para localStorage. */
+export async function pickImage(file: File, mode: "db" | "demo", alt?: string): Promise<string> {
+  return mode === "db" ? (await uploadImage(file, alt)).path : fileToDataUrl(file);
 }

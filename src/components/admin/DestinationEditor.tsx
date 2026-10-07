@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import type { Destination } from "@/types/content";
-import { fileToDataUrl } from "@/lib/admin/image";
+import { pickImage } from "@/lib/admin/image";
 import { asset } from "@/lib/config";
 import { ArrowRight } from "@/components/ui/icons";
 
@@ -17,6 +17,8 @@ interface Props {
   onCancel: () => void;
   /** Mueve la ficha una posición arriba (-1) o abajo (1) en el orden de la web. */
   onMove?: (dir: -1 | 1) => void;
+  /** "db": las imágenes se suben al servidor; "demo": se guardan como data: URL en el navegador. */
+  mode?: "db" | "demo";
 }
 
 const FIELDS: [keyof Destination, string][] = [
@@ -25,16 +27,21 @@ const FIELDS: [keyof Destination, string][] = [
 ];
 
 /** Inline editor for one destination (rendered under its row). */
-export function DestinationEditor({ initial, isNew, onSave, onDelete, onCancel, onMove }: Props) {
+export function DestinationEditor({ initial, isNew, onSave, onDelete, onCancel, onMove, mode = "demo" }: Props) {
   const [d, setD] = useState<Destination>({ ...initial, includes: [...initial.includes] });
   const [msg, setMsg] = useState<string | null>(null);
   const field = <K extends keyof Destination>(k: K, v: Destination[K]) => setD((x) => ({ ...x, [k]: v }));
+  const [uploading, setUploading] = useState(false);
   const onImage = async (file?: File) => {
     if (!file) return;
+    setUploading(true);
     try {
-      field("image", { ...d.image, src: await fileToDataUrl(file) });
-    } catch {
-      setMsg("No se pudo cargar la imagen.");
+      field("image", { ...d.image, src: await pickImage(file, mode, d.image.alt || d.name) });
+      setMsg(null);
+    } catch (err) {
+      setMsg(err instanceof Error ? err.message : "No se pudo cargar la imagen.");
+    } finally {
+      setUploading(false);
     }
   };
   const save = () => {
@@ -49,7 +56,8 @@ export function DestinationEditor({ initial, isNew, onSave, onDelete, onCancel, 
         {d.image.src ? <img className="thumb" src={imgSrc(d.image.src)} alt={d.image.alt} /> : <div className="thumb" />}
         <div>
           <label className="lbl" htmlFor={`img-${initial.id || "new"}`}>Imagen (JPG/PNG/WebP)</label>
-          <input id={`img-${initial.id || "new"}`} type="file" accept="image/*" onChange={(e) => onImage(e.target.files?.[0])} className="t-small" />
+          <input id={`img-${initial.id || "new"}`} type="file" accept="image/*" disabled={uploading} onChange={(e) => onImage(e.target.files?.[0])} className="t-small" />
+          {uploading && <span className="t-small t-muted">Subiendo…</span>}
         </div>
         <div>
           <label className="lbl" htmlFor={`alt-${initial.id || "new"}`}>Texto alternativo</label>
