@@ -39,9 +39,10 @@ export function MapExperience({ content, destinations }: Props) {
     chosen !== undefined ? chosen : initialDestination ? fromDestination(initialDestination) : hydrated && selected.length ? selected[selected.length - 1] : null;
   const [tab, setTab] = useState<string>(initialDestination?.id ?? destinations[0].id);
 
+  // One destination only: choosing a new one replaces the previous.
   const add = (p: Place) => {
     rememberPlace(p);
-    setStored((s) => (s.includes(p.id) ? s : [...s, p.id]));
+    setStored([p.id]);
     setFocus(p);
   };
   const remove = (id: string) => {

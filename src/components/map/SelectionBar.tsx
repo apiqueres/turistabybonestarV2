@@ -15,7 +15,7 @@ export function SelectionBar({ list, selected, onRemove }: Props) {
   return (
     <div className="rule mt-8 pt-6 flex flex-col md:flex-row md:items-center gap-6">
       <div className="kicker text-ink whitespace-nowrap" style={{ color: "var(--ink)" }}>
-        {list.label} — {n} {n === 1 ? "sitio" : "sitios"}
+        {list.label}
       </div>
       <div className="flex flex-wrap gap-2 flex-1">
         {n === 0 ? (

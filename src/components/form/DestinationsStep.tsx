@@ -16,23 +16,21 @@ interface Props {
 /** Step 01: the current selection (any country or city) plus the twelve recommended ones. */
 export function DestinationsStep({ answers, setAnswer, destinations }: Props) {
   const sel = Array.isArray(answers.destinos) ? (answers.destinos as string[]) : [];
+  // One destination only: picking another replaces it.
   const toggle = (id: string) =>
     setAnswer("destinos", (prev) => {
       const cur = Array.isArray(prev) ? prev : [];
-      return cur.includes(id) ? cur.filter((x) => x !== id) : [...cur, id];
+      return cur.includes(id) ? [] : [id];
     });
   const addPlace = (p: Place) => {
     rememberPlace(p);
-    setAnswer("destinos", (prev) => {
-      const cur = Array.isArray(prev) ? (prev as string[]) : [];
-      return cur.includes(p.id) ? cur : [...cur, p.id];
-    });
+    setAnswer("destinos", () => [p.id]);
   };
 
   return (
     <div className="flex flex-col gap-10">
       <div>
-        <div className="kicker mb-4">Tu selección · {sel.length}</div>
+        <div className="kicker mb-4">Tu destino</div>
         {sel.length === 0 ? (
           <div className="t-small t-muted">Todavía no hay ningún destino. Búscalo aquí o elige uno de los recomendados.</div>
         ) : (

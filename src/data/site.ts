@@ -159,18 +159,18 @@ export const siteContent: SiteContent = {
   map: {
     kicker: "02 — ¿Dónde nos vamos?",
     title: "¿Dónde nos vamos?",
-    text: "Escribe el país o la ciudad a la que quieres llevar a los tuyos y el mapa te llevará hasta allí. Puedes añadir varios sitios y cambiar de idea luego, pero al menos uno tiene que ser.",
-    rule: { label: "Un destino como mínimo", hint: ["Vale cualquier país o ciudad del mundo.", "Los de cian son los que mejor conocemos."] },
+    text: "Escribe el país o la ciudad a la que quieres llevar a los tuyos y el mapa te llevará hasta allí. Puedes cambiar de idea las veces que quieras: el último que elijas es el que nos queda.",
+    rule: { label: "Un destino", hint: ["Vale cualquier país o ciudad del mundo.", "Los de cian son los que mejor conocemos."] },
     search: { placeholder: "¿A dónde? Un país o una ciudad…", hint: "Escribe y elige una sugerencia · Enter añade la primera" },
     legend: ["Proyección Equal Earth · 12 destinos recomendados en cian", "Escribe un destino arriba para acercar el mapa"],
-    list: { label: "Tu lista", empty: "Todavía no has añadido ningún sitio", cta: "¡Te lo organizamos!", ctaHref: "/como-viajas", needOne: "Añade al menos un destino para seguir" },
+    list: { label: "Tu destino", empty: "Todavía no has elegido ninguno", cta: "¡Te lo organizamos!", ctaHref: "/como-viajas", needOne: "Elige un destino para seguir" },
     recurrent: {
       kicker: "Nuestros más recurrentes",
       title: ["Doce sitios que nos", "piden una y otra vez."],
       text: "No son los únicos, montamos donde haga falta, pero de estos nos sabemos las temporadas, los horarios y a quién hay que llamar. Elige uno para ver su ficha.",
     },
-    add: "Añadir a mi lista",
-    remove: "Quitar de mi lista",
+    add: "Elegir este destino",
+    remove: "Quitar este destino",
   },
   contact: {
     kicker: "03 — Contacto",

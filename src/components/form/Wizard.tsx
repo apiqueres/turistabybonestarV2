@@ -52,7 +52,8 @@ export function Wizard({ content, destinations, brand }: Props) {
     const selection = readJSON<string[]>(KEYS.selection, []);
     const next: Answers = { ...saved };
     const prev = Array.isArray(saved.destinos) ? (saved.destinos as string[]) : [];
-    if (selection.length || prev.length) next.destinos = Array.from(new Set([...prev, ...selection]));
+    // One destination: the map choice wins over an older stored answer.
+    if (selection.length || prev.length) next.destinos = (selection.length ? selection : prev).slice(0, 1);
     delete next.indeciso;
     writeJSON(KEYS.form, next);
   }, [hydrated, params]);

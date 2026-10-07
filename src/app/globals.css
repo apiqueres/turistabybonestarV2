@@ -1096,7 +1096,9 @@ html.reduced-motion .hero-el {
 }
 .map-canvas {
   position: relative;
-  width: 100%;
+  /* never taller than ~55% of the viewport: the 2:1 map is capped by width */
+  width: min(100%, 110vh);
+  margin: 0 auto;
 }
 @media (max-width: 900px) {
   .map-canvas {
