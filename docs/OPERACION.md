@@ -1,6 +1,6 @@
 # Guía de operación · TuristaByBonestar
 
-Cómo se maneja la web en el VPS en el día a día. Todo se ejecuta desde la carpeta del proyecto (por defecto `/opt/turistabybonestar`), donde están `docker-compose.yml` y `.env`.
+Cómo se maneja la web en el VPS en el día a día. Todo se ejecuta desde la carpeta del proyecto (en este servidor, `/opt/turistabybonestar/turistabybonestarV2`), donde están `docker-compose.yml` y `.env`.
 
 ## Entrar al panel
 
@@ -54,7 +54,7 @@ Para crear un segundo administrador, inserta otra fila en `AdminUser` con su `em
 `deploy/backup.sh` hace un `pg_dump` del contenedor `db` y un `tar` de `data/uploads`, y borra lo que tenga más de 14 días (`BACKUP_KEEP_DAYS` en `.env` para cambiarlo). Programado en el cron del host:
 
 ```
-15 3 * * * cd /opt/turistabybonestar && ./deploy/backup.sh >> backups/backup.log 2>&1
+15 3 * * * cd /opt/turistabybonestar/turistabybonestarV2 && ./deploy/backup.sh >> backups/backup.log 2>&1
 ```
 
 Comprueba de vez en cuando que `backups/` tiene ficheros recientes y copia la carpeta fuera del servidor (rsync, Backblaze, Drive…): una copia en el mismo disco no protege contra la pérdida del VPS.
@@ -80,7 +80,7 @@ Servidor nuevo desde cero: clona el repositorio, copia `.env` y la carpeta `back
 ## Actualizar la web
 
 ```bash
-cd /opt/turistabybonestar
+cd /opt/turistabybonestar/turistabybonestarV2
 git pull
 docker compose up -d --build
 docker compose logs -f web      # hasta ver "Ready"

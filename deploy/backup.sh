@@ -2,7 +2,7 @@
 # Copia diaria: volcado de PostgreSQL (pg_dump del contenedor `db`) + tar de data/uploads.
 # Retención: 14 días. Ejecutar desde la carpeta del proyecto (donde está docker-compose.yml).
 #
-#   crontab -e   →   15 3 * * * cd /opt/turistabybonestar && ./deploy/backup.sh >> backups/backup.log 2>&1
+#   crontab -e   →   15 3 * * * cd /opt/turistabybonestar/turistabybonestarV2 && ./deploy/backup.sh >> backups/backup.log 2>&1
 #
 # Restaurar la base de datos (¡sobrescribe la actual!):
 #   gunzip -c backups/db-AAAA-MM-DD.sql.gz | docker compose exec -T db psql -U "$POSTGRES_USER" -d "$POSTGRES_DB"

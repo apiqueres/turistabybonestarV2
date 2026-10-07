@@ -154,12 +154,12 @@ y devuélvelos a su sitio; el resultado queda en `out/`.
 ## Despliegue en el VPS (Docker Compose + Nginx)
 
 1. Instala Docker (con el plugin Compose) y Nginx en el servidor y apunta el dominio a su IP.
-2. Clona el proyecto en `/opt/turistabybonestar` y crea `.env` a partir de `.env.example`: `POSTGRES_PASSWORD`, `DATABASE_URL` (con esa misma contraseña y host `db`), `AUTH_SECRET` (`openssl rand -base64 32`), `ADMIN_EMAIL`/`ADMIN_PASSWORD` (solo para el primer arranque), `SMTP_*`, `MAIL_FROM`, `MAIL_AGENCY`, `NEXT_PUBLIC_SITE_URL`, `AUTH_URL`.
+2. Clona el proyecto (en este servidor está en `/opt/turistabybonestar/turistabybonestarV2`) y crea `.env` a partir de `.env.example`: `POSTGRES_PASSWORD`, `DATABASE_URL` (con esa misma contraseña y host `db`), `AUTH_SECRET` (`openssl rand -base64 32`), `ADMIN_EMAIL`/`ADMIN_PASSWORD` (solo para el primer arranque), `SMTP_*`, `MAIL_FROM`, `MAIL_AGENCY`, `NEXT_PUBLIC_SITE_URL`, `AUTH_URL`.
 3. Si tienes solicitudes de la versión anterior, deja sus JSON en `data/solicitudes/` y `data/contacto/`: el seed los importa.
 4. Construye y arranca: `docker compose up -d --build`. El contenedor `web` espera a que `db` esté sano, ejecuta `prisma migrate deploy`, el seed (idempotente) y arranca Next en `127.0.0.1:3000`. Comprueba `curl localhost:3000/api/health`.
 5. Copia `deploy/nginx.conf` a `/etc/nginx/sites-available/`, ajusta el dominio y la ruta del `alias` de `/uploads/`, enlázalo en `sites-enabled` y recarga Nginx.
 6. Certificado TLS: `sudo certbot --nginx -d turistabybonestar.com -d www.turistabybonestar.com`.
-7. Copias de seguridad: `crontab -e` → `15 3 * * * cd /opt/turistabybonestar && ./deploy/backup.sh >> backups/backup.log 2>&1` (volcado diario de PostgreSQL + tar de `data/uploads`, retención 14 días).
+7. Copias de seguridad: `crontab -e` → `15 3 * * * cd /opt/turistabybonestar/turistabybonestarV2 && ./deploy/backup.sh >> backups/backup.log 2>&1` (volcado diario de PostgreSQL + tar de `data/uploads`, retención 14 días).
 8. Entra en `https://turistabybonestar.com/admin/login` con `ADMIN_EMAIL`/`ADMIN_PASSWORD` y cambia la contraseña en **Cuenta**.
 
 Para actualizar: `git pull && docker compose up -d --build`. La base de datos (volumen `pgdata`) y `data/uploads` sobreviven a los redespliegues y a los reinicios del servidor (`restart: unless-stopped`). Registro: `docker compose logs -f web`.
