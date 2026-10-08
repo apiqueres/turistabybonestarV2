@@ -5,7 +5,7 @@ import type { RequestStatus, StoredRequest } from "@/types/admin";
 import type { FormStep } from "@/types/form";
 import type { EmailBrand } from "@/lib/email-shell";
 import { buildPrompt } from "@/lib/prompt";
-import { clientConfirmationEmail, openPreview } from "@/lib/email-templates";
+import { clientMessageEmail, defaultAdminMessage } from "@/lib/email-templates";
 import { ArrowRight } from "@/components/ui/icons";
 import { MessageComposer } from "./MessageComposer";
 import type { RequestsStore } from "./sources";
@@ -60,14 +60,10 @@ export function RequestDetail({ request: r, steps, brand, store, onDeleted }: Pr
     if (notes === (r.notes ?? "")) return;
     void run(() => store.update(r.id, { notes }), "Notas guardadas.");
   };
-  const download = () => {
-    const url = URL.createObjectURL(new Blob([brief], { type: "text/plain;charset=utf-8" }));
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = `${r.id}.txt`;
-    a.click();
-    URL.revokeObjectURL(url);
-  };
+  const copyBrief = () =>
+    void run(async () => {
+      await navigator.clipboard.writeText(brief);
+    }, "Brief copiado al portapapeles.").catch(() => setState("No se pudo copiar; selecciona el texto y cópialo a mano."));
   const remove = () => {
     if (!window.confirm(`¿Eliminar definitivamente la solicitud de ${r.data.contacto.nombre}? Se borran sus datos personales y los correos registrados.`)) return;
     void run(async () => {
@@ -138,15 +134,12 @@ export function RequestDetail({ request: r, steps, brand, store, onDeleted }: Pr
             {composing ? "Cerrar mensaje" : "Escribir al cliente"}
             <ArrowRight className="btn-icon" />
           </button>
-          <button type="button" className="btn btn-secondary btn-sm" onClick={download}>Descargar brief .txt</button>
-          <button type="button" className="btn btn-secondary btn-sm" onClick={() => openPreview(clientConfirmationEmail(r.id, r.data, brand))}>
-            Ver correo de confirmación
-          </button>
+          <button type="button" className="btn btn-secondary btn-sm" onClick={copyBrief}>Copiar brief para el gestor</button>
           <button type="button" className="btn btn-secondary btn-sm" onClick={remove}>Eliminar solicitud</button>
           {state && <span className="form-status">{state}</span>}
         </div>
         {composing ? (
-          <MessageComposer key={r.id} request={r} brand={brand} mode={store.mode} send={(msg) => store.sendMessage(r, msg, brand)} />
+          <MessageComposer key={r.id} to={r.data.contacto.email} initial={defaultAdminMessage(r.data, brand)} render={(m) => clientMessageEmail(r.id, r.data, m, brand)} mode={store.mode} send={(msg) => store.sendMessage(r, msg, brand)} />
         ) : (
           <div>
             <span className="lbl">Brief para el gestor</span>

@@ -66,6 +66,10 @@ export interface Offer {
   includes: string[];
   image: Media;
   badge?: string;
+  /** Promoción de portada (como mucho una; lo garantiza el servidor). */
+  promo: boolean;
+  /** Texto de la barra de portada; vacío = "Título · desde Precio". */
+  promoText?: string;
   active: boolean;
 }
 
@@ -114,8 +118,6 @@ export interface SiteContent {
       meta: string;
       image: Media;
       paragraph: string;
-      stats: [Stat, Stat];
-      partners: string[];
     };
     dimensions: { kicker: string; text: string; items: { label: string; step: number }[] };
     pain: { kicker: string; statement: [string, string]; items: string[]; answer: string; quote: string; author: string; meta: string };
@@ -132,7 +134,6 @@ export interface SiteContent {
     list: { label: string; empty: string; cta: string; ctaHref: string; needOne: string };
     recurrent: { kicker: string; title: [string, string]; text: string };
     add: string;
-    remove: string;
   };
   contact: {
     kicker: string;
@@ -160,4 +161,6 @@ export interface SiteContent {
   };
   destinations: Destination[];
   offersList: Offer[];
+  /** Oferta activa marcada como promoción de portada, o null. */
+  promo: Offer | null;
 }

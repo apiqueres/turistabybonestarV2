@@ -4,9 +4,10 @@ import { useState } from "react";
 import type { Destination, Offer } from "@/types/content";
 import { pickImage } from "@/lib/admin/image";
 import { imgSrc } from "./DestinationEditor";
+import { slugify } from "@/lib/slug";
 import { ArrowRight } from "@/components/ui/icons";
 
-export const EMPTY_OFFER: Offer = { id: "", title: "", destinationId: "", price: "", priceNote: "por persona", dates: "", duration: "", text: "", includes: [], image: { src: "", alt: "" }, badge: "", active: true };
+export const EMPTY_OFFER: Offer = { id: "", title: "", destinationId: "", price: "", priceNote: "por persona", dates: "", duration: "", text: "", includes: [], image: { src: "", alt: "" }, badge: "", promo: false, promoText: "", active: true };
 
 interface Props {
   initial: Offer;
@@ -19,7 +20,6 @@ interface Props {
   mode?: "db" | "demo";
 }
 
-const slug = (s: string) => s.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "");
 
 /** Inline editor for one seasonal offer. */
 export function OfferEditor({ initial, destinations, isNew, onSave, onDelete, onCancel, onMove, mode = "demo" }: Props) {
@@ -46,7 +46,7 @@ export function OfferEditor({ initial, destinations, isNew, onSave, onDelete, on
   };
   const save = () => {
     if (!o.title || !o.price || !o.destinationId) return setMsg("Faltan el título, el precio y el destino.");
-    onSave({ ...o, id: o.id || slug(o.title) || `oferta-${Date.now()}` });
+    onSave({ ...o, id: o.id || slugify(o.title) || `oferta-${Date.now()}` });
   };
 
   return (
@@ -67,6 +67,23 @@ export function OfferEditor({ initial, destinations, isNew, onSave, onDelete, on
           <input type="checkbox" checked={o.active} onChange={(e) => field("active", e.target.checked)} />
           <span>Oferta activa (visible en la web)</span>
         </label>
+        <label className="check">
+          <input type="checkbox" checked={o.promo} onChange={(e) => field("promo", e.target.checked)} />
+          <span>Mostrar como aviso en la portada (solo puede haber una)</span>
+        </label>
+        {o.promo && (
+          <div>
+            <label className="lbl" htmlFor={`opt-${k}`}>Texto del aviso</label>
+            <input
+              id={`opt-${k}`}
+              className="input"
+              value={o.promoText ?? ""}
+              onChange={(e) => field("promoText", e.target.value)}
+              placeholder={`Si lo dejas vacío: «${o.title || "Título"} · desde ${o.price || "Precio"}»`}
+            />
+            {!o.active && <span className="t-small t-muted">La oferta está oculta: el aviso no saldrá hasta que la actives.</span>}
+          </div>
+        )}
       </div>
       <div className="flex flex-col gap-4 min-w-0">
         <div className="grid grid-cols-2 gap-4">

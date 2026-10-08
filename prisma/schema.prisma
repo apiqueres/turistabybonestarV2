@@ -59,6 +59,9 @@ model Offer {
   imageSrc      String
   imageAlt      String
   badge         String?
+  /// Promoción de portada: como mucho una (lo garantiza upsertOffer). promoText vacío = "Título · desde Precio".
+  promo         Boolean     @default(false)
+  promoText     String?
   active        Boolean     @default(true)
   sortOrder     Int         @default(0)
   updatedAt     DateTime    @updatedAt

@@ -23,7 +23,7 @@ export function OffersAdmin({ store, destinations }: { store: ListStore<Offer>; 
       await store.save(o);
       setOpenId(null);
       setAdding(false);
-      setMsg(`«${o.title}» guardada${where}. La página de ofertas ya la muestra.`);
+      setMsg(`«${o.title}» guardada${where}. La página de ofertas ya la muestra.${o.promo ? " Ahora es la promoción de portada." : ""}`);
     } catch (err) {
       setMsg(err instanceof Error ? err.message : "No se pudo guardar.");
     }
@@ -90,7 +90,10 @@ export function OffersAdmin({ store, destinations }: { store: ListStore<Offer>; 
                     <td>{destName(o.destinationId)}</td>
                     <td className="whitespace-nowrap">{o.price}</td>
                     <td>{o.dates}</td>
-                    <td>{o.active ? <span className="badge nueva">Activa</span> : <span className="badge cerrada">Oculta</span>}</td>
+                    <td className="whitespace-nowrap">
+                      {o.active ? <span className="badge nueva">Activa</span> : <span className="badge cerrada">Oculta</span>}
+                      {o.promo && <span className="badge promo-badge ml-2">Portada</span>}
+                    </td>
                   </tr>
                   {isOpen && (
                     <tr className="detail-row">

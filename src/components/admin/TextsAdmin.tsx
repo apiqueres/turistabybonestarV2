@@ -11,6 +11,8 @@ export interface TextBlock {
   label: string;
   data: Json;
   updatedAt?: string;
+  /** Listas de longitud fija del bloque (ver fixedListPaths): sin añadir ni quitar. */
+  fixedLists?: string[];
 }
 
 const fmtDate = (iso?: string) => (iso ? new Date(iso).toLocaleString("es-ES", { dateStyle: "medium", timeStyle: "short" }) : "Sin cambios");
@@ -82,7 +84,7 @@ export function TextsAdmin({ blocks }: { blocks: TextBlock[] }) {
                     <tr className="detail-row">
                       <td colSpan={3}>
                         <div className="detail" style={{ gridTemplateColumns: "1fr" }}>
-                          <BlockEditor value={draft} onChange={setDraft} blockKey={b.key} />
+                          <BlockEditor value={draft} onChange={setDraft} blockKey={b.key} fixedLists={b.fixedLists} />
                           <div className="flex flex-wrap gap-3 items-center rule pt-4">
                             <button type="button" className="btn btn-primary btn-sm" onClick={() => save(b)} disabled={busy}>
                               Guardar

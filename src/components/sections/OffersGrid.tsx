@@ -46,7 +46,7 @@ export function OffersGrid({ content, offers: serverOffers, communityHref }: Pro
           ) : (
             <div className="dest-grid" data-cascade>
               {active.map((o) => (
-                <article key={o.id} className="card dest-card" data-cascade-item>
+                <article key={o.id} id={`oferta-${o.id}`} className="card dest-card" data-cascade-item>
                   <div className="media" style={{ aspectRatio: "4 / 3" }}>
                     <div className="media-inner">
                       {o.image.src.startsWith("data:") ? (

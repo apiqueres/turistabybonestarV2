@@ -32,7 +32,7 @@ export function StepView({ step, steps, answers, setAnswer, destinations, showSu
         </div>
         <div className="flex flex-col gap-12">
           {step.questions.map((q) => (
-            <QuestionField key={q.id} question={q} answers={answers} setAnswer={setAnswer} destinations={destinations} />
+            <QuestionField key={q.id} question={q} answers={answers} setAnswer={setAnswer} destinations={destinations} siblings={step.questions} />
           ))}
         </div>
       </div>

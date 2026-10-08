@@ -7,7 +7,7 @@ import type { Destination, SiteContent } from "@/types/content";
 import { useMotion } from "@/lib/useMotion";
 import { ScrubHeading } from "@/components/motion/ScrubHeading";
 import { SectionLabel } from "@/components/layout/SectionLabel";
-import { ArrowRight, WhatsApp } from "@/components/ui/icons";
+import { ArrowRight } from "@/components/ui/icons";
 import { destinationMessage, waHref } from "@/lib/whatsapp";
 
 interface Props {
@@ -42,7 +42,7 @@ export function DestinationsGrid({ data, items, whatsapp }: Props) {
                     <Image src={d.image.src} alt={d.image.alt} fill sizes="(max-width: 900px) 100vw, 33vw" className="object-cover" />
                   </div>
                 </div>
-                <div className="pt-6 md:px-6">
+                <div className="pt-6 px-5 md:px-6">
                   <div className="flex items-baseline justify-between gap-4">
                     <h3 className="t-h3">{d.name}</h3>
                     <span className="t-small t-muted whitespace-nowrap">{d.duration}</span>
@@ -54,10 +54,9 @@ export function DestinationsGrid({ data, items, whatsapp }: Props) {
                   </div>
                 </div>
               </Link>
-              <div className="pt-5 pb-8 md:px-6">
+              <div className="pt-5 pb-8 px-5 md:px-6 flex justify-center md:justify-start">
                 <a href={waHref(whatsapp, destinationMessage(d.name))} target="_blank" rel="noreferrer" className="btn btn-primary btn-sm">
                   Escribir por WhatsApp
-                  <WhatsApp className="btn-icon" />
                 </a>
               </div>
             </article>

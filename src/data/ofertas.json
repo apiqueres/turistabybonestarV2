@@ -11,6 +11,7 @@
     "includes": ["Vuelo directo desde Valencia o Madrid", "Hotel 5* todo incluido en Bávaro", "Traslados y seguro de viaje"],
     "image": { "src": "/media/real-punta-cana.webp", "alt": "Playa de Bávaro, Punta Cana" },
     "badge": "Temporada",
+    "promo": false,
     "active": true
   },
   {
@@ -25,6 +26,7 @@
     "includes": ["Vuelo directo y traslados", "Riad en la medina y jaima en el desierto", "Guía en castellano todo el viaje"],
     "image": { "src": "/media/real-marruecos.webp", "alt": "Caravana en las dunas de Erg Chebbi" },
     "badge": "Puentes",
+    "promo": false,
     "active": true
   },
   {
@@ -38,6 +40,7 @@
     "text": "El Cairo, Giza y cuatro noches de crucero de Luxor a Asuán con todas las visitas incluidas y guía egiptólogo.",
     "includes": ["Vuelos y traslados", "Crucero 5* de Luxor a Asuán en pensión completa", "Visitas con guía egiptólogo"],
     "image": { "src": "/media/real-egipto.webp", "alt": "Pirámides de Giza" },
+    "promo": false,
     "active": true
   },
   {
@@ -52,6 +55,7 @@
     "includes": ["Vuelos internacionales e internos", "Hoteles 4* con desayuno", "Excursiones principales y traslados"],
     "image": { "src": "/media/real-tailandia.webp", "alt": "Gran Palacio de Bangkok" },
     "badge": "Viaje estrella",
+    "promo": false,
     "active": true
   }
 ]

@@ -14,6 +14,7 @@ export function DestinationsAdmin({ store }: { store: ListStore<Destination> }) 
   const [page, setPage] = useState(1);
   const [msg, setMsg] = useState<string | null>(null);
   const { rows, current } = paginate(destinations, page);
+  const taken = new Map(destinations.map((d) => [d.id, d.name]));
   const where = store.mode === "demo" ? " en este navegador" : "";
 
   const persist = async (d: Destination, previousId?: string) => {
@@ -66,7 +67,7 @@ export function DestinationsAdmin({ store }: { store: ListStore<Destination> }) 
       </div>
       <div className="card overflow-x-auto">
         {adding && (
-          <DestinationEditor key="new" initial={EMPTY_DESTINATION} isNew mode={store.mode} onSave={(d) => persist(d)} onCancel={() => setAdding(false)} />
+          <DestinationEditor key="new" initial={EMPTY_DESTINATION} isNew mode={store.mode} taken={taken} onSave={(d) => persist(d)} onCancel={() => setAdding(false)} />
         )}
         <table className="table">
           <thead>
@@ -99,6 +100,7 @@ export function DestinationsAdmin({ store }: { store: ListStore<Destination> }) 
                           key={d.id}
                           initial={d}
                           mode={store.mode}
+                          taken={taken}
                           onSave={(next) => persist(next, d.id)}
                           onDelete={() => remove(d)}
                           onCancel={() => setOpenId(null)}

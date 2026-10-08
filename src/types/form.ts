@@ -31,7 +31,7 @@ export type SetAnswer = (id: string, input: SetAnswerInput) => void;
 
 export interface FormContent {
   header: { stepLabel: string; exit: string };
-  nav: { back: string; backToMap: string; next: string; enterHint: string; missing: string; missingDestination: string; submit: string };
+  nav: { back: string; backToMap: string; next: string; enterHint: string; missing: string; missingDestination: string; datesOrder: string; submit: string };
   steps: FormStep[];
   summary: { title: string; empty: string };
   success: { kicker: string; title: [string, string]; text: string; reference: string; home: Link; map: Link };

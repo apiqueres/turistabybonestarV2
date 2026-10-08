@@ -26,7 +26,7 @@ const hasDatabase = () => Boolean(process.env.DATABASE_URL);
  * o un despliegue sin migrar nunca deja la web sin contenido). Cacheado por etiqueta.
  */
 async function loadFromDatabase(): Promise<{ site: SiteContent; form: FormContent }> {
-  const [{ unstable_cache }, { listDestinations }, { listOffers }, { getFormSteps }, { getSettings }] = await Promise.all([
+  const [{ unstable_cache }, { listDestinations }, { listOffers, getPromoOffer }, { getFormSteps }, { getSettings }] = await Promise.all([
     import("next/cache"),
     import("./repo/destinos"),
     import("./repo/ofertas"),
@@ -35,9 +35,9 @@ async function loadFromDatabase(): Promise<{ site: SiteContent; form: FormConten
   ]);
   const cached = unstable_cache(
     async () => {
-      const [destinations, offersList, steps, settings] = await Promise.all([listDestinations(), listOffers(), getFormSteps(), getSettings()]);
+      const [destinations, offersList, promo, steps, settings] = await Promise.all([listDestinations(), listOffers(), getPromoOffer(), getFormSteps(), getSettings()]);
       const home = { ...siteContent.home };
-      const site: SiteContent = { ...siteContent, home, destinations, offersList };
+      const site: SiteContent = { ...siteContent, home, destinations, offersList, promo };
       for (const [key, data] of Object.entries(settings)) {
         if (data == null) continue;
         if (key.startsWith("home.")) (home as unknown as Record<string, unknown>)[key.slice(5)] = data;

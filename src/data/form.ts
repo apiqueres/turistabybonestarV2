@@ -10,6 +10,7 @@ export const formContent: FormContent = {
     enterHint: "",
     missing: "Faltan los campos con *",
     missingDestination: "Elige un destino para seguir",
+    datesOrder: "La fecha de vuelta debe ser posterior a la de salida",
     submit: "Enviar mi solicitud",
   },
   summary: { title: "Tu viaje", empty: "Sin respuesta" },

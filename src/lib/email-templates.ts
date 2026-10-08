@@ -1,4 +1,4 @@
-import type { SolicitudInput } from "./validation";
+import type { ContactoInput, SolicitudInput } from "./validation";
 import { summarize } from "./prompt";
 import { renderEmailHtml, renderEmailText, type EmailBlock, type EmailBrand, type EmailSpec } from "./email-shell";
 import { BASE_PATH } from "./config";
@@ -82,6 +82,34 @@ export function defaultAdminMessage(s: SolicitudInput, brand: EmailBrand): Admin
   return {
     subject: `Tu propuesta para ${destinos}`,
     message: `Hola, ${firstName(s.contacto.nombre)}.\n\nHemos revisado lo que nos contaste y ya estamos trabajando en una primera propuesta para ${destinos}. Antes de cerrarla nos gustaría confirmar contigo un par de detalles.\n\n¿Te viene bien que te llamemos esta semana? Dinos qué día y franja te encaja.`,
+    signature: `Un saludo,\nEl equipo de ${brand.name}`,
+    includeSummary: false,
+  };
+}
+
+/** Reply written by the agency to a message from the short contact form, in the same template. */
+export function contactReplyEmail(id: string, c: ContactoInput, msg: AdminMessage, brand: EmailBrand): RenderedEmail {
+  const paragraphs = msg.message.split(/\n{2,}/).map((t) => t.trim()).filter(Boolean);
+  const spec: EmailSpec = {
+    preheader: paragraphs[0]?.slice(0, 120) ?? msg.subject,
+    kicker: `Sobre tu mensaje · Ref. ${id}`,
+    title: msg.subject,
+    blocks: [
+      ...paragraphs.map((text) => ({ kind: "p" as const, text })),
+      ...(msg.includeSummary ? [{ kind: "note" as const, title: "Tu mensaje", items: c.mensaje.split(/\n+/).map((l) => l.trim()).filter(Boolean) }] : []),
+      { kind: "signature", lines: msg.signature.split("\n").map((l) => l.trim()).filter(Boolean) },
+    ],
+    brand,
+    siteUrl: siteUrl(),
+  };
+  return { subject: msg.subject, html: renderEmailHtml(spec), text: renderEmailText(spec) };
+}
+
+/** Default draft when replying to a contact message. */
+export function defaultContactReply(c: ContactoInput, brand: EmailBrand): AdminMessage {
+  return {
+    subject: `Respuesta a tu mensaje · ${brand.name}`,
+    message: `Hola, ${firstName(c.nombre)}.\n\nGracias por escribirnos. Hemos leído tu mensaje y te contestamos a continuación.\n\n`,
     signature: `Un saludo,\nEl equipo de ${brand.name}`,
     includeSummary: false,
   };

@@ -132,7 +132,11 @@ export function OffersDemo() {
     mode: "demo",
     dirty,
     reset,
-    save: async (o) => save(offers.some((x) => x.id === o.id) ? offers.map((x) => (x.id === o.id ? o : x)) : [o, ...offers]),
+    save: async (o) => {
+      // Solo una promoción de portada, como hace el servidor.
+      const rest = offers.map((x) => (x.id === o.id ? o : o.promo ? { ...x, promo: false } : x));
+      save(offers.some((x) => x.id === o.id) ? rest : [o, ...rest]);
+    },
     remove: async (id) => save(offers.filter((x) => x.id !== id)),
     reorder: async (ids) => save(ids.map((id) => offers.find((x) => x.id === id)).filter((x): x is Offer => Boolean(x))),
   };

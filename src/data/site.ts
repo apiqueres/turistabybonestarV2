@@ -66,11 +66,6 @@ export const siteContent: SiteContent = {
       image: { src: "/media/about.webp", alt: "Viajero contemplando un valle de montaña al amanecer" },
       paragraph:
         "Diriges tu negocio con el alma. Trabajas los siete días de la semana y te has perdido cumpleaños, comuniones y navidades. El dinero nunca ha sido el problema: el problema es encontrar el momento y, cuando por fin llega, que organizarlo no te agote. Para eso estamos nosotros. Tú eliges el destino y las fechas; el viaje entero, con alojamientos, traslados y reservas, lo montamos nosotros y te lo entregamos listo.",
-      stats: [
-        { value: 60, suffix: "+", label: "Países" },
-        { value: 12000, suffix: "+", label: "Viajeros" },
-      ],
-      partners: ["Aerolíneas del Sur", "Hotelia", "Nomad Cover", "RailEuropa", "GlobalStay"],
     },
     dimensions: {
       kicker: "Lo que te preguntamos",
@@ -170,7 +165,6 @@ export const siteContent: SiteContent = {
       text: "No son los únicos, montamos donde haga falta, pero de estos nos sabemos las temporadas, los horarios y a quién hay que llamar. Elige uno para ver su ficha.",
     },
     add: "Elegir este destino",
-    remove: "Quitar este destino",
   },
   contact: {
     kicker: "03 — Contacto",
@@ -215,4 +209,5 @@ export const siteContent: SiteContent = {
   },
   destinations,
   offersList: ofertas,
+  promo: ofertas.find((o) => o.promo && o.active) ?? null,
 };

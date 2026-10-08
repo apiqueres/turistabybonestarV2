@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
-import type { Answers, AnswerValue, FormContent, SetAnswerInput } from "@/types/form";
+import type { Answers, AnswerValue, FormContent, FormStep, SetAnswerInput } from "@/types/form";
 import type { Destination } from "@/types/content";
 import { KEYS, readJSON, removeKey, usePersistedState, writeJSON } from "@/lib/storage";
 import { ArrowRight } from "@/components/ui/icons";
@@ -21,12 +21,17 @@ interface Props {
   brand: EmailBrand;
 }
 
-type Status = { kind: "idle" | "sending" | "missing" | "missingDestination" | "error" } | { kind: "done"; id: string; prompt?: string; payload: SolicitudPayload };
+type Status = { kind: "idle" | "sending" | "missing" | "missingDestination" | "datesOrder" | "error" } | { kind: "done"; id: string; prompt?: string; payload: SolicitudPayload };
 type SolicitudPayload = { destinos: { id: string; nombre: string }[]; respuestas: Answers; contacto: { nombre: string; email: string; telefono: string; canal: string; privacidad: true } };
 const PROCESSING_MS = 2000;
 const delay = (ms: number) => new Promise((r) => window.setTimeout(r, ms));
 const CONTACT_KEYS = ["nombre", "email", "telefono", "canal", "privacidad"];
 const hasDestination = (a: Answers) => Array.isArray(a.destinos) && a.destinos.length > 0;
+/** The date answers of a step, in question order, must be strictly increasing (departure before return). */
+const datesInOrder = (step: FormStep, a: Answers) => {
+  const values = step.questions.filter((q) => q.kind === "date").map((q) => a[q.id]).filter((v): v is string => typeof v === "string" && v !== "");
+  return values.every((v, i) => i === 0 || values[i - 1] < v);
+};
 const pad = (n: number) => String(n).padStart(2, "0");
 const EMPTY: Answers = {};
 
@@ -85,6 +90,10 @@ export function Wizard({ content, destinations, brand }: Props) {
       setStatus({ kind: "missingDestination" });
       return;
     }
+    if (!steps.every((s) => datesInOrder(s, answers))) {
+      setStatus({ kind: "datesOrder" });
+      return;
+    }
     const nombre = String(answers.nombre ?? "").trim();
     const email = String(answers.email ?? "").trim();
     const telefono = String(answers.telefono ?? "").trim();
@@ -140,6 +149,10 @@ export function Wizard({ content, destinations, brand }: Props) {
   const next = () => {
     if (step === 0 && !hasDestination(answers)) {
       setStatus({ kind: "missingDestination" });
+      return;
+    }
+    if (!datesInOrder(steps[step], answers)) {
+      setStatus({ kind: "datesOrder" });
       return;
     }
     if (lastStep) void submit();
@@ -236,9 +249,10 @@ export function Wizard({ content, destinations, brand }: Props) {
             {content.nav.back}
           </button>
         )}
-        <div className="flex items-center gap-6 flex-wrap">
+        <div className="flex items-center justify-center md:justify-end gap-6 flex-wrap">
           {status.kind === "missing" && <span className="form-status normal-case tracking-normal">{content.nav.missing}</span>}
           {status.kind === "missingDestination" && <span className="form-status normal-case tracking-normal">{content.nav.missingDestination}</span>}
+          {status.kind === "datesOrder" && <span className="form-status normal-case tracking-normal">{content.nav.datesOrder}</span>}
           {status.kind === "error" && <span className="form-status normal-case tracking-normal">{content.error}</span>}
           <span className="t-muted hidden md:inline">{content.nav.enterHint}</span>
           <button type="button" className="btn btn-primary btn-sm" onClick={next} disabled={status.kind === "sending"}>

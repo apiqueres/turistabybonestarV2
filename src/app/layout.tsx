@@ -4,6 +4,7 @@ import "./globals.css";
 import { Loader } from "@/components/motion/Loader";
 import { RouteTransition } from "@/components/motion/RouteTransition";
 import { WhatsAppFab } from "@/components/layout/WhatsAppFab";
+import { CookieBanner } from "@/components/layout/CookieBanner";
 import { connection } from "next/server";
 import { getSiteContent } from "@/lib/content";
 import { STATIC_DEMO } from "@/lib/config";
@@ -60,6 +61,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
         <RouteTransition />
         {children}
         <WhatsAppFab phone={brand.whatsapp} communityName={brand.communityName} communityUrl={brand.communityUrl} />
+        <CookieBanner />
       </body>
     </html>
   );

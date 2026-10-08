@@ -2,7 +2,7 @@ import "server-only";
 import nodemailer, { type Transporter } from "nodemailer";
 import type { EmailBrand } from "./email-shell";
 import type { ContactoInput, SolicitudInput } from "./validation";
-import { agencyContactEmail, agencyRequestEmail, clientConfirmationEmail, clientMessageEmail, type AdminMessage, type RenderedEmail } from "./email-templates";
+import { agencyContactEmail, agencyRequestEmail, clientConfirmationEmail, clientMessageEmail, contactReplyEmail, type AdminMessage, type RenderedEmail } from "./email-templates";
 import { logMessage } from "./repo/solicitudes";
 
 /**
@@ -89,4 +89,9 @@ export function notifyAgencyContact(id: string, data: ContactoInput, brand: Emai
 /** Mensaje libre del gestor al cliente, desde el panel. */
 export function sendClientMessage(id: string, data: SolicitudInput, msg: AdminMessage, brand: EmailBrand) {
   return sendAndLog("admin", rendered(clientMessageEmail(id, data, msg, brand), data.contacto.email, brand.email), id);
+}
+
+/** Respuesta desde el panel a un mensaje del formulario de contacto (sin solicitud asociada en el registro). */
+export function sendContactReply(id: string, data: ContactoInput, msg: AdminMessage, brand: EmailBrand) {
+  return sendAndLog("admin", rendered(contactReplyEmail(id, data, msg, brand), data.email, brand.email));
 }

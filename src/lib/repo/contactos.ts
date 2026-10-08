@@ -30,6 +30,11 @@ export async function listContactos(opts: { page?: number; pageSize?: number; pe
   return { rows: rows.map(toFront), total, page, pageSize, pending };
 }
 
+export async function getContacto(id: string): Promise<StoredContact | null> {
+  const row = await db().contacto.findUnique({ where: { id } });
+  return row ? toFront(row) : null;
+}
+
 export async function setContactoHandled(id: string, handled: boolean): Promise<StoredContact> {
   return toFront(await db().contacto.update({ where: { id }, data: { handled } }));
 }

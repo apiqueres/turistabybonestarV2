@@ -4,8 +4,11 @@ import { Fragment, useState } from "react";
 import { useRouter } from "next/navigation";
 import type { StoredContact } from "@/types/admin";
 import { api } from "@/lib/admin/api";
+import type { EmailBrand } from "@/lib/email-shell";
+import { contactReplyEmail, defaultContactReply } from "@/lib/email-templates";
 import { ArrowRight } from "@/components/ui/icons";
 import { Pager } from "./Pager";
+import { MessageComposer } from "./MessageComposer";
 
 const fmtDate = (iso: string) => new Date(iso).toLocaleString("es-ES", { dateStyle: "medium", timeStyle: "short" });
 
@@ -15,12 +18,14 @@ interface Props {
   page: number;
   pending: number;
   onlyPending: boolean;
+  brand: EmailBrand;
 }
 
 /** Mensajes del formulario corto de contacto: listado paginado con detalle en línea. */
-export function ContactsAdmin({ rows, total, page, pending, onlyPending }: Props) {
+export function ContactsAdmin({ rows, total, page, pending, onlyPending, brand }: Props) {
   const router = useRouter();
   const [openId, setOpenId] = useState<string | null>(null);
+  const [composing, setComposing] = useState(false);
   const [msg, setMsg] = useState<string | null>(null);
   const url = (p: number, pend: boolean) => `/admin/contactos${[p > 1 ? `page=${p}` : "", pend ? "pendientes=1" : ""].filter(Boolean).length ? `?${[p > 1 ? `page=${p}` : "", pend ? "pendientes=1" : ""].filter(Boolean).join("&")}` : ""}`;
 
@@ -66,7 +71,7 @@ export function ContactsAdmin({ rows, total, page, pending, onlyPending }: Props
               const isOpen = c.id === openId;
               return (
                 <Fragment key={c.id}>
-                  <tr className={`is-clickable ${isOpen ? "is-open" : ""}`} onClick={() => setOpenId(isOpen ? null : c.id)} aria-expanded={isOpen}>
+                  <tr className={`is-clickable ${isOpen ? "is-open" : ""}`} onClick={() => { setOpenId(isOpen ? null : c.id); setComposing(false); }} aria-expanded={isOpen}>
                     <td className="whitespace-nowrap">{fmtDate(c.createdAt)}</td>
                     <td>{c.data.nombre}</td>
                     <td className="break-all">{c.data.email}</td>
@@ -83,16 +88,31 @@ export function ContactsAdmin({ rows, total, page, pending, onlyPending }: Props
                             <pre className="pre" style={{ whiteSpace: "pre-wrap" }}>{c.data.mensaje}</pre>
                           </div>
                           <div className="flex flex-wrap gap-3 items-center">
-                            <a className="btn btn-primary btn-sm" href={`mailto:${encodeURIComponent(c.data.email)}?subject=${encodeURIComponent(`Re: tu mensaje a TuristaByBonestar`)}`}>
-                              Responder por correo
+                            <button type="button" className="btn btn-primary btn-sm" onClick={() => setComposing((v) => !v)}>
+                              {composing ? "Cerrar mensaje" : "Escribir al cliente"}
                               <ArrowRight className="btn-icon" />
-                            </a>
+                            </button>
                             <button type="button" className="btn btn-secondary btn-sm" onClick={() => setHandled(c, !c.handled)}>
                               {c.handled ? "Marcar pendiente" : "Marcar atendido"}
                             </button>
                             <button type="button" className="btn btn-secondary btn-sm" onClick={() => remove(c)}>Eliminar</button>
                             <span className="t-small t-muted">Ref. {c.id}</span>
                           </div>
+                          {composing && (
+                            <MessageComposer
+                              key={c.id}
+                              to={c.data.email}
+                              initial={defaultContactReply(c.data, brand)}
+                              render={(m) => contactReplyEmail(c.id, c.data, m, brand)}
+                              summaryLabel="Incluir su mensaje original"
+                              mode="db"
+                              send={async (m) => {
+                                const res = await api<{ to: string }>(`/api/admin/contactos/${encodeURIComponent(c.id)}/mensaje`, { method: "POST", body: m });
+                                router.refresh();
+                                return `Correo enviado a ${res.to}.`;
+                              }}
+                            />
+                          )}
                         </div>
                       </td>
                     </tr>

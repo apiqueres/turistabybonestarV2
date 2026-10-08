@@ -8,10 +8,20 @@ interface Props {
   answers: Answers;
   setAnswer: SetAnswer;
   destinations: Destination[];
+  /** All the questions of the step: the dates of a step must be in order (departure before return). */
+  siblings?: Question[];
+}
+
+/** YYYY-MM-DD shifted by `days` (date inputs' min/max are exclusive of the neighbouring date). */
+export function shiftDay(iso: string, days: number): string {
+  const d = new Date(`${iso}T00:00:00Z`);
+  if (Number.isNaN(d.getTime())) return "";
+  d.setUTCDate(d.getUTCDate() + days);
+  return d.toISOString().slice(0, 10);
 }
 
 /** Renders one question of the wizard according to its `kind`. */
-export function QuestionField({ question: q, answers, setAnswer }: Props) {
+export function QuestionField({ question: q, answers, setAnswer, siblings = [] }: Props) {
   const value = answers[q.id];
 
   if (q.kind === "destinations") return null; // the destination comes from the map, it is never asked here
@@ -84,10 +94,23 @@ export function QuestionField({ question: q, answers, setAnswer }: Props) {
 
   if (q.kind === "date") {
     const cur = typeof value === "string" ? value : "";
+    // Dates of a step are chronological: each one is bounded by the previous and the next date question.
+    const dates = siblings.filter((x) => x.kind === "date");
+    const i = dates.findIndex((x) => x.id === q.id);
+    const prev = i > 0 ? answers[dates[i - 1].id] : undefined;
+    const after = i >= 0 ? dates[i + 1] : undefined;
+    const next = after ? answers[after.id] : undefined;
+    const min = typeof prev === "string" && prev ? shiftDay(prev, 1) : undefined;
+    const max = typeof next === "string" && next ? shiftDay(next, -1) : undefined;
+    const onChange = (v: string) => {
+      setAnswer(q.id, v);
+      // A return date that is no longer after the new departure is cleared, so it has to be picked again.
+      if (v && after && typeof next === "string" && next && next <= v) setAnswer(after.id, undefined);
+    };
     return (
       <div className="field">
         <label htmlFor={q.id}>{q.label}</label>
-        <input id={q.id} type="date" value={cur} onChange={(e) => setAnswer(q.id, e.target.value)} />
+        <input id={q.id} type="date" value={cur} min={min} max={max} onChange={(e) => onChange(e.target.value)} />
       </div>
     );
   }

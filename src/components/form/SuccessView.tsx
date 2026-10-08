@@ -49,18 +49,18 @@ export function SuccessView({ content, id, brand, prompt, demo }: Props) {
               Versión de demostración: la solicitud no se ha enviado a ningún servidor. Puedes enviar el brief generado por correo.
             </p>
           )}
-          <div className="mt-10 flex flex-wrap gap-4">
+          <div className="mt-10 flex flex-wrap gap-4 success-actions">
             {demo && prompt && (
               <button type="button" onClick={mail} className="btn btn-secondary btn-sm">
                 Enviar por correo
                 <ArrowRight className="btn-icon" />
               </button>
             )}
-            <Link href={content.home.href} className="btn btn-primary btn-sm">
+            <Link href={content.home.href} className="btn btn-primary btn-sm justify-center">
               {content.home.label}
               <ArrowRight className="btn-icon" />
             </Link>
-            <Link href={content.map.href} className="btn btn-secondary btn-sm">
+            <Link href={content.map.href} className="btn btn-secondary btn-sm justify-center">
               {content.map.label}
               <ArrowRight className="btn-icon" />
             </Link>

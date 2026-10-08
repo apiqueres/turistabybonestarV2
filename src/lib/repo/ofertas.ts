@@ -15,6 +15,8 @@ const toFront = (r: Row): Offer => ({
   includes: r.includes,
   image: { src: r.imageSrc, alt: r.imageAlt },
   ...(r.badge ? { badge: r.badge } : {}),
+  promo: r.promo,
+  ...(r.promoText ? { promoText: r.promoText } : {}),
   active: r.active,
 });
 
@@ -30,6 +32,8 @@ const toRow = (o: Offer) => ({
   imageSrc: o.image.src,
   imageAlt: o.image.alt,
   badge: o.badge || null,
+  promo: o.promo,
+  promoText: o.promoText || null,
   active: o.active,
 });
 
@@ -43,13 +47,22 @@ export async function listOffers(opts: { all?: boolean } = {}): Promise<Offer[]>
 }
 
 export async function upsertOffer(o: Offer): Promise<Offer> {
-  const prisma = db();
   const data = toRow(o);
-  const existing = await prisma.offer.findUnique({ where: { id: o.id }, select: { id: true } });
-  if (existing) return toFront(await prisma.offer.update({ where: { id: o.id }, data }));
-  // Las nuevas van primero: desplaza el resto una posición.
-  await prisma.offer.updateMany({ data: { sortOrder: { increment: 1 } } });
-  return toFront(await prisma.offer.create({ data: { id: o.id, ...data, sortOrder: 0 } }));
+  return db().$transaction(async (tx) => {
+    // Solo una promoción de portada: marcar esta desmarca las demás.
+    if (o.promo) await tx.offer.updateMany({ where: { id: { not: o.id }, promo: true }, data: { promo: false } });
+    const existing = await tx.offer.findUnique({ where: { id: o.id }, select: { id: true } });
+    if (existing) return toFront(await tx.offer.update({ where: { id: o.id }, data }));
+    // Las nuevas van primero: desplaza el resto una posición.
+    await tx.offer.updateMany({ data: { sortOrder: { increment: 1 } } });
+    return toFront(await tx.offer.create({ data: { id: o.id, ...data, sortOrder: 0 } }));
+  });
+}
+
+/** La oferta marcada como promoción de portada, si está activa. */
+export async function getPromoOffer(): Promise<Offer | null> {
+  const row = await db().offer.findFirst({ where: { promo: true, active: true }, orderBy: { updatedAt: "desc" } });
+  return row ? toFront(row) : null;
 }
 
 export async function deleteOffer(id: string): Promise<void> {

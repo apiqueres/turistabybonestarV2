@@ -1,9 +1,11 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import type { Destination } from "@/types/content";
 import { pickImage } from "@/lib/admin/image";
 import { asset } from "@/lib/config";
+import { loadMapCountries, type MapCountry } from "@/lib/geo/countries";
+import { slugify } from "@/lib/slug";
 import { ArrowRight } from "@/components/ui/icons";
 
 export const EMPTY_DESTINATION: Destination = { id: "", slug: "", name: "", code: "", region: "", lon: 0, lat: 0, tagline: "", bestSeason: "", duration: "", idealFor: "", badge: "", includes: [], image: { src: "", alt: "" }, featured: false };
@@ -19,18 +21,32 @@ interface Props {
   onMove?: (dir: -1 | 1) => void;
   /** "db": las imágenes se suben al servidor; "demo": se guardan como data: URL en el navegador. */
   mode?: "db" | "demo";
+  /** Países (id del mapa) ya usados por otros destinos, con su nombre: el mapa solo admite un destino por país. */
+  taken?: Map<string, string>;
 }
 
 const FIELDS: [keyof Destination, string][] = [
-  ["name", "Nombre"], ["id", "Id (ISO numérico)"], ["code", "Código"], ["region", "Región"],
-  ["bestSeason", "Cuándo ir"], ["duration", "Duración ideal"], ["idealFor", "Perfecto para"], ["badge", "Etiqueta (opcional)"], ["slug", "Slug"],
+  ["name", "Nombre"], ["code", "Código"], ["region", "Región"],
+  ["bestSeason", "Cuándo ir"], ["duration", "Duración ideal"], ["idealFor", "Perfecto para"], ["badge", "Etiqueta (opcional)"],
 ];
 
 /** Inline editor for one destination (rendered under its row). */
-export function DestinationEditor({ initial, isNew, onSave, onDelete, onCancel, onMove, mode = "demo" }: Props) {
+export function DestinationEditor({ initial, isNew, onSave, onDelete, onCancel, onMove, mode = "demo", taken }: Props) {
   const [d, setD] = useState<Destination>({ ...initial, includes: [...initial.includes] });
   const [msg, setMsg] = useState<string | null>(null);
   const field = <K extends keyof Destination>(k: K, v: Destination[K]) => setD((x) => ({ ...x, [k]: v }));
+  const [countries, setCountries] = useState<MapCountry[]>([]);
+  useEffect(() => {
+    let alive = true;
+    loadMapCountries().then((l) => alive && setCountries(l));
+    return () => { alive = false; };
+  }, []);
+  // El país fija el id del mapa (ISO numérico), las coordenadas y, si está vacío, el código.
+  const pickCountry = (id: string) => {
+    const c = countries.find((x) => x.id === id);
+    if (!c) return field("id", "");
+    setD((x) => ({ ...x, id: c.id, lon: c.lon, lat: c.lat, code: x.code || c.code }));
+  };
   const [uploading, setUploading] = useState(false);
   const onImage = async (file?: File) => {
     if (!file) return;
@@ -45,8 +61,13 @@ export function DestinationEditor({ initial, isNew, onSave, onDelete, onCancel, 
     }
   };
   const save = () => {
-    if (!d.id || !d.name) return setMsg("Faltan el id (código ISO numérico) y el nombre.");
-    onSave(d);
+    if (!d.name.trim()) return setMsg("Falta el nombre.");
+    if (!d.id) return setMsg("Elige el país en el mapa.");
+    const other = taken?.get(d.id);
+    if (other && d.id !== initial.id) return setMsg(`Ya hay un destino en ese país («${other}»); el mapa solo admite uno por país.`);
+    const slug = slugify(d.name);
+    if (!slug) return setMsg("El nombre necesita alguna letra o número.");
+    onSave({ ...d, name: d.name.trim(), slug });
   };
 
   return (
@@ -77,12 +98,11 @@ export function DestinationEditor({ initial, isNew, onSave, onDelete, onCancel, 
             </div>
           ))}
           <div>
-            <label className="lbl" htmlFor={`lon-${initial.id || "new"}`}>Longitud</label>
-            <input id={`lon-${initial.id || "new"}`} className="input" type="number" step="0.1" value={d.lon} onChange={(e) => field("lon", Number(e.target.value))} />
-          </div>
-          <div>
-            <label className="lbl" htmlFor={`lat-${initial.id || "new"}`}>Latitud</label>
-            <input id={`lat-${initial.id || "new"}`} className="input" type="number" step="0.1" value={d.lat} onChange={(e) => field("lat", Number(e.target.value))} />
+            <label className="lbl" htmlFor={`country-${initial.id || "new"}`}>País en el mapa</label>
+            <select id={`country-${initial.id || "new"}`} className="select" value={countries.some((c) => c.id === d.id) ? d.id : ""} onChange={(e) => pickCountry(e.target.value)} disabled={countries.length === 0}>
+              <option value="">{countries.length === 0 ? "Cargando países…" : "Elige un país"}</option>
+              {countries.map((c) => <option key={c.id} value={c.id}>{c.name}</option>)}
+            </select>
           </div>
         </div>
         <div>

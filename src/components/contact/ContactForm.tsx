@@ -108,8 +108,8 @@ ${f.telefono}` })}
         </label>
         {errors.privacidad && <div className="field-error text-[13px] text-accent mt-2">{errors.privacidad}</div>}
       </div>
-      <div className="flex items-center gap-6 flex-wrap">
-        <button type="submit" className="btn btn-primary btn-sm" disabled={status === "sending"}>
+      <div className="flex items-center justify-center md:justify-start gap-6 flex-wrap">
+        <button type="submit" className="btn btn-primary btn-sm justify-center" disabled={status === "sending"}>
           {fields.submit}
           <ArrowRight className="btn-icon" />
         </button>

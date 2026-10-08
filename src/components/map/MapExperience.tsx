@@ -1,7 +1,7 @@
 "use client";
 
 import { useMemo, useRef, useState } from "react";
-import { useSearchParams } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import type { Destination, SiteContent } from "@/types/content";
 import { KEYS, usePersistedState } from "@/lib/storage";
 import { useMotion } from "@/lib/useMotion";
@@ -11,7 +11,7 @@ import { ScrubHeading } from "@/components/motion/ScrubHeading";
 import { SectionLabel } from "@/components/layout/SectionLabel";
 import { ZoomMap } from "./ZoomMap";
 import { PlaceSearch } from "./PlaceSearch";
-import { SelectionBar } from "./SelectionBar";
+import { SelectionBar, SelectionCta } from "./SelectionBar";
 import { DestinationTabs } from "./DestinationTabs";
 
 interface Props {
@@ -26,6 +26,7 @@ const fromDestination = (d: Destination): Place => ({ id: d.id, name: d.name, ki
 /** Search box + zooming map + the list of chosen places, shared with the wizard through localStorage. */
 export function MapExperience({ content, destinations, whatsapp }: Props) {
   const params = useSearchParams();
+  const router = useRouter();
   const initialTab = params.get("pais");
   const recommended = useMemo(() => new Map(destinations.map((d) => [d.id, d.name])), [destinations]);
 
@@ -53,14 +54,14 @@ export function MapExperience({ content, destinations, whatsapp }: Props) {
       setFocus(rest.length ? rest[rest.length - 1] : null);
     }
   };
-  const toggleDestination = (id: string) => {
+  // Ficha de un destino recomendado: lo deja elegido (localStorage, síncrono) y abre el formulario con él.
+  const chooseDestination = (id: string) => {
     const d = destinations.find((x) => x.id === id);
     if (!d) return;
-    if (stored.includes(id)) remove(id);
-    else add(fromDestination(d));
+    add(fromDestination(d));
+    router.push(content.list.ctaHref);
   };
 
-  const selectedSet = useMemo(() => new Set(stored), [stored]);
   const selectedItems = selected.map((p) => ({ id: p.id, name: p.kind === "city" && p.country ? `${p.name}, ${p.country}` : p.name }));
 
   const top = useRef<HTMLElement>(null);
@@ -91,8 +92,11 @@ export function MapExperience({ content, destinations, whatsapp }: Props) {
               </div>
             </div>
           </div>
-          <div className="mb-8 place-search-wrap" data-reveal>
-            <PlaceSearch placeholder={content.search.placeholder} hint={content.search.hint} onPick={add} />
+          <div className="mb-8 place-search-wrap flex flex-col gap-6 md:flex-row md:items-start md:justify-between" data-reveal>
+            <div className="flex-1 min-w-0">
+              <PlaceSearch placeholder={content.search.placeholder} hint={content.search.hint} onPick={add} />
+            </div>
+            <SelectionCta list={content.list} count={selectedItems.length} className="self-center md:self-auto md:mt-1 md:ml-8" />
           </div>
           <ZoomMap focus={focus} selected={selected} recommended={recommended} legend={content.legend} />
           <SelectionBar list={content.list} selected={selectedItems} onRemove={remove} />
@@ -112,7 +116,7 @@ export function MapExperience({ content, destinations, whatsapp }: Props) {
               </p>
             </div>
           </div>
-          <DestinationTabs content={content} items={destinations} activeId={tab} onSelectTab={setTab} selected={selectedSet} onToggle={toggleDestination} whatsapp={whatsapp} />
+          <DestinationTabs content={content} items={destinations} activeId={tab} onSelectTab={setTab} onChoose={chooseDestination} whatsapp={whatsapp} />
         </div>
       </section>
     </>

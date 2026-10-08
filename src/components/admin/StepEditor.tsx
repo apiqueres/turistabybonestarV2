@@ -39,10 +39,6 @@ export function StepEditor({ step, onChange }: Props) {
               {q.kind === "multi" && (
                 <div><label className="lbl" htmlFor={`qm-${q.id}`}>Máximo de opciones (vacío = sin límite)</label><input id={`qm-${q.id}`} className="input" type="number" min={1} value={q.max ?? ""} onChange={(e) => patchQ(qi, { max: e.target.value ? Number(e.target.value) : undefined } as Partial<Question>)} /></div>
               )}
-              {(q.kind === "multi" || q.kind === "single") && (
-                <div><label className="lbl" htmlFor={`qy-${q.id}`}>Presentación</label>
-                  <select id={`qy-${q.id}`} className="select" value={q.layout} onChange={(e) => patchQ(qi, { layout: e.target.value as "cards" | "chips" } as Partial<Question>)}><option value="chips">Chips</option><option value="cards">Tarjetas con descripción</option></select></div>
-              )}
               {q.kind === "text" && (
                 <div><label className="lbl" htmlFor={`qp-${q.id}`}>Placeholder</label><input id={`qp-${q.id}`} className="input" value={q.placeholder ?? ""} onChange={(e) => patchQ(qi, { placeholder: e.target.value } as Partial<Question>)} /></div>
               )}

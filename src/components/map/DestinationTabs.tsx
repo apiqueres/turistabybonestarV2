@@ -1,9 +1,8 @@
 "use client";
 
 import Image from "next/image";
-import Link from "next/link";
 import type { Destination, SiteContent } from "@/types/content";
-import { ArrowRight, WhatsApp } from "@/components/ui/icons";
+import { ArrowRight } from "@/components/ui/icons";
 import { destinationMessage, waHref } from "@/lib/whatsapp";
 
 interface Props {
@@ -11,15 +10,14 @@ interface Props {
   items: Destination[];
   activeId: string;
   onSelectTab: (id: string) => void;
-  selected: Set<string>;
-  onToggle: (id: string) => void;
+  /** "Elegir este destino": lo guarda como destino del viaje y lleva al formulario. */
+  onChoose: (id: string) => void;
   /** Agency WhatsApp number for the direct-message button. */
   whatsapp: string;
 }
 
-export function DestinationTabs({ content, items, activeId, onSelectTab, selected, onToggle, whatsapp }: Props) {
+export function DestinationTabs({ content, items, activeId, onSelectTab, onChoose, whatsapp }: Props) {
   const active = items.find((d) => d.id === activeId) ?? items[0];
-  const isSel = selected.has(active.id);
   const rows: [string, string][] = [
     ["Cuándo ir", active.bestSeason],
     ["Duración ideal", active.duration],
@@ -81,15 +79,11 @@ export function DestinationTabs({ content, items, activeId, onSelectTab, selecte
           <div className="mt-10 flex flex-wrap gap-4">
             <a href={waHref(whatsapp, destinationMessage(active.name))} target="_blank" rel="noreferrer" className="btn btn-primary btn-sm">
               Escribir por WhatsApp
-              <WhatsApp className="btn-icon" />
             </a>
-            <button type="button" className={`btn btn-sm ${isSel ? "btn-primary" : "btn-secondary"}`} onClick={() => onToggle(active.id)} aria-pressed={isSel}>
-              {isSel ? content.remove : content.add}
-            </button>
-            <Link href={content.list.ctaHref} className="btn btn-secondary btn-sm">
-              {content.list.cta}
+            <button type="button" className="btn btn-secondary btn-sm" onClick={() => onChoose(active.id)}>
+              {content.add}
               <ArrowRight className="btn-icon" />
-            </Link>
+            </button>
           </div>
         </div>
       </div>

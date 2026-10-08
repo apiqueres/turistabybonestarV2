@@ -3,6 +3,7 @@ import { requireApiUser } from "@/lib/admin/session";
 import { dbError, parseBody, revalidateContent } from "@/lib/admin/api-utils";
 import { listDestinations, reorderDestinations, upsertDestination } from "@/lib/repo/destinos";
 import { destinationUpsertSchema, reorderSchema } from "@/lib/validation-admin";
+import { slugify } from "@/lib/slug";
 
 export const runtime = "nodejs";
 
@@ -18,8 +19,10 @@ export async function PUT(req: Request) {
   if (error) return error;
   const { data, error: bad } = await parseBody(req, destinationUpsertSchema);
   if (bad) return bad;
+  const slug = slugify(data.destination.name);
+  if (!slug) return NextResponse.json({ ok: false, error: "El nombre necesita alguna letra o número." }, { status: 400 });
   try {
-    const destination = await upsertDestination(data.destination, data.previousId);
+    const destination = await upsertDestination({ ...data.destination, slug }, data.previousId);
     revalidateContent();
     return NextResponse.json({ ok: true, destination });
   } catch (err) {

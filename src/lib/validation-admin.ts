@@ -29,7 +29,8 @@ export const adminMessageSchema = z.object({
 
 export const destinationSchema = z.object({
   id: z.string().trim().min(1, "Falta el id").max(12),
-  slug: z.string().trim().min(1, "Falta el slug").max(80).regex(/^[a-z0-9-]+$/, "El slug solo admite minúsculas, números y guiones"),
+  /** Se ignora: el servidor lo deriva del nombre (ver slugify). */
+  slug: z.string().max(80).optional().default(""),
   name: short.min(1, "Falta el nombre"),
   code: short,
   region: short,
@@ -58,6 +59,8 @@ export const offerSchema = z.object({
   includes: z.array(s).max(20),
   image: media,
   badge: short.optional(),
+  promo: z.boolean().default(false),
+  promoText: short.optional(),
   active: z.boolean(),
 });
 
@@ -83,7 +86,7 @@ export const settingSchemas = {
   "home.hero": z.object({ kicker: s, word: s, subtitle: pair, primary: link, secondary: link, video: z.object({ mp4: s, poster: s }) }),
   "home.method": z.object({ kicker: s, steps: z.array(z.object({ number: s, title: pair, text: s })).max(10) }),
   "home.destinations": z.object({ kicker: s, title: pair, link }),
-  "home.about": z.object({ kicker: s, title: z.array(s).max(6), meta: s, image: media, paragraph: s, stats: z.tuple([stat, stat]), partners: z.array(s).max(20) }),
+  "home.about": z.object({ kicker: s, title: z.array(s).max(6), meta: s, image: media, paragraph: s }),
   "home.dimensions": z.object({ kicker: s, text: s, items: z.array(z.object({ label: s, step: z.number().int() })).max(20) }),
   "home.pain": z.object({ kicker: s, statement: pair, items: z.array(s).max(12), answer: s, quote: s, author: s, meta: s }),
   "home.team": z.object({ title: s, members: z.array(z.object({ id: s, name: s, role: s, bio: s, stats: z.tuple([stat, stat]), image: media })).max(12) }),
@@ -95,7 +98,7 @@ export const settingSchemas = {
     legend: pair,
     list: z.object({ label: s, empty: s, cta: s, ctaHref: s, needOne: s }),
     recurrent: z.object({ kicker: s, title: pair, text: s }),
-    add: s, remove: s,
+    add: s,
   }),
   contact: z.object({
     kicker: s, title: s, text: s, formKicker: s,
@@ -107,6 +110,36 @@ export const settingSchemas = {
   footer: z.object({ sections: s, contact: s, legal: s, legalLinks: z.array(link).max(10), credits: link }),
 } as const;
 export type SettingKey = keyof typeof settingSchemas;
+
+/**
+ * Rutas de las listas de longitud fija (tuplas) de un bloque, con `*` en las posiciones
+ * de lista: p. ej. "rule.hint" o "members.*.stats". El editor no deja añadir ni quitar en ellas.
+ */
+export function fixedListPaths(schema: z.ZodType): string[] {
+  const out: string[] = [];
+  const walk = (node: z.ZodType, path: string) => {
+    const def = (node as unknown as { _zod: { def: Record<string, unknown> } })._zod.def;
+    switch (def.type) {
+      case "object":
+        for (const [k, child] of Object.entries(def.shape as Record<string, z.ZodType>)) walk(child, path ? `${path}.${k}` : k);
+        break;
+      case "tuple":
+        out.push(path);
+        (def.items as z.ZodType[]).forEach((item) => walk(item, `${path}.*`));
+        break;
+      case "array":
+        walk(def.element as z.ZodType, `${path}.*`);
+        break;
+      case "optional":
+      case "nullable":
+      case "default":
+        walk(def.innerType as z.ZodType, path);
+        break;
+    }
+  };
+  walk(schema, "");
+  return out;
+}
 export const SETTING_LABELS: Record<SettingKey, string> = {
   brand: "Marca y contacto (teléfono, WhatsApp, comunidad, correo, horario)",
   nav: "Menú de navegación",
