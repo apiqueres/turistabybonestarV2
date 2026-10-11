@@ -11,7 +11,7 @@ export const siteContent: SiteContent = {
     whatsapp: "+34 623 375 998",
     communityName: "Turista by Bonestar✈️ Comunidad Privada1",
     communityUrl: "https://chat.whatsapp.com/Dyx6BhsB5VUCuxqKqhAK81",
-    email: "turistasinlicenciabook@gmail.com",
+    email: "contacto@turistabybonestar.com",
     hours: "L–V · 10:00–19:00",
     instagram: "https://instagram.com/turistabyb",
     year: 2026,
