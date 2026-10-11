@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { requireApiUser } from "@/lib/admin/session";
+import { requireApiRole } from "@/lib/admin/session";
 import { parseBody } from "@/lib/admin/api-utils";
 import { getContacto, setContactoHandled } from "@/lib/repo/contactos";
 import { getSiteContent } from "@/lib/content";
@@ -10,7 +10,7 @@ export const runtime = "nodejs";
 
 /** Responde por correo a un mensaje de contacto desde el panel y lo marca como atendido. */
 export async function POST(req: Request, { params }: { params: Promise<{ id: string }> }) {
-  const { error } = await requireApiUser();
+  const { error } = await requireApiRole("admin");
   if (error) return error;
   const { data, error: bad } = await parseBody(req, adminMessageSchema);
   if (bad) return bad;

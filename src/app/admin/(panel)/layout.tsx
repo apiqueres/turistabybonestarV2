@@ -7,6 +7,6 @@ export const metadata: Metadata = { title: "Administración", robots: { index: f
 
 export default async function AdminLayout({ children }: { children: React.ReactNode }) {
   if (STATIC_DEMO) return <DemoAdminShell>{children}</DemoAdminShell>;
-  const user = await requireUser();
+  const user = await requireUser({ allowPending: true });
   return <AdminShell userLabel={user.email || user.name}>{children}</AdminShell>;
 }

@@ -2,7 +2,7 @@ import { notFound } from "next/navigation";
 import { TextsAdmin, type TextBlock } from "@/components/admin/TextsAdmin";
 import type { Json } from "@/components/admin/BlockEditor";
 import { STATIC_DEMO } from "@/lib/config";
-import { requireUser } from "@/lib/admin/session";
+import { requireRole } from "@/lib/admin/session";
 import { db } from "@/lib/db";
 import { SETTING_KEYS } from "@/lib/repo/settings";
 import { SETTING_LABELS, fixedListPaths, settingSchemas } from "@/lib/validation-admin";
@@ -17,7 +17,7 @@ function staticBlock(key: string): Json {
 
 export default async function TextsPage() {
   if (STATIC_DEMO) notFound();
-  await requireUser();
+  await requireRole("admin");
   const rows = await db().siteSetting.findMany();
   const byKey = new Map(rows.map((r) => [r.key, r]));
   const blocks: TextBlock[] = SETTING_KEYS.map((key) => {

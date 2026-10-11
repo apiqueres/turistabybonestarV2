@@ -7,7 +7,7 @@ export const runtime = "nodejs";
 
 /** Cambio de contraseña del usuario con sesión. */
 export async function POST(req: Request) {
-  const { user, error } = await requireApiUser();
+  const { user, error } = await requireApiUser({ allowPending: true });
   if (error) return error;
   let body: unknown;
   try {

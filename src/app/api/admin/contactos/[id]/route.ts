@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
-import { requireApiUser } from "@/lib/admin/session";
+import { requireApiRole } from "@/lib/admin/session";
 import { dbError, parseBody } from "@/lib/admin/api-utils";
 import { deleteContacto, setContactoHandled } from "@/lib/repo/contactos";
 
@@ -8,7 +8,7 @@ export const runtime = "nodejs";
 type Ctx = { params: Promise<{ id: string }> };
 
 export async function PATCH(req: Request, { params }: Ctx) {
-  const { error } = await requireApiUser();
+  const { error } = await requireApiRole("admin");
   if (error) return error;
   const { data, error: bad } = await parseBody(req, z.object({ handled: z.boolean() }));
   if (bad) return bad;
@@ -20,7 +20,7 @@ export async function PATCH(req: Request, { params }: Ctx) {
 }
 
 export async function DELETE(_req: Request, { params }: Ctx) {
-  const { error } = await requireApiUser();
+  const { error } = await requireApiRole("admin");
   if (error) return error;
   try {
     await deleteContacto((await params).id);

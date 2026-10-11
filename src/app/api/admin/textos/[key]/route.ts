@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import type { ZodType } from "zod";
-import { requireApiUser } from "@/lib/admin/session";
+import { requireApiRole } from "@/lib/admin/session";
 import { dbError, parseBody, revalidateContent } from "@/lib/admin/api-utils";
 import { saveSetting } from "@/lib/repo/settings";
 import { settingSchemas } from "@/lib/validation-admin";
@@ -9,7 +9,7 @@ export const runtime = "nodejs";
 
 /** Guarda un bloque de texto de la web (validado con el esquema de su clave). */
 export async function PUT(req: Request, { params }: { params: Promise<{ key: string }> }) {
-  const { error } = await requireApiUser();
+  const { error } = await requireApiRole("admin");
   if (error) return error;
   const { key } = await params;
   const schema = (settingSchemas as unknown as Record<string, ZodType<unknown> | undefined>)[key];

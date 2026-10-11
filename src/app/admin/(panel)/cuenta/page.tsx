@@ -5,7 +5,7 @@ import { requireUser } from "@/lib/admin/session";
 
 export default async function AccountPage() {
   if (STATIC_DEMO) notFound();
-  const user = await requireUser();
+  const user = await requireUser({ allowPending: true });
   return (
     <>
       <div className="admin-head">

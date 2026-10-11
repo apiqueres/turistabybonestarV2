@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { requireApiUser } from "@/lib/admin/session";
+import { requireApiRole } from "@/lib/admin/session";
 import { dbError, parseBody, revalidateContent } from "@/lib/admin/api-utils";
 import { listDestinations, reorderDestinations, upsertDestination } from "@/lib/repo/destinos";
 import { destinationUpsertSchema, reorderSchema } from "@/lib/validation-admin";
@@ -8,14 +8,14 @@ import { slugify } from "@/lib/slug";
 export const runtime = "nodejs";
 
 export async function GET() {
-  const { error } = await requireApiUser();
+  const { error } = await requireApiRole("admin");
   if (error) return error;
   return NextResponse.json({ ok: true, destinations: await listDestinations({ all: true }) });
 }
 
 /** Crea o actualiza un destino. */
 export async function PUT(req: Request) {
-  const { error } = await requireApiUser();
+  const { error } = await requireApiRole("admin");
   if (error) return error;
   const { data, error: bad } = await parseBody(req, destinationUpsertSchema);
   if (bad) return bad;
@@ -32,7 +32,7 @@ export async function PUT(req: Request) {
 
 /** Nuevo orden (lista completa de ids). */
 export async function PATCH(req: Request) {
-  const { error } = await requireApiUser();
+  const { error } = await requireApiRole("admin");
   if (error) return error;
   const { data, error: bad } = await parseBody(req, reorderSchema);
   if (bad) return bad;

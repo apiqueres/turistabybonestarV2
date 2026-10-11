@@ -4,7 +4,7 @@ import { randomBytes } from "node:crypto";
 import path from "node:path";
 import sharp from "sharp";
 import { z } from "zod";
-import { requireApiUser } from "@/lib/admin/session";
+import { requireApiRole } from "@/lib/admin/session";
 import { parseBody } from "@/lib/admin/api-utils";
 import { createAsset, deleteAssetByPath } from "@/lib/repo/media";
 import { diskPath, UPLOADS_DIR, UPLOAD_MAX_BYTES } from "@/lib/uploads";
@@ -20,7 +20,7 @@ const ALLOWED = new Set(["jpeg", "png", "webp", "gif", "avif", "tiff", "heif"]);
  * redimensiona a 1600 px como máximo, convierte a WebP y guarda en DATA_DIR/uploads/AAAA/MM/.
  */
 export async function POST(req: Request) {
-  const { error } = await requireApiUser();
+  const { error } = await requireApiRole("admin");
   if (error) return error;
   let form: FormData;
   try {
@@ -63,7 +63,7 @@ export async function POST(req: Request) {
 
 /** Borra una imagen subida (cuerpo: { path: "/uploads/AAAA/MM/<id>.webp" }). */
 export async function DELETE(req: Request) {
-  const { error } = await requireApiUser();
+  const { error } = await requireApiRole("admin");
   if (error) return error;
   const { data, error: bad } = await parseBody(req, z.object({ path: z.string().max(200) }));
   if (bad) return bad;
