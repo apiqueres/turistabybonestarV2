@@ -10,13 +10,31 @@ datasource db {
   provider = "postgresql"
 }
 
+/// admin: todo el panel. gestor: solo sus solicitudes asignadas y «Mi cuenta».
+enum AdminRole {
+  admin
+  gestor
+}
+
 model AdminUser {
-  id           String    @id @default(cuid())
-  email        String    @unique
-  name         String
-  passwordHash String
-  createdAt    DateTime  @default(now())
-  lastLoginAt  DateTime?
+  id                 String      @id @default(cuid())
+  email              String      @unique
+  name               String
+  role               AdminRole   @default(gestor)
+  passwordHash       String
+  active             Boolean     @default(true)
+  /// Obliga a cambiar la contraseña antes de usar el panel (primer acceso o restablecimiento).
+  mustChangePassword Boolean     @default(true)
+  /// Gmail propio del usuario para enviar «como» su dirección corporativa (requiere «Enviar como» en Gmail).
+  gmailUser          String?
+  /// Contraseña de aplicación de Google, cifrada (AES-256-GCM con APP_SECRET_KEY). Nunca se devuelve.
+  gmailAppPass       String?
+  /// Copia oculta de cada correo que envía el usuario a su propia dirección corporativa.
+  bccSelf            Boolean     @default(false)
+  createdAt          DateTime    @default(now())
+  lastLoginAt        DateTime?
+  asignadas          Solicitud[]
+  mensajesEnviados   MessageLog[]
 }
 
 model Destination {
@@ -101,11 +119,16 @@ model Solicitud {
   email     String // copia desnormalizada para buscar
   phone     String
   name      String
+  /// Gestor que la atiende. null = sin asignar (solo la ve el admin).
+  assignedToId String?
+  assignedTo   AdminUser?  @relation(fields: [assignedToId], references: [id], onDelete: SetNull)
+  assignedAt   DateTime?
   messages  MessageLog[]
 
   @@index([createdAt])
   @@index([status])
   @@index([email])
+  @@index([assignedToId])
 }
 
 model Contacto {
@@ -126,13 +149,19 @@ model MessageLog {
   solicitudId String?
   solicitud   Solicitud? @relation(fields: [solicitudId], references: [id], onDelete: Cascade)
   to          String
+  /// Remitente usado (dirección corporativa del usuario o la de la agencia).
+  from        String    @default("")
+  /// Usuario del panel que lo envió; null en envíos automáticos.
+  sentById    String?
+  sentBy      AdminUser? @relation(fields: [sentById], references: [id], onDelete: SetNull)
   subject     String
-  kind        String // "confirmacion" | "admin" | "aviso-agencia"
+  kind        String // "confirmacion" | "admin" | "aviso-agencia" | "aviso-gestor"
   status      String // "sent" | "error" | "skipped"
   error       String?
 
   @@index([solicitudId])
   @@index([createdAt])
+  @@index([sentById])
 }
 
 model MediaAsset {

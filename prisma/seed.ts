@@ -3,7 +3,7 @@
  * Importa también las solicitudes/contactos guardados en JSON por la versión anterior (DATA_DIR).
  * Es idempotente: no pisa lo que el admin ya haya editado (solo crea lo que falta).
  *
- *   npm run db:seed            (ADMIN_EMAIL / ADMIN_PASSWORD en .env)
+ *   npm run db:seed            (ADMIN_SEED_PASSWORD en .env: contraseña inicial de los cuatro usuarios)
  */
 import { readdir, readFile } from "node:fs/promises";
 import path from "node:path";
@@ -91,21 +91,37 @@ async function seedSettings() {
   console.log(`[seed] bloques de texto: ${created} creados (${Object.keys(blocks).length} en total)`);
 }
 
+/** Los cuatro usuarios del panel (plan §2 «Usuarios, roles y asignación»). */
+const SEED_USERS: { email: string; name: string; role: "admin" | "gestor" }[] = [
+  { email: "contacto@turistabybonestar.com", name: "Agencia", role: "admin" },
+  { email: "javierestornell@turistabybonestar.com", name: "Javier Estornell", role: "gestor" },
+  { email: "sandramartinez@turistabybonestar.com", name: "Sandra Martínez", role: "gestor" },
+  { email: "alexandra@turistabybonestar.com", name: "Alexandra", role: "gestor" },
+];
+
+/**
+ * Crea los usuarios que falten con la contraseña inicial de ADMIN_SEED_PASSWORD y obliga a cambiarla
+ * en el primer acceso. A los que ya existen solo les fija nombre y rol: nunca toca su contraseña.
+ */
 async function seedAdmin() {
-  const email = process.env.ADMIN_EMAIL?.trim().toLowerCase();
-  const password = process.env.ADMIN_PASSWORD;
-  const count = await prisma.adminUser.count();
-  if (count > 0) {
-    console.log(`[seed] admin: ya hay ${count} usuario(s), no se crea ninguno`);
-    return;
+  const password = process.env.ADMIN_SEED_PASSWORD;
+  if (password !== undefined && password.length < 8) throw new Error("[seed] ADMIN_SEED_PASSWORD debe tener al menos 8 caracteres");
+  let passwordHash: string | null = null;
+  for (const u of SEED_USERS) {
+    const existing = await prisma.adminUser.findUnique({ where: { email: u.email } });
+    if (existing) {
+      await prisma.adminUser.update({ where: { id: existing.id }, data: { name: u.name, role: u.role } });
+      console.log(`[seed] admin: ${u.email} actualizado (${u.role})`);
+      continue;
+    }
+    if (!password) {
+      console.warn(`[seed] admin: falta ADMIN_SEED_PASSWORD; no se crea ${u.email}`);
+      continue;
+    }
+    passwordHash ??= await bcrypt.hash(password, 12);
+    await prisma.adminUser.create({ data: { email: u.email, name: u.name, role: u.role, passwordHash, mustChangePassword: true } });
+    console.log(`[seed] admin: creado ${u.email} (${u.role}; cambio de contraseña en el primer acceso)`);
   }
-  if (!email || !password) {
-    console.warn("[seed] admin: faltan ADMIN_EMAIL/ADMIN_PASSWORD; no se crea el usuario inicial");
-    return;
-  }
-  if (password.length < 8) throw new Error("[seed] ADMIN_PASSWORD debe tener al menos 8 caracteres");
-  await prisma.adminUser.create({ data: { email, name: siteContent.brand.name, passwordHash: await bcrypt.hash(password, 12) } });
-  console.log(`[seed] admin: creado ${email} (cambia la contraseña desde el panel)`);
 }
 
 /** Importa data/solicitudes/*.json y data/contacto/*.json de la versión sin base de datos. */
