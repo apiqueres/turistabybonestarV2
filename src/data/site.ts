@@ -102,10 +102,6 @@ export const siteContent: SiteContent = {
           name: "Laura García",
           role: "Fundadora y diseñadora de viajes",
           bio: "Hija de hosteleros. Sabe lo que cuesta cerrar un negocio una semana y por eso diseña viajes que no den trabajo: todo resuelto antes de salir y un teléfono al otro lado durante el viaje.",
-          stats: [
-            { value: 400, suffix: "+", label: "Viajes diseñados" },
-            { value: 14, label: "Años de experiencia" },
-          ],
           image: { src: "/media/team-4.webp", alt: "Retrato de Laura García" },
         },
         {
@@ -113,10 +109,6 @@ export const siteContent: SiteContent = {
           name: "Javier Martínez",
           role: "Guía de montaña",
           bio: "Guía titulado de alta montaña. Lidera las rutas de Patagonia, Islandia y los Alpes, siempre con un plan B para cada tramo.",
-          stats: [
-            { value: 120, suffix: "+", label: "Expediciones" },
-            { value: 30, suffix: "+", label: "Cumbres guiadas" },
-          ],
           image: { src: "/media/team-1.webp", alt: "Retrato de Javier Martínez" },
         },
         {
@@ -124,10 +116,6 @@ export const siteContent: SiteContent = {
           name: "Pablo Sánchez",
           role: "Fotógrafo y guía",
           bio: "Acompaña los viajes de Asia y el Mediterráneo con la cámara al hombro. Sus viajeros vuelven con un álbum editado y con las mejores horas de luz marcadas en el mapa.",
-          stats: [
-            { value: 60, suffix: "+", label: "Viajes guiados" },
-            { value: 25, label: "Países fotografiados" },
-          ],
           image: { src: "/media/team-2.webp", alt: "Retrato de Pablo Sánchez" },
         },
         {
@@ -135,10 +123,6 @@ export const siteContent: SiteContent = {
           name: "María López",
           role: "Experta en cultura e historia",
           bio: "Historiadora del arte. Diseña las rutas culturales de Grecia, Marruecos y Japón y consigue accesos a espacios que normalmente están cerrados al público.",
-          stats: [
-            { value: 90, suffix: "+", label: "Rutas culturales" },
-            { value: 18, label: "Años guiando" },
-          ],
           image: { src: "/media/team-3.webp", alt: "Retrato de María López" },
         },
       ],

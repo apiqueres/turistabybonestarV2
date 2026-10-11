@@ -21,12 +21,6 @@ export interface NavLink extends Link {
   accent?: boolean;
 }
 
-export interface Stat {
-  value: number;
-  suffix?: string;
-  label: string;
-}
-
 export interface Step {
   number: string;
   title: [string, string];
@@ -78,7 +72,6 @@ export interface TeamMember {
   name: string;
   role: string;
   bio: string;
-  stats: [Stat, Stat];
   image: Media;
 }
 

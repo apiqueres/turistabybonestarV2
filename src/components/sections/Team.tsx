@@ -74,17 +74,6 @@ export function Team({ data }: { data: SiteContent["home"]["team"] }) {
             <h3 className="t-h3 mt-8">{selected.name}</h3>
             <div className="t-muted mt-1">{selected.role}</div>
             <p className="t-body mt-6">{selected.bio}</p>
-            <div className="rule mt-8 pt-6 grid grid-cols-2">
-              {selected.stats.map((s, i) => (
-                <div key={s.label} className={i === 1 ? "v-rule pl-6" : ""}>
-                  <div className="t-stat">
-                    {s.value.toLocaleString("es-ES")}
-                    {s.suffix}
-                  </div>
-                  <div className="t-muted t-small mt-2">{s.label}</div>
-                </div>
-              ))}
-            </div>
           </div>
         )}
       </aside>

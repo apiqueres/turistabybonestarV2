@@ -7,7 +7,6 @@ const short = z.string().trim().max(200);
 const pair = z.tuple([s, s]);
 const link = z.object({ label: s, href: s });
 const media = z.object({ src: z.string().max(2_000_000), alt: s });
-const stat = z.object({ value: z.number().finite(), suffix: s.optional(), label: s });
 
 export const passwordChangeSchema = z
   .object({
@@ -89,7 +88,7 @@ export const settingSchemas = {
   "home.about": z.object({ kicker: s, title: z.array(s).max(6), meta: s, image: media, paragraph: s }),
   "home.dimensions": z.object({ kicker: s, text: s, items: z.array(z.object({ label: s, step: z.number().int() })).max(20) }),
   "home.pain": z.object({ kicker: s, statement: pair, items: z.array(s).max(12), answer: s, quote: s, author: s, meta: s }),
-  "home.team": z.object({ title: s, members: z.array(z.object({ id: s, name: s, role: s, bio: s, stats: z.tuple([stat, stat]), image: media })).max(12) }),
+  "home.team": z.object({ title: s, members: z.array(z.object({ id: s, name: s, role: s, bio: s, image: media })).max(12) }),
   "home.closing": z.object({ kicker: s, title: pair, image: media, primary: link, secondary: link }),
   map: z.object({
     kicker: s, title: s, text: s,
@@ -113,7 +112,7 @@ export type SettingKey = keyof typeof settingSchemas;
 
 /**
  * Rutas de las listas de longitud fija (tuplas) de un bloque, con `*` en las posiciones
- * de lista: p. ej. "rule.hint" o "members.*.stats". El editor no deja añadir ni quitar en ellas.
+ * de lista: p. ej. "rule.hint". El editor no deja añadir ni quitar en ellas.
  */
 export function fixedListPaths(schema: z.ZodType): string[] {
   const out: string[] = [];
