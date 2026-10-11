@@ -7,6 +7,8 @@ export interface MessageEntry {
   id: string;
   createdAt: string;
   to: string;
+  /** Remitente con el que salió el correo. */
+  from?: string;
   subject: string;
   kind: string;
   status: string;
@@ -22,6 +24,9 @@ export interface StoredRequest {
   notes?: string;
   /** Brief .txt generado en el servidor (solo con base de datos). */
   prompt?: string;
+  /** Gestor que la atiende; null = sin asignar. */
+  assignedTo?: { id: string; name: string } | null;
+  assignedAt?: string | null;
   /** Correos enviados desde el servidor (solo con base de datos). */
   messages?: MessageEntry[];
 }

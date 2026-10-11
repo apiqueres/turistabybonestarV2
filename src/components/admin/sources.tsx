@@ -49,11 +49,19 @@ export interface RequestsStore {
   counts: Record<RequestFilter, number>;
   filter: RequestFilter;
   q: string;
+  /** Solo admin: "todas", "sin" o el id de un gestor. */
+  gestor: string;
+  /** Gestores a los que se puede asignar (solo admin). */
+  gestores: { id: string; name: string }[];
+  viewer: { id: string; role: "admin" | "gestor" };
   mode: Mode;
   setFilter: (f: RequestFilter) => void;
+  setGestor: (g: string) => void;
   setPage: (p: number) => void;
   setQuery: (q: string) => void;
   update: (id: string, patch: { status?: RequestStatus; notes?: string }) => Promise<void>;
+  /** Asigna o reasigna (null = sin asignar). Devuelve un resumen, incluido el aviso al gestor. */
+  assign: (id: string, gestorId: string | null) => Promise<string>;
   remove: (id: string) => Promise<void>;
   /** Envía el correo al cliente y devuelve un resumen para mostrar. */
   sendMessage: (request: StoredRequest, msg: AdminMessage, brand: EmailBrand) => Promise<string>;
@@ -174,37 +182,68 @@ export interface RequestsPageData {
   counts: Record<RequestFilter, number>;
 }
 
-const requestsUrl = (filter: RequestFilter, q: string, page: number) => {
+const requestsUrl = (filter: RequestFilter, q: string, page: number, gestor = "todas") => {
   const p = new URLSearchParams();
   if (filter !== "todas") p.set("estado", filter);
+  if (gestor !== "todas") p.set("gestor", gestor);
   if (q) p.set("q", q);
   if (page > 1) p.set("page", String(page));
   const qs = p.toString();
   return `/admin/solicitudes${qs ? `?${qs}` : ""}`;
 };
 
-export function RequestsDb({ data, filter, q, steps, brand }: { data: RequestsPageData; filter: RequestFilter; q: string; steps: FormStep[]; brand: EmailBrand }) {
+export function RequestsDb({
+  data,
+  filter,
+  q,
+  gestor,
+  gestores,
+  viewer,
+  steps,
+  brand,
+}: {
+  data: RequestsPageData;
+  filter: RequestFilter;
+  q: string;
+  gestor: string;
+  gestores: { id: string; name: string }[];
+  viewer: { id: string; role: "admin" | "gestor" };
+  steps: FormStep[];
+  brand: EmailBrand;
+}) {
   const router = useRouter();
   const store: RequestsStore = {
     ...data,
     filter,
     q,
+    gestor,
+    gestores,
+    viewer,
     mode: "db",
-    setFilter: (f) => router.push(requestsUrl(f, q, 1)),
-    setQuery: (next) => router.push(requestsUrl(filter, next, 1)),
-    setPage: (p) => router.push(requestsUrl(filter, q, p)),
+    setFilter: (f) => router.push(requestsUrl(f, q, 1, gestor)),
+    setGestor: (g) => router.push(requestsUrl(filter, q, 1, g)),
+    setQuery: (next) => router.push(requestsUrl(filter, next, 1, gestor)),
+    setPage: (p) => router.push(requestsUrl(filter, q, p, gestor)),
     update: async (id, patch) => {
       await api(`/api/admin/solicitudes/${encodeURIComponent(id)}`, { method: "PATCH", body: patch });
       router.refresh();
+    },
+    assign: async (id, gestorId) => {
+      const res = await api<{ aviso: "sent" | "error" | null }>(`/api/admin/solicitudes/${encodeURIComponent(id)}/asignar`, { method: "POST", body: { gestorId } });
+      router.refresh();
+      if (!gestorId) return "Solicitud sin asignar.";
+      return res.aviso === "sent" ? "Asignada. El gestor ha recibido el aviso con el brief." : "Asignada, pero el aviso al gestor no se pudo enviar (revisa el correo del servidor).";
     },
     remove: async (id) => {
       await api(`/api/admin/solicitudes/${encodeURIComponent(id)}`, { method: "DELETE" });
       router.refresh();
     },
     sendMessage: async (request, msg) => {
-      const res = await api<{ to: string }>(`/api/admin/solicitudes/${encodeURIComponent(request.id)}/mensaje`, { method: "POST", body: msg });
+      const res = await api<{ to: string; viaAgency: boolean }>(`/api/admin/solicitudes/${encodeURIComponent(request.id)}/mensaje`, { method: "POST", body: msg });
       router.refresh();
-      return `Correo enviado a ${res.to}.`;
+      return res.viaAgency
+        ? `Correo enviado a ${res.to} con la cuenta de la agencia. Conecta tu Gmail en «Mi cuenta» para enviar con tu dirección.`
+        : `Correo enviado a ${res.to}.`;
     },
   };
   return <RequestsAdmin store={store} steps={steps} brand={brand} />;
@@ -239,11 +278,16 @@ export function RequestsDemo({ brand }: { brand: EmailBrand }) {
     counts,
     filter,
     q,
+    gestor: "todas",
+    gestores: [],
+    viewer: { id: "demo", role: "admin" },
     mode: "demo",
     setFilter: (f) => router.push(requestsUrl(f, q, 1)),
+    setGestor: () => undefined,
     setQuery: (next) => router.push(requestsUrl(filter, next, 1)),
     setPage: (p) => router.push(requestsUrl(filter, q, p)),
     update: async (id, patch) => update(id, patch),
+    assign: async () => "La asignación de gestores requiere la base de datos.",
     remove: async (id) => remove(id),
     sendMessage: async (request, msg, b) => {
       const email = clientMessageEmail(request.id, request.data, msg, b);

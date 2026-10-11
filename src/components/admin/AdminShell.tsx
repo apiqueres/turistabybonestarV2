@@ -25,10 +25,10 @@ export function DemoAdminShell({ children }: { children: React.ReactNode }) {
 }
 
 /** Armazón del admin con servidor: la sesión ya se comprobó en el layout. */
-export function AdminShell({ userLabel, children }: { userLabel: string; children: React.ReactNode }) {
+export function AdminShell({ userLabel, role, children }: { userLabel: string; role: "admin" | "gestor"; children: React.ReactNode }) {
   return (
     <div className="admin">
-      <AdminNav userLabel={userLabel} />
+      <AdminNav userLabel={userLabel} role={role} />
       <main className="admin-main">{children}</main>
     </div>
   );

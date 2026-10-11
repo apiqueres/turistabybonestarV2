@@ -6,10 +6,10 @@ export const runtime = "nodejs";
 
 /** Descarga el brief .txt de una solicitud. */
 export async function GET(_req: Request, { params }: { params: Promise<{ id: string }> }) {
-  const { error } = await requireApiUser();
+  const { user, error } = await requireApiUser();
   if (error) return error;
   const { id } = await params;
-  const row = await getSolicitud(id);
+  const row = await getSolicitud(id, user);
   if (!row) return NextResponse.json({ ok: false, error: "No existe" }, { status: 404 });
   return new NextResponse(row.prompt ?? "", {
     headers: {

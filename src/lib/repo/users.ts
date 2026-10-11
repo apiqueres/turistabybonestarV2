@@ -64,6 +64,11 @@ export async function listUsers() {
   }));
 }
 
+/** Cuentas activas a las que se puede asignar una solicitud (id y nombre). */
+export async function listAssignees(): Promise<{ id: string; name: string }[]> {
+  return db().adminUser.findMany({ where: { active: true }, select: { id: true, name: true }, orderBy: { name: "asc" } });
+}
+
 /** Activa o desactiva una cuenta. Nadie puede desactivarse a sí mismo. */
 export async function setUserActive(targetId: string, active: boolean, actorId: string): Promise<"ok" | "self"> {
   if (!active && targetId === actorId) return "self";

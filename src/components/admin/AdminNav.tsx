@@ -7,25 +7,31 @@ import { Brand } from "@/components/layout/Brand";
 import { STATIC_DEMO } from "@/lib/config";
 import { demoLogout } from "@/lib/admin/auth";
 
-export const ADMIN_NAV = [
-  { href: "/admin/solicitudes", label: "Solicitudes" },
-  { href: "/admin/contactos", label: "Contactos" },
-  { href: "/admin/destinos", label: "Destinos" },
-  { href: "/admin/ofertas", label: "Ofertas" },
-  { href: "/admin/preguntas", label: "Preguntas" },
-  { href: "/admin/textos", label: "Textos" },
-  { href: "/admin/cuenta", label: "Cuenta" },
+type Role = "admin" | "gestor";
+
+/** Secciones del panel y quién las ve. El gestor solo tiene Solicitudes y «Mi cuenta». */
+export const ADMIN_NAV: { href: string; label: string; roles: Role[] }[] = [
+  { href: "/admin/solicitudes", label: "Solicitudes", roles: ["admin", "gestor"] },
+  { href: "/admin/contactos", label: "Contactos", roles: ["admin"] },
+  { href: "/admin/destinos", label: "Destinos", roles: ["admin"] },
+  { href: "/admin/ofertas", label: "Ofertas", roles: ["admin"] },
+  { href: "/admin/preguntas", label: "Preguntas", roles: ["admin"] },
+  { href: "/admin/textos", label: "Textos", roles: ["admin"] },
+  { href: "/admin/usuarios", label: "Usuarios", roles: ["admin"] },
+  { href: "/admin/cuenta", label: "Mi cuenta", roles: ["admin", "gestor"] },
 ];
 
 interface Props {
   userLabel: string;
+  /** Rol de la sesión; sin dato se muestra todo el menú (solo lo usa la demo). */
+  role?: Role;
   note?: string;
   /** Secciones que no existen en la demo estática. */
   hide?: string[];
 }
 
-/** Barra lateral del panel: marca, navegación y cierre de sesión. */
-export function AdminNav({ userLabel, note, hide = [] }: Props) {
+/** Barra lateral del panel: marca, navegación por rol y cierre de sesión. */
+export function AdminNav({ userLabel, role = "admin", note, hide = [] }: Props) {
   const pathname = usePathname();
   const router = useRouter();
   const logout = async () => {
@@ -42,7 +48,7 @@ export function AdminNav({ userLabel, note, hide = [] }: Props) {
     <aside className="admin-side">
       <Brand href="/" />
       <nav className="admin-nav" aria-label="Administración">
-        {ADMIN_NAV.filter((n) => !hide.includes(n.href)).map((n) => (
+        {ADMIN_NAV.filter((n) => n.roles.includes(role) && !hide.includes(n.href)).map((n) => (
           <Link key={n.href} href={n.href} className={pathname.startsWith(n.href) ? "is-active" : ""}>
             {n.label}
           </Link>

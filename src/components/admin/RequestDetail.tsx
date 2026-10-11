@@ -71,6 +71,14 @@ export function RequestDetail({ request: r, steps, brand, store, onDeleted }: Pr
       onDeleted();
     });
   };
+  const isAdmin = store.viewer.role === "admin";
+  const assign = async (gestorId: string | null) => {
+    try {
+      setState(await store.assign(r.id, gestorId));
+    } catch (err) {
+      setState(err instanceof Error ? err.message : "No se pudo asignar la solicitud.");
+    }
+  };
 
   return (
     <div className="detail">
@@ -83,6 +91,19 @@ export function RequestDetail({ request: r, steps, brand, store, onDeleted }: Pr
                 <option key={s} value={s}>{STATUS[s]}</option>
               ))}
             </select>
+          </div>
+          <div>
+            <label className="lbl" htmlFor={`gs-${r.id}`}>Gestor</label>
+            {isAdmin ? (
+              <select id={`gs-${r.id}`} className="select" value={r.assignedTo?.id ?? ""} onChange={(e) => void assign(e.target.value || null)}>
+                <option value="">Sin asignar</option>
+                {store.gestores.map((g) => (
+                  <option key={g.id} value={g.id}>{g.name}</option>
+                ))}
+              </select>
+            ) : (
+              <div className="t-small">{r.assignedTo?.name ?? "Sin asignar"}</div>
+            )}
           </div>
           <div>
             <span className="lbl">Contacto</span>
@@ -120,7 +141,8 @@ export function RequestDetail({ request: r, steps, brand, store, onDeleted }: Pr
                 <li key={m.id} className="flex gap-3 flex-wrap">
                   <span className="t-muted whitespace-nowrap">{fmt(m.createdAt)}</span>
                   <span>{KIND[m.kind] ?? m.kind} · {m.subject}</span>
-                  <span className={`badge ${m.status === "sent" ? "nueva" : "cerrada"}`}>{m.status === "sent" ? "Enviado" : m.status === "skipped" ? "Sin SMTP" : "Error"}</span>
+                  {m.from && <span className="t-muted">desde {m.from}</span>}
+                  <span className={`badge ${m.status === "sent" ? "nueva" : "cerrada"}`} title={m.error ?? undefined}>{m.status === "sent" ? "Enviado" : "Error"}</span>
                 </li>
               ))}
             </ul>
@@ -135,7 +157,7 @@ export function RequestDetail({ request: r, steps, brand, store, onDeleted }: Pr
             <ArrowRight className="btn-icon" />
           </button>
           <button type="button" className="btn btn-secondary btn-sm" onClick={copyBrief}>Copiar brief para el gestor</button>
-          <button type="button" className="btn btn-secondary btn-sm" onClick={remove}>Eliminar solicitud</button>
+          {isAdmin && <button type="button" className="btn btn-secondary btn-sm" onClick={remove}>Eliminar solicitud</button>}
           {state && <span className="form-status">{state}</span>}
         </div>
         {composing ? (

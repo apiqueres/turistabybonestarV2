@@ -19,6 +19,18 @@ export type PasswordChangeInput = z.infer<typeof passwordChangeSchema>;
 
 export const requestStatusSchema = z.enum(["nueva", "en-curso", "cerrada"]);
 export const requestPatchSchema = z.object({ status: requestStatusSchema.optional(), notes: z.string().max(20_000).optional() });
+export const assignSchema = z.object({ gestorId: z.string().trim().min(1).max(64).nullable() });
+
+/** Gmail propio: cuenta de Google y contraseña de aplicación (16 letras; los espacios se ignoran). */
+export const gmailSchema = z.object({
+  gmailUser: z.string().trim().toLowerCase().email("Escribe el Gmail completo").max(200),
+  appPassword: z
+    .string()
+    .transform((v) => v.replace(/\s+/g, ""))
+    .pipe(z.string().min(16, "La contraseña de aplicación tiene 16 caracteres").max(64)),
+});
+export const bccSchema = z.object({ bccSelf: z.boolean() });
+export const userActiveSchema = z.object({ active: z.boolean() });
 export const adminMessageSchema = z.object({
   subject: z.string().trim().min(1, "Falta el asunto").max(200),
   message: z.string().trim().min(1, "Escribe el mensaje").max(20_000),

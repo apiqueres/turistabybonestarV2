@@ -51,6 +51,18 @@ export function RequestsAdmin({ store, steps, brand }: Props) {
               </option>
             ))}
           </select>
+          {store.viewer.role === "admin" && (
+            <>
+              <label className="lbl mb-0" htmlFor="gst">Gestor</label>
+              <select id="gst" className="select" style={{ width: "auto" }} value={store.gestor} onChange={(e) => { setOpenId(null); store.setGestor(e.target.value); }}>
+                <option value="todas">Todos</option>
+                <option value="sin">Sin asignar</option>
+                {store.gestores.map((g) => (
+                  <option key={g.id} value={g.id}>{g.name}</option>
+                ))}
+              </select>
+            </>
+          )}
         </form>
       </div>
 
@@ -58,7 +70,7 @@ export function RequestsAdmin({ store, steps, brand }: Props) {
         <table className="table">
           <thead>
             <tr>
-              <th>Fecha</th><th>Cliente</th><th>Destinos</th><th>Viajeros</th><th>Teléfono</th><th>Estado</th>
+              <th>Fecha</th><th>Cliente</th><th>Destinos</th><th>Viajeros</th><th>Teléfono</th><th>Gestor</th><th>Estado</th>
             </tr>
           </thead>
           <tbody>
@@ -75,11 +87,12 @@ export function RequestsAdmin({ store, steps, brand }: Props) {
                     <td>{r.data.destinos.map((d) => d.nombre).join(", ")}</td>
                     <td>{Number(r.data.respuestas.adultos ?? 0) + Number(r.data.respuestas.ninos ?? 0) || "—"}</td>
                     <td className="whitespace-nowrap">{r.data.contacto.telefono || "—"}</td>
+                    <td className="whitespace-nowrap">{r.assignedTo?.name ?? <span className="t-muted">Sin asignar</span>}</td>
                     <td><span className={`badge ${r.status}`}>{STATUS[r.status]}</span></td>
                   </tr>
                   {isOpen && (
                     <tr className="detail-row">
-                      <td colSpan={6}>
+                      <td colSpan={7}>
                         <RequestDetail request={r} steps={steps} brand={brand} store={store} onDeleted={() => setOpenId(null)} />
                       </td>
                     </tr>
@@ -88,7 +101,7 @@ export function RequestsAdmin({ store, steps, brand }: Props) {
               );
             })}
             {store.rows.length === 0 && (
-              <tr><td colSpan={6} className="t-muted">No hay solicitudes con ese filtro.</td></tr>
+              <tr><td colSpan={7} className="t-muted">No hay solicitudes con ese filtro.</td></tr>
             )}
           </tbody>
         </table>
