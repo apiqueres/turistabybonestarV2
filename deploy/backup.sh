@@ -10,15 +10,18 @@
 #   tar -xzf backups/uploads-AAAA-MM-DD.tar.gz -C .
 set -euo pipefail
 cd "$(dirname "$0")/.."
-set -a; . ./.env; set +a
+# No se hace `source .env`: un valor con espacios sin comillas (p. ej. una contraseña de
+# aplicación de Google) rompe la shell. Solo hace falta BACKUP_KEEP_DAYS; usuario y base
+# de datos los conoce ya el contenedor `db` por sus propias variables de entorno.
+KEEP_DAYS=$(sed -nE 's/^BACKUP_KEEP_DAYS=["'"'"']?([0-9]+).*/\1/p' .env 2>/dev/null | tail -1)
 
 DIR=backups
-KEEP_DAYS=${BACKUP_KEEP_DAYS:-14}
+KEEP_DAYS=${KEEP_DAYS:-14}
 STAMP=$(date +%F)
 mkdir -p "$DIR"
 
 echo "[$(date -Is)] pg_dump → $DIR/db-$STAMP.sql.gz"
-docker compose exec -T db pg_dump -U "${POSTGRES_USER:-tbb}" -d "${POSTGRES_DB:-turistabybonestar}" --clean --if-exists | gzip > "$DIR/db-$STAMP.sql.gz.tmp"
+docker compose exec -T db sh -c 'pg_dump -U "$POSTGRES_USER" -d "$POSTGRES_DB" --clean --if-exists' | gzip > "$DIR/db-$STAMP.sql.gz.tmp"
 mv "$DIR/db-$STAMP.sql.gz.tmp" "$DIR/db-$STAMP.sql.gz"
 
 if [ -d data/uploads ]; then
