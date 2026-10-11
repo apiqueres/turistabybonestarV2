@@ -40,7 +40,7 @@ Formas de datos que ya existen y que el backend debe respetar:
 | Base de datos | **PostgreSQL 16** en un contenedor del mismo `docker-compose` | Robusta, backups sencillos con `pg_dump`, JSONB para las respuestas del formulario y los bloques de texto |
 | ORM | **Prisma** (`prisma`, `@prisma/client`) | Migraciones versionadas, cliente tipado, seed en TypeScript |
 | Autenticación del admin | **Auth.js v5** (`next-auth@beta`) con proveedor *Credentials*, contraseñas con `bcryptjs`, sesión en cookie JWT, `middleware.ts` protegiendo `/admin/**` y `/api/admin/**` | Un usuario (o pocos) de la agencia, sin OAuth. Se puede añadir 2FA después |
-| Correo | **Nodemailer por SMTP desde el servidor** (`src/lib/mailer.ts`). Proveedor: Brevo/Resend/SMTP de Gmail con contraseña de aplicación | Las plantillas HTML ya existen; solo cambia quién envía. Se elimina EmailJS del front |
+| Correo | **Nodemailer contra `smtp.gmail.com:587`** (`src/lib/mailer.ts`) con la **contraseña de aplicación de Google de cada usuario**, guardada cifrada en su fila de `AdminUser` y configurable por cada uno desde «Mi cuenta». La entrada llega por Cloudflare Email Routing | Sin servicios de terceros. Las plantillas HTML ya existen; solo cambia quién envía. Se elimina EmailJS del front |
 | Imágenes | Subida al servidor, procesado con `sharp` a WebP (máx. 1600 px) y guardado en el volumen `/app/data/uploads`, servido por Nginx en `/uploads/` | Sin dependencia de terceros; `sharp` ya está en el proyecto (pasar a `dependencies`) |
 | Caché de páginas | Páginas públicas renderizadas en servidor con revalidación por etiqueta: cada guardado del admin llama a `revalidateTag`/`revalidatePath` | Las páginas siguen siendo rápidas y el admin ve el cambio al instante |
 | Demo en Pages | `getSiteContent()` y el admin mantienen el camino actual cuando no hay `DATABASE_URL` (`NEXT_PUBLIC_STATIC_DEMO=1`) | La demo pública sigue viva mientras se desarrolla |
@@ -56,6 +56,10 @@ model AdminUser {
   role         AdminRole @default(gestor)
   passwordHash String
   active       Boolean  @default(true)
+  // Envío por Gmail: cuenta de Google de la persona y su contraseña de aplicación (cifrada con APP_SECRET_KEY, AES-256-GCM).
+  gmailUser    String?               // p. ej. javier.turista@gmail.com
+  gmailAppPass String?               // cifrada; nunca se devuelve al cliente
+  bccSelf      Boolean  @default(false)
   createdAt    DateTime @default(now())
   lastLoginAt  DateTime?
   asignadas    Solicitud[]
@@ -190,7 +194,8 @@ Reglas:
 - Un gestor puede cambiar estado y notas y escribir al cliente de sus solicitudes; no puede reasignarlas ni ver las de otros. El filtro `assignedToId = sesión.userId` se aplica **en el servidor** (repositorio), nunca solo en la interfaz.
 - Destinos, ofertas, preguntas y textos: solo `admin`. Los gestores ven en el menú únicamente «Solicitudes».
 - Cuando un gestor pulsa «Enviar correo», el mensaje sale con **su dirección corporativa** como `From` y `Reply-To`; las respuestas del cliente llegan a su Gmail por el reenvío de Cloudflare. El admin envía como `contacto@`. Las confirmaciones automáticas al cliente salen siempre de `contacto@`.
-- El envío lo hace el servidor por **Brevo** con el dominio autenticado (DKIM del dominio), que permite cualquier remitente `@turistabybonestar.com`. No se guardan contraseñas de Gmail de nadie. Opcional por usuario: copia oculta a su propia dirección para tener el enviado en su Gmail.
+- El envío lo hace el servidor por **`smtp.gmail.com` (puerto 587, STARTTLS)** autenticándose con la cuenta de Google del usuario en sesión y su **contraseña de aplicación**. Cada usuario la introduce él mismo en «Mi cuenta» (campo de solo escritura; el servidor la guarda cifrada y nunca la muestra). **Requisito**: la dirección corporativa debe estar verificada como «Enviar como» en ese Gmail; si no, Google sustituye el remitente por la dirección gmail.com. Al guardar la clave, el servidor hace un envío de prueba al propio usuario y avisa si el remitente llegó reescrito.
+- Si un gestor aún no ha configurado su Gmail, su correo sale con la cuenta de `contacto@` y `Reply-To` su dirección corporativa, y el admin ve un aviso. Las confirmaciones automáticas y los avisos de nueva solicitud usan siempre la cuenta de `contacto@`. Límite de Google: 500 envíos al día por cuenta, de sobra para la agencia.
 - El seed crea los cuatro usuarios con contraseña inicial de `ADMIN_SEED_PASSWORD` y los obliga a cambiarla en el primer acceso.
 
 ## 3. Contrato de la API
@@ -215,7 +220,7 @@ Rutas del admin (requieren sesión de Auth.js; prefijo `/api/admin/*` o Server A
 | `textos` | leer y guardar cada bloque de `SiteSetting` (hero, método, equipo, cierre, contacto, footer, marca) |
 | `media` | `POST /api/admin/media` (multipart) → `{ path, width, height }`; `DELETE` |
 | `usuarios` | (solo admin) listar, crear, desactivar, cambiar rol, restablecer contraseña |
-| `cuenta` | cambiar contraseña, activar copia oculta de los correos enviados |
+| `cuenta` | cambiar contraseña, **conectar Gmail** (cuenta de Google + contraseña de aplicación, con envío de prueba), activar copia oculta de los correos enviados |
 
 Recomendación: implementar las mutaciones del admin como **Server Actions** (`src/lib/admin/actions/*.ts` con `"use server"`) y dejar como Route Handlers solo lo que necesite URL propia (subida de imágenes, descarga del `.txt`, API pública). Las Server Actions ya traen protección de origen y se llaman desde los componentes existentes sin montar un cliente HTTP.
 
@@ -295,14 +300,16 @@ AUTH_SECRET=<openssl rand -base64 32>
 AUTH_URL=https://turistabybonestar.com
 ADMIN_SEED_PASSWORD=<contraseña inicial de los cuatro usuarios; se cambia en el primer acceso>
 
-# Correo: Brevo por SMTP (puerto 587; el 25 está bloqueado en el VPS). Dominio autenticado en Brevo
-# para poder enviar con cualquier remitente @turistabybonestar.com. La entrada la gestiona Cloudflare Email Routing.
-SMTP_HOST=smtp-relay.brevo.com
+# Correo: Gmail por SMTP (smtp.gmail.com:587; el puerto 25 está bloqueado en el VPS).
+# Cada usuario guarda su contraseña de aplicación desde «Mi cuenta»; aquí solo va la de la agencia,
+# usada para confirmaciones automáticas, avisos y como respaldo. La entrada la gestiona Cloudflare Email Routing.
+SMTP_HOST=smtp.gmail.com
 SMTP_PORT=587
-SMTP_USER=<login de Brevo>
-SMTP_PASS=<clave SMTP de Brevo>
+AGENCY_GMAIL_USER=<gmail de contacto@>
+AGENCY_GMAIL_APP_PASSWORD=<contraseña de aplicación de ese Gmail>
 MAIL_FROM="TuristaByBonestar <contacto@turistabybonestar.com>"   # confirmaciones automáticas
 MAIL_AGENCY=contacto@turistabybonestar.com                        # recibe los avisos de solicitudes y contactos
+APP_SECRET_KEY=<openssl rand -base64 32>                          # cifra las contraseñas de aplicación guardadas en la base de datos
 
 # Archivos
 DATA_DIR=/app/data            # uploads y copias
@@ -313,6 +320,7 @@ UPLOAD_MAX_MB=10
 
 - Toda entrada pasa por zod (`src/lib/validation.ts`); los esquemas existentes no se relajan.
 - Contraseñas con `bcryptjs` (coste 12); nunca se registran en logs; el seed no deja la contraseña inicial en la base en claro.
+- Las contraseñas de aplicación de Google se cifran con AES-256-GCM y `APP_SECRET_KEY` antes de guardarse, no aparecen en ninguna respuesta ni log, y se pueden borrar desde «Mi cuenta».
 - Las rutas `/api/admin/*` y las Server Actions comprueban la sesión en servidor en cada llamada (no basta el middleware).
 - Límite de peticiones en las rutas públicas y tamaño máximo de cuerpo (Nginx ya tiene `client_max_body_size 20m`).
 - Subidas: comprobar el tipo real del archivo con `sharp` (no solo la extensión), renombrar con id aleatorio, no servir nunca desde una ruta que permita `..`.
