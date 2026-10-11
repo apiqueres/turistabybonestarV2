@@ -9,6 +9,10 @@ ADD COLUMN     "gmailUser" TEXT,
 ADD COLUMN     "mustChangePassword" BOOLEAN NOT NULL DEFAULT true,
 ADD COLUMN     "role" "AdminRole" NOT NULL DEFAULT 'gestor';
 
+-- Las cuentas anteriores a este cambio eran administradores completos y ya tienen contraseña elegida:
+-- no se les rebaja a gestor ni se les obliga a cambiarla.
+UPDATE "AdminUser" SET "role" = 'admin', "mustChangePassword" = false;
+
 -- AlterTable
 ALTER TABLE "MessageLog" ADD COLUMN     "from" TEXT NOT NULL DEFAULT '',
 ADD COLUMN     "sentById" TEXT;

@@ -2,7 +2,7 @@
 
 Web de la agencia de viajes a medida TuristaByBonestar (Sueca, Valencia). Estilo editorial premium en tema claro (blanco, negro y cian), con animaciones GSAP + ScrollTrigger. Las fotografías de los destinos son reales (Wikimedia Commons, licencias libres, ver `/creditos`); el vídeo hero, la foto de «Sobre nosotros», la del cierre y los retratos del equipo se generaron con Higgsfield.
 
-El backend vive **dentro del mismo proyecto Next.js** (Route Handlers + componentes de servidor) sobre **PostgreSQL + Prisma**, con el panel `/admin` protegido por **Auth.js** y el correo enviado por **SMTP desde el servidor**. El plan original está en [`docs/PLAN-BACKEND.md`](docs/PLAN-BACKEND.md) y la guía de operación en [`docs/OPERACION.md`](docs/OPERACION.md).
+El backend vive **dentro del mismo proyecto Next.js** (Route Handlers + componentes de servidor) sobre **PostgreSQL + Prisma**, con el panel `/admin` protegido por **Auth.js** y el correo enviado desde el servidor por **Gmail (SMTP)**. El plan original está en [`docs/PLAN-BACKEND.md`](docs/PLAN-BACKEND.md) y la guía de operación en [`docs/OPERACION.md`](docs/OPERACION.md).
 
 ## Rutas
 
@@ -14,14 +14,15 @@ El backend vive **dentro del mismo proyecto Next.js** (Route Handlers + componen
 | `/ofertas` | Ofertas de temporada activas y la comunidad de WhatsApp. |
 | `/contacto` | Datos de contacto, horario y formulario corto de 4 campos. |
 | `/aviso-legal`, `/privacidad`, `/cookies`, `/creditos` | Páginas legales y créditos fotográficos. |
-| `/admin/login` | Acceso al panel (usuario y contraseña de la base de datos; sesión de 12 h). |
-| `/admin/solicitudes` | Solicitudes del asistente: listado paginado (10) con filtro por estado y búsqueda, detalle en línea con estado, notas, respuestas, brief `.txt`, correos enviados, redactor que envía por SMTP y botón de **eliminar** (RGPD). |
+| `/admin/login` | Acceso al panel con el correo corporativo y la contraseña (sesión de 12 h). |
+| `/admin/solicitudes` | Solicitudes del asistente: listado paginado (10) con filtros por estado, gestor y búsqueda; asignación a gestor (este recibe un aviso con el brief; solo admin); detalle en línea con estado, notas, respuestas, brief `.txt`, correos enviados, redactor que envía por SMTP y botón de **eliminar** (RGPD). |
 | `/admin/contactos` | Mensajes del formulario corto: marcar atendido, responder, eliminar. |
 | `/admin/destinos` | Destinos: textos, coordenadas, portada, imagen (subida al servidor), orden. |
 | `/admin/ofertas` | Ofertas: alta, edición, activar/ocultar, orden, imagen. |
 | `/admin/preguntas` | Páginas del asistente: títulos, textos, etiquetas, máximo de opciones y opciones. |
 | `/admin/textos` | Bloques de texto de la web: marca y contacto (teléfono, WhatsApp, comunidad), menú, portada, método, equipo, cierre, mapa, contacto, ofertas, pie. |
-| `/admin/cuenta` | Cambio de contraseña. |
+| `/admin/cuenta` | Mi cuenta (todos): cambio de contraseña y conexión del Gmail propio con contraseña de aplicación cifrada. |
+| `/admin/usuarios` | Solo admin: los cuatro usuarios, activar/desactivar y restablecer contraseña (temporal de un solo uso). |
 | `POST /api/solicitudes` | Recibe el asistente, valida con zod, guarda la solicitud y su brief en la base de datos y envía la confirmación al cliente y el aviso a la agencia. |
 | `POST /api/contacto` | Recibe el formulario corto, lo guarda y avisa a la agencia. |
 | `/api/admin/*` | API del panel (requiere sesión): solicitudes, contactos, destinos, ofertas, preguntas, textos, media (subida de imágenes), cuenta. |
@@ -37,7 +38,7 @@ La selección del mapa y las respuestas del asistente se guardan en `localStorag
 | Front y backend | **Next.js 16** (App Router, Route Handlers) + **React 19** + **TypeScript** | Un solo proyecto y un solo contenedor: web pública, API y panel comparten tipos y validación. |
 | Base de datos | **PostgreSQL 16** + **Prisma 7** (`@prisma/adapter-pg`) | Migraciones versionadas, cliente tipado, JSONB para respuestas y bloques de texto. |
 | Autenticación | **Auth.js v5** (Credentials + bcryptjs, sesión JWT en cookie) | Uno o pocos administradores, sin OAuth. `src/proxy.ts` protege `/admin/**` y `/api/admin/**`. |
-| Correo | **Nodemailer** por SMTP (Brevo, Resend, Gmail…) | Las plantillas HTML con la marca ya existían; ahora las envía el servidor. |
+| Correo | **Nodemailer** por Gmail (`smtp.gmail.com:587`, STARTTLS) | Las plantillas HTML con la marca ya existían; ahora las envía el servidor. |
 | Imágenes | **sharp** | Las subidas se convierten a WebP (máx. 1600 px) y se guardan en `data/uploads`. |
 | Estilos | **Tailwind CSS 4** + CSS propio (`src/app/globals.css`) | Tokens del sistema visual en variables CSS; utilidades solo para layout. |
 | Animación | **GSAP 3 + ScrollTrigger** | Scrub de titulares, parallax, contadores, cascadas y el avión de transición. |
@@ -53,18 +54,20 @@ La selección del mapa y las respuestas del asistente se guardan en `localStorag
 
 ## Panel de administración
 
-- Login con Auth.js (`src/auth.ts`): correo y contraseña de la tabla `AdminUser` (bcrypt, coste 12). La cookie es `httpOnly`, `sameSite=lax`, `secure` con HTTPS, y caduca a las 12 h. El usuario inicial lo crea el seed con `ADMIN_EMAIL`/`ADMIN_PASSWORD`; cámbiala desde **Cuenta**.
+- Login con Auth.js (`src/auth.ts`): correo y contraseña de la tabla `AdminUser` (bcrypt, coste 12). La cookie es `httpOnly`, `sameSite=lax`, `secure` con HTTPS, y caduca a las 12 h. El seed crea los cuatro usuarios (`contacto@`, `javierestornell@`, `sandramartinez@`, `alexandra@`) con `ADMIN_SEED_PASSWORD` y `mustChangePassword`: deben cambiarla en su primer acceso. Roles: `admin` (todo el panel) y `gestor` (solo sus solicitudes asignadas y Mi cuenta). `requireUser`, `requireApiUser`, `requireRole` y `requireApiRole` leen rol, estado activo y cambio pendiente de la base de datos en cada petición, así que una desactivación surte efecto al momento.
 - Cada página del panel carga los datos en el servidor (`src/lib/repo/*`) y los componentes (`src/components/admin/*`) hablan con `/api/admin/*` a través de `src/lib/admin/api.ts`. `src/components/admin/sources.tsx` define la «fuente» de cada sección: base de datos (VPS) o `localStorage` (demo estática).
 - Las mutaciones van por Route Handlers y no por Server Actions porque la demo de GitHub Pages es una exportación estática, donde las Server Actions no compilan.
 - Cada ruta de `/api/admin/*` comprueba la sesión en el servidor (no basta el proxy) y valida la entrada con zod.
 
 ## Correo
 
-`src/lib/mailer.ts` envía por SMTP con las variables `SMTP_*` y `MAIL_FROM`/`MAIL_AGENCY`:
+`src/lib/mailer.ts` envía por Gmail (`SMTP_HOST`/`SMTP_PORT`, STARTTLS):
 
 - **Confirmación al cliente** (`clientConfirmationEmail`) y **aviso a la agencia** (`agencyRequestEmail`, con el brief completo en la versión de texto) al recibir una solicitud; **aviso a la agencia** (`agencyContactEmail`) al recibir un contacto. Se envían después de responder al navegador (`after()`), así el formulario no espera al SMTP.
-- **Mensaje del gestor** (`clientMessageEmail`) desde la ficha de cada solicitud en el panel, con vista previa en vivo.
-- Todo envío deja traza en `MessageLog` (enviado / error / sin SMTP). Sin `SMTP_HOST` la web funciona igual y los correos quedan registrados como «skipped».
+- **Mensaje del gestor** (`clientMessageEmail`) desde la ficha de cada solicitud o contacto, con vista previa en vivo. Sale con el Gmail del usuario en sesión (`From` y `Reply-To` su dirección corporativa; la contraseña de aplicación va cifrada con `APP_SECRET_KEY`). Sin Gmail conectado, sale con la cuenta de la agencia y lo indica en pantalla.
+- **Aviso al gestor** (`agencyRequestEmail`) al asignarle una solicitud.
+- Las cuentas de la agencia son `AGENCY_GMAIL_USER` / `AGENCY_GMAIL_APP_PASSWORD`; `MAIL_FROM` es el remitente de las confirmaciones y `MAIL_AGENCY` el destino de los avisos.
+- Todo envío deja traza en `MessageLog` (remitente, usuario que lo envió, estado y error). Sin credenciales, el intento queda como «error» con el motivo «Correo no configurado» y la web sigue funcionando.
 
 En la demo estática no hay servidor: los botones de correo abren el programa de correo del visitante con un `mailto:` (`src/lib/mailto.ts`).
 
@@ -76,7 +79,7 @@ Modelos (`prisma/schema.prisma`): `AdminUser`, `Destination`, `Offer`, `FormStep
 npm run db:generate   # cliente Prisma (src/generated/prisma, ignorado por git)
 npm run db:migrate    # crea/aplica migraciones en desarrollo (prisma migrate dev)
 npm run db:deploy     # aplica migraciones en producción (lo hace el contenedor al arrancar)
-npm run db:seed       # destinos, ofertas, formulario, textos, admin inicial e importación de data/*.json
+npm run db:seed       # destinos, ofertas, formulario, textos, los cuatro usuarios (ADMIN_SEED_PASSWORD) e importación de data/*.json
 npm run db:studio     # Prisma Studio
 ```
 
@@ -112,14 +115,14 @@ docs/                        PLAN-BACKEND.md, OPERACION.md
 
 ```bash
 npm install
-cp .env.example .env         # DATABASE_URL de un PostgreSQL local, AUTH_SECRET, ADMIN_EMAIL/ADMIN_PASSWORD…
+cp .env.example .env         # DATABASE_URL de un PostgreSQL local, AUTH_SECRET, APP_SECRET_KEY, ADMIN_SEED_PASSWORD…
 npm run db:migrate && npm run db:seed
 npm run dev                  # http://localhost:3000  (admin en /admin/login)
 npm run lint && npx tsc --noEmit
 npm run build && npm start
 ```
 
-Sin `DATABASE_URL` la web arranca con los datos estáticos y sin panel operativo. Para probar el correo en local sin un proveedor, cualquier servidor SMTP de pruebas sirve (`SMTP_HOST=127.0.0.1`, `SMTP_PORT=2525`).
+Sin `DATABASE_URL` la web arranca con los datos estáticos y sin panel operativo. En local no hace falta correo: sin `AGENCY_GMAIL_*` los envíos quedan registrados como error «Correo no configurado».
 
 Scripts auxiliares:
 
@@ -154,13 +157,13 @@ y devuélvelos a su sitio; el resultado queda en `out/`.
 ## Despliegue en el VPS (Docker Compose + Nginx)
 
 1. Instala Docker (con el plugin Compose) y Nginx en el servidor y apunta el dominio a su IP.
-2. Clona el proyecto (en este servidor está en `/opt/turistabybonestar/turistabybonestarV2`) y crea `.env` a partir de `.env.example`: `POSTGRES_PASSWORD`, `DATABASE_URL` (con esa misma contraseña y host `db`), `AUTH_SECRET` (`openssl rand -base64 32`), `ADMIN_EMAIL`/`ADMIN_PASSWORD` (solo para el primer arranque), `SMTP_*`, `MAIL_FROM`, `MAIL_AGENCY`, `NEXT_PUBLIC_SITE_URL`, `AUTH_URL`.
+2. Clona el proyecto (en este servidor está en `/opt/turistabybonestar/turistabybonestarV2`) y crea `.env` a partir de `.env.example`: `POSTGRES_PASSWORD`, `DATABASE_URL` (con esa misma contraseña y host `db`), `AUTH_SECRET` (`openssl rand -base64 32`), `ADMIN_SEED_PASSWORD`, `APP_SECRET_KEY`, `AGENCY_GMAIL_USER`/`AGENCY_GMAIL_APP_PASSWORD`, `MAIL_FROM`, `MAIL_AGENCY`, `NEXT_PUBLIC_SITE_URL`, `AUTH_URL`.
 3. Si tienes solicitudes de la versión anterior, deja sus JSON en `data/solicitudes/` y `data/contacto/`: el seed los importa.
 4. Construye y arranca: `docker compose up -d --build`. El contenedor `web` espera a que `db` esté sano, ejecuta `prisma migrate deploy`, el seed (idempotente) y arranca Next en `127.0.0.1:3000`. Comprueba `curl localhost:3000/api/health`.
 5. Copia `deploy/nginx.conf` a `/etc/nginx/sites-available/`, ajusta el dominio y la ruta del `alias` de `/uploads/`, enlázalo en `sites-enabled` y recarga Nginx.
 6. Certificado TLS: `sudo certbot --nginx -d turistabybonestar.com -d www.turistabybonestar.com`.
 7. Copias de seguridad: `crontab -e` → `15 3 * * * cd /opt/turistabybonestar/turistabybonestarV2 && ./deploy/backup.sh >> backups/backup.log 2>&1` (volcado diario de PostgreSQL + tar de `data/uploads`, retención 14 días).
-8. Entra en `https://turistabybonestar.com/admin/login` con `ADMIN_EMAIL`/`ADMIN_PASSWORD` y cambia la contraseña en **Cuenta**.
+8. Entra en `https://turistabybonestar.com/admin/login` con `contacto@turistabybonestar.com` y `ADMIN_SEED_PASSWORD`; el sistema pide cambiar la contraseña. Cada gestor hace lo mismo y conecta su Gmail en **Mi cuenta**.
 
 Para actualizar: `git pull && docker compose up -d --build`. La base de datos (volumen `pgdata`) y `data/uploads` sobreviven a los redespliegues y a los reinicios del servidor (`restart: unless-stopped`). Registro: `docker compose logs -f web`.
 

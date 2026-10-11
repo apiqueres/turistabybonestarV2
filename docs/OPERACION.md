@@ -5,20 +5,21 @@ Cómo se maneja la web en el VPS en el día a día. Todo se ejecuta desde la car
 ## Entrar al panel
 
 1. `https://turistabybonestar.com/admin/login`.
-2. Usuario: el valor de `ADMIN_EMAIL` en `.env` (puede ser un correo o un nombre de usuario; se guarda en minúsculas). Contraseña: la que se puso en `ADMIN_PASSWORD` la primera vez; después, la que se haya cambiado en **Cuenta**.
+2. Usuario: tu correo corporativo (`contacto@`, `javierestornell@`, `sandramartinez@` o `alexandra@`). Contraseña: la que te dio la agencia para el primer acceso (`ADMIN_SEED_PASSWORD`); el panel te obliga a cambiarla al entrar. Si la olvidas, un administrador la restablece desde **Usuarios** y te da una temporal de un solo uso.
 3. La sesión dura 12 horas. **Salir** cierra la sesión en ese navegador.
 
 Secciones:
 
 | Sección | Para qué |
 | --- | --- |
-| Solicitudes | Cada envío del asistente «Cómo viajas». Filtra por estado o busca por nombre/correo/destino. Al abrir una fila: estado, notas internas (se guardan al salir del campo), respuestas, brief `.txt`, correos enviados y «Escribir al cliente» (envía por SMTP con la plantilla de la marca). «Eliminar solicitud» borra los datos personales de verdad (derechos RGPD). |
+| Solicitudes | Cada envío del asistente «Cómo viajas». Filtra por estado o busca por nombre/correo/destino. Al abrir una fila: estado, notas internas (se guardan al salir del campo), respuestas, brief `.txt`, correos enviados y «Escribir al cliente» (envía con tu Gmail conectado, o con la cuenta de la agencia si no lo has conectado). «Eliminar solicitud» borra los datos personales de verdad (derechos RGPD). |
 | Contactos | Mensajes del formulario corto. Marcar atendido, responder (abre el correo) o eliminar. |
 | Destinos | Los doce destinos recomendados: textos, coordenadas, «mostrar en la portada», imagen (se sube al servidor), orden con ↑ ↓. No se puede borrar un destino que tenga ofertas. |
 | Ofertas | Ofertas de temporada: alta, edición, activa/oculta, orden, imagen. |
 | Preguntas | Las dos páginas del asistente. Los cambios se guardan con **Guardar cambios**. |
 | Textos | Bloques de la web: marca y contacto (teléfono, WhatsApp, enlace de la comunidad, horario), menú, portada, método, equipo, cierre, mapa, contacto, ofertas y pie. |
-| Cuenta | Cambiar la contraseña. |
+| Mi cuenta | Cambiar la contraseña y conectar tu Gmail (contraseña de aplicación). Sin Gmail conectado, tus correos salen con la cuenta de la agencia. |
+| Usuarios (solo admin) | Activar o desactivar cuentas y restablecer contraseñas. |
 
 Cualquier cambio se ve en la web pública al recargar.
 
@@ -75,7 +76,7 @@ Imágenes:
 tar -xzf backups/uploads-2026-10-07.tar.gz -C .
 ```
 
-Servidor nuevo desde cero: clona el repositorio, copia `.env` y la carpeta `backups/`, `docker compose up -d --build` (crea la base de datos vacía y migrada), y después restaura la base de datos y las imágenes como arriba. Si no hay copia de la base de datos, el seed deja la web con los destinos, ofertas y textos iniciales y el usuario de `ADMIN_EMAIL`/`ADMIN_PASSWORD`.
+Servidor nuevo desde cero: clona el repositorio, copia `.env` y la carpeta `backups/`, `docker compose up -d --build` (crea la base de datos vacía y migrada), y después restaura la base de datos y las imágenes como arriba. Si no hay copia de la base de datos, el seed deja la web con los destinos, ofertas y textos iniciales y los cuatro usuarios con `ADMIN_SEED_PASSWORD`.
 
 ## Actualizar la web
 
@@ -93,7 +94,7 @@ El contenedor aplica las migraciones pendientes (`prisma migrate deploy`) y el s
 
 - `curl -s localhost:3000/api/health` → `{"ok":true,"db":"ok"}`.
 - `docker compose ps` → `tbb-db` *healthy* y `tbb-web` *healthy*.
-- Envía una solicitud de prueba desde la web y comprueba que aparece en **Solicitudes** y que llegan los dos correos (cliente y agencia). Si no llegan, en la ficha de la solicitud el apartado «Correos enviados» indica *Error* o *Sin SMTP*; revisa `SMTP_*` en `.env` y `docker compose logs web | grep mailer`.
+- Envía una solicitud de prueba desde la web y comprueba que aparece en **Solicitudes** y que llegan los dos correos (cliente y agencia). Si no llegan, en la ficha de la solicitud el apartado «Correos enviados» indica *Error* (el motivo aparece al pasar el ratón); revisa `AGENCY_GMAIL_*` en `.env` y `docker compose logs web | grep mailer`.
 - Tras un reinicio del servidor los contenedores vuelven solos (`restart: unless-stopped`).
 
 ## Mantenimiento opcional
