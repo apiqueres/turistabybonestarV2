@@ -51,12 +51,16 @@ Formas de datos que ya existen y que el backend debe respetar:
 // prisma/schema.prisma (resumen; completar enums y @@index)
 model AdminUser {
   id           String   @id @default(cuid())
-  email        String   @unique
+  email        String   @unique        // dirección corporativa: contacto@, javierestornell@, sandramartinez@, alexandra@
   name         String
+  role         AdminRole @default(gestor)
   passwordHash String
+  active       Boolean  @default(true)
   createdAt    DateTime @default(now())
   lastLoginAt  DateTime?
+  asignadas    Solicitud[]
 }
+enum AdminRole { admin gestor }
 
 model Destination {
   id         String   @id            // ISO numérico ("392"), igual que hoy
@@ -123,8 +127,11 @@ model Solicitud {
   prompt    String                  // brief .txt generado con buildPrompt()
   email     String                  // copia desnormalizada para buscar
   phone     String
+  assignedToId String?              // gestor que la atiende (null = sin asignar, solo la ve el admin)
+  assignedTo   AdminUser? @relation(fields: [assignedToId], references: [id])
+  assignedAt   DateTime?
   messages  MessageLog[]
-  @@index([createdAt]) @@index([status]) @@index([email])
+  @@index([createdAt]) @@index([status]) @@index([email]) @@index([assignedToId])
 }
 enum RequestStatus { nueva en_curso cerrada }
 
@@ -141,6 +148,8 @@ model MessageLog {             // correos enviados (confirmaciones y mensajes de
   solicitudId String?
   solicitud   Solicitud? @relation(fields: [solicitudId], references: [id])
   to          String
+  from        String              // remitente usado (dirección corporativa del gestor o contacto@)
+  sentById    String?             // usuario del admin que lo envió
   subject     String
   kind        String              // "confirmacion" | "admin" | "aviso-agencia"
   status      String              // "sent" | "error"
@@ -164,6 +173,26 @@ Notas:
 - Las respuestas del formulario (`data.respuestas`) van en JSONB tal cual: las preguntas son editables desde el admin y no conviene una columna por pregunta.
 - `SiteSetting.data` guarda cada bloque de `SiteContent` con la misma forma que `src/data/site.ts`, así `getSiteContent()` puede hacer `{ ...siteContent, ...bloquesDeLaBD }` sin transformar nada.
 
+### Usuarios, roles y asignación
+
+Hay cuatro usuarios, uno por dirección corporativa (el correo entrante llega a cada uno por Cloudflare Email Routing):
+
+| Usuario | Dirección | Rol | Qué ve |
+| --- | --- | --- | --- |
+| Contacto (agencia) | contacto@turistabybonestar.com | `admin` | Todas las solicitudes y contactos; asigna, reasigna y gestiona usuarios, destinos, ofertas, textos |
+| Javier | javierestornell@turistabybonestar.com | `gestor` | Solo las solicitudes que tiene asignadas |
+| Sandra | sandramartinez@turistabybonestar.com | `gestor` | Solo las suyas |
+| Alexandra | alexandra@turistabybonestar.com | `gestor` | Solo las suyas |
+
+Reglas:
+
+- Una solicitud nueva entra **sin asignar**: el aviso llega a `contacto@` y solo el admin la ve hasta que la asigna a un gestor (desde el detalle en línea o en bloque desde el listado). Al asignar, el gestor recibe un correo de aviso con el brief.
+- Un gestor puede cambiar estado y notas y escribir al cliente de sus solicitudes; no puede reasignarlas ni ver las de otros. El filtro `assignedToId = sesión.userId` se aplica **en el servidor** (repositorio), nunca solo en la interfaz.
+- Destinos, ofertas, preguntas y textos: solo `admin`. Los gestores ven en el menú únicamente «Solicitudes».
+- Cuando un gestor pulsa «Enviar correo», el mensaje sale con **su dirección corporativa** como `From` y `Reply-To`; las respuestas del cliente llegan a su Gmail por el reenvío de Cloudflare. El admin envía como `contacto@`. Las confirmaciones automáticas al cliente salen siempre de `contacto@`.
+- El envío lo hace el servidor por **Brevo** con el dominio autenticado (DKIM del dominio), que permite cualquier remitente `@turistabybonestar.com`. No se guardan contraseñas de Gmail de nadie. Opcional por usuario: copia oculta a su propia dirección para tener el enviado en su Gmail.
+- El seed crea los cuatro usuarios con contraseña inicial de `ADMIN_SEED_PASSWORD` y los obliga a cambiarla en el primer acceso.
+
 ## 3. Contrato de la API
 
 Rutas públicas (sin sesión), con validación zod y límite de peticiones por IP:
@@ -178,14 +207,15 @@ Rutas del admin (requieren sesión de Auth.js; prefijo `/api/admin/*` o Server A
 
 | Recurso | Operaciones |
 | --- | --- |
-| `solicitudes` | listar (paginado de 10, filtros por estado y texto), ver una, cambiar `status`, editar `notes`, **enviar correo al cliente** (`POST /api/admin/solicitudes/:id/mensaje` con `{ subject, intro, body, closing }` → usa `clientMessageEmail`), descargar brief `.txt` |
+| `solicitudes` | listar (paginado de 10, filtros por estado, gestor y texto; un gestor solo recibe las suyas), ver una, cambiar `status`, editar `notes`, **asignar/reasignar gestor** (solo admin), **enviar correo al cliente** (`POST /api/admin/solicitudes/:id/mensaje` con `{ subject, intro, body, closing }` → usa `clientMessageEmail`, remitente = dirección del usuario en sesión), descargar brief `.txt`, eliminar (solo admin) |
 | `contactos` | listar, marcar atendido |
 | `destinos` | listar, crear, editar, borrar, reordenar, marcar destacado |
 | `ofertas` | listar, crear, editar, borrar, activar/ocultar, reordenar |
 | `preguntas` | leer y guardar las dos páginas del formulario (`FormStep[]`) |
 | `textos` | leer y guardar cada bloque de `SiteSetting` (hero, método, equipo, cierre, contacto, footer, marca) |
 | `media` | `POST /api/admin/media` (multipart) → `{ path, width, height }`; `DELETE` |
-| `cuenta` | cambiar contraseña |
+| `usuarios` | (solo admin) listar, crear, desactivar, cambiar rol, restablecer contraseña |
+| `cuenta` | cambiar contraseña, activar copia oculta de los correos enviados |
 
 Recomendación: implementar las mutaciones del admin como **Server Actions** (`src/lib/admin/actions/*.ts` con `"use server"`) y dejar como Route Handlers solo lo que necesite URL propia (subida de imágenes, descarga del `.txt`, API pública). Las Server Actions ya traen protección de origen y se llaman desde los componentes existentes sin montar un cliente HTTP.
 
@@ -218,13 +248,14 @@ Recomendación: implementar las mutaciones del admin como **Server Actions** (`s
 - **Hecho cuando**: enviar el formulario desde la web crea la fila, llega el correo de confirmación al cliente y el aviso a la agencia, y el `.txt` se puede descargar desde el admin.
 
 ### Fase 3 · Autenticación
-- Auth.js con Credentials, `src/auth.ts`, `src/middleware.ts` (matcher `/admin/:path*`, `/api/admin/:path*`; `/admin/login` libre).
+- Auth.js con Credentials, `src/auth.ts`, `src/middleware.ts` (matcher `/admin/:path*`, `/api/admin/:path*`; `/admin/login` libre). La sesión lleva `userId`, `role` y `email`; un helper `requireRole("admin")` protege las secciones de solo administrador.
 - Cookies `secure`, `httpOnly`, `sameSite=lax`; expiración de 12 h; `AUTH_SECRET` en `.env`.
 - Pantalla de cambio de contraseña.
 - **Hecho cuando**: sin sesión, `/admin/solicitudes` redirige al login; con sesión, entra; el usuario demo ya no existe.
 
 ### Fase 4 · Admin sobre la base de datos
-- Solicitudes: listado paginado de 10 con filtros, detalle en línea (estado, notas, respuestas, brief, redactor de correo que envía desde el servidor y deja traza en `MessageLog`).
+- Solicitudes: listado paginado de 10 con filtros, columna «Gestor», detalle en línea (estado, notas, respuestas, brief, selector de gestor para el admin, redactor de correo que envía desde el servidor con el remitente del usuario en sesión y deja traza en `MessageLog`). Los gestores solo ven las suyas.
+- Sección **Usuarios** (solo admin) con los cuatro usuarios, rol y restablecer contraseña.
 - Destinos, Ofertas, Preguntas: CRUD con edición en línea, reordenación y revalidación de caché al guardar.
 - Nueva sección **Textos** para los bloques de `SiteSetting` (hero, método, a quién nos dirigimos, dolor real, equipo, cierre, contacto, footer, marca y enlaces de WhatsApp/comunidad).
 - Nueva sección **Contactos** (mensajes del formulario corto).
@@ -262,16 +293,16 @@ DATABASE_URL=postgresql://tbb:<password>@db:5432/turistabybonestar?schema=public
 # Auth.js
 AUTH_SECRET=<openssl rand -base64 32>
 AUTH_URL=https://turistabybonestar.com
-ADMIN_EMAIL=turistasinlicenciabook@gmail.com   # usuario inicial creado por el seed
-ADMIN_PASSWORD=<solo para el primer seed; cambiar desde el admin>
+ADMIN_SEED_PASSWORD=<contraseña inicial de los cuatro usuarios; se cambia en el primer acceso>
 
-# Correo (SMTP del proveedor elegido)
+# Correo: Brevo por SMTP (puerto 587; el 25 está bloqueado en el VPS). Dominio autenticado en Brevo
+# para poder enviar con cualquier remitente @turistabybonestar.com. La entrada la gestiona Cloudflare Email Routing.
 SMTP_HOST=smtp-relay.brevo.com
 SMTP_PORT=587
-SMTP_USER=<usuario>
-SMTP_PASS=<clave>
-MAIL_FROM="TuristaByBonestar <hola@turistabybonestar.com>"
-MAIL_AGENCY=turistasinlicenciabook@gmail.com   # recibe los avisos de solicitudes y contactos
+SMTP_USER=<login de Brevo>
+SMTP_PASS=<clave SMTP de Brevo>
+MAIL_FROM="TuristaByBonestar <contacto@turistabybonestar.com>"   # confirmaciones automáticas
+MAIL_AGENCY=contacto@turistabybonestar.com                        # recibe los avisos de solicitudes y contactos
 
 # Archivos
 DATA_DIR=/app/data            # uploads y copias
