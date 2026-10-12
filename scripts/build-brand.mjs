@@ -55,10 +55,15 @@ const SRC = "scratch/logo-light-a.png";
   const { data: ld, info: li } = await sharp(L).ensureAlpha().raw().toBuffer({ resolveWithObject: true });
   const LW = li.width, LH = li.height, N = LW * LH;
   const PLANE = { left: Math.round(LW * 0.79), top: Math.round(LH * 0.11), width: Math.round(LW * 0.21), height: Math.round(LH * 0.2) };
-  const G = { cx: 0.5 * LW, cy: 0.26 * LH, r: 0.205 * LW };
+  const G = { cx: 0.5 * LW, cy: 0.26 * LH, r: 0.217 * LW };
   const CAM = [[0.172, 0.345], [0.215, 0.345], [0.225, 0.305], [0.36, 0.305], [0.372, 0.345], [0.445, 0.345], [0.448, 0.525], [0.178, 0.53]];
   const inPoly = (px, py, poly) => { let inside = false; for (let i = 0, j = poly.length - 1; i < poly.length; j = i++) { const [xi, yi] = poly[i], [xj, yj] = poly[j]; if (yi > py !== yj > py && px < ((xj - xi) * (py - yi)) / (yj - yi) + xi) inside = !inside; } return inside; };
   const isCyan = (i) => ld[i * 4 + 2] > 150 && ld[i * 4] < 110;
+  // Swoosh centre line (same as TRAIL in Loader.tsx), sampled to find the ring where it passes in front of the globe.
+  const SEG = [[358, 285, 240, 320, 90, 400, 88, 452], [88, 452, 92, 505, 250, 520, 430, 505], [430, 505, 560, 495, 660, 430, 740, 350], [740, 350, 800, 290, 860, 250, 916, 200]];
+  const trail = [];
+  for (const [x0, y0, x1, y1, x2, y2, x3, y3] of SEG) for (let t = 0; t <= 1; t += 0.01) { const u = 1 - t; trail.push([u*u*u*x0 + 3*u*u*t*x1 + 3*u*t*t*x2 + t*t*t*x3, u*u*u*y0 + 3*u*u*t*y1 + 3*u*t*t*y2 + t*t*t*y3]); }
+  const nearTrail = (x, y, d) => trail.some(([tx, ty]) => (tx - x) * (tx - x) + (ty - y) * (ty - y) < d * d);
   const layers = { ring: Buffer.alloc(N * 4), camera: Buffer.alloc(N * 4), words: Buffer.alloc(N * 4), globe: Buffer.alloc(N * 4) };
   const plane = Buffer.alloc(PLANE.width * PLANE.height * 4);
   for (let y = 0; y < LH; y++) for (let x = 0; x < LW; x++) {
@@ -70,7 +75,7 @@ const SRC = "scratch/logo-light-a.png";
       plane[di] = ld[i * 4]; plane[di + 1] = ld[i * 4 + 1]; plane[di + 2] = ld[i * 4 + 2]; plane[di + 3] = ld[i * 4 + 3];
       continue;
     }
-    if (Math.hypot(x - G.cx, y - G.cy) <= G.r) dst = layers.globe;
+    if (Math.hypot(x - G.cx, y - G.cy) <= G.r && !(y > G.cy && nearTrail(x, y, 46))) dst = layers.globe; // the lower swoosh crosses in front of the globe
     else if (inPoly(fx, fy, CAM)) dst = layers.camera;
     else if (fy > 0.86 || (fy > 0.5 && !isCyan(i))) dst = layers.words;                       // letters + subtitle
     else if (fy < 0.27 && (fx < 0.4 || fx > 0.66)) dst = layers.words;                          // sparkles appear with the wordmark

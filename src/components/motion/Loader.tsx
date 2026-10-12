@@ -17,11 +17,11 @@ import { markLoaded, prefersReducedMotion } from "@/lib/motion";
  * Then the wordmark settles in and the screen slides away. Fractions refer to the 1024 × 950 logo box.
  */
 const BOX = { w: 1024, h: 950 };
-const GLOBE = { cx: 0.5, cy: 0.26, r: 0.205 }; // r as a fraction of the width
+const GLOBE = { cx: 0.5, cy: 0.26, r: 0.217 }; // r as a fraction of the width
 const PLANE = { width: 0.21, height: 0.2, heading: -41 }; // sprite points up-right
 const LENS = { x: 0.355, y: 0.44 };
 /** Swoosh centre line in logo pixels: starts behind the globe, swings round the left tip, runs under the camera and climbs to the plane. */
-const TRAIL = "M 358 285 C 230 330 70 400 82 455 C 95 520 260 515 430 500 C 600 485 740 460 800 410 C 850 365 875 245 916 200";
+const TRAIL = "M 358 285 C 240 320 90 400 88 452 C 92 505 250 520 430 505 C 560 495 660 430 740 350 C 800 290 860 250 916 200";
 const TOTAL = 3.7;
 
 const land = feature(landTopo as unknown as Topology, (landTopo as unknown as Topology).objects.land as GeometryCollection);
@@ -138,19 +138,19 @@ export function Loader() {
     <div className={`loader ${done ? "is-done" : ""}`} aria-hidden onTransitionEnd={() => done && setGone(true)}>
       <div className="loader-inner">
         <div className="loader-logo" style={{ aspectRatio: `${BOX.w} / ${BOX.h}` }}>
-          <svg className="loader-layer loader-trail" viewBox={`0 0 ${BOX.w} ${BOX.h}`}>
-            <defs>
-              <mask id="tb-trail-mask" maskUnits="userSpaceOnUse" x="0" y="0" width={BOX.w} height={BOX.h}>
-                <path ref={maskPath} d={TRAIL} fill="none" stroke="#fff" strokeWidth="130" strokeLinecap="round" strokeLinejoin="round" />
-              </mask>
-            </defs>
-            <image href={asset("/brand/loader-ring.png")} width={BOX.w} height={BOX.h} mask="url(#tb-trail-mask)" />
-          </svg>
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img ref={plane} src={asset("/brand/loader-plane.png")} alt="" className="loader-layer loader-plane" style={{ width: `${PLANE.width * 100}%` }} />
           <canvas ref={canvas} className="loader-layer loader-globe" style={globeStyle} />
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img ref={globeRaster} src={asset("/brand/loader-globe.png")} alt="" className="loader-layer" style={{ opacity: 0 }} />
+          <svg className="loader-layer loader-trail" viewBox={`0 0 ${BOX.w} ${BOX.h}`}>
+            <defs>
+              <mask id="tb-trail-mask" maskUnits="userSpaceOnUse" x="0" y="0" width={BOX.w} height={BOX.h}>
+                <path ref={maskPath} d={TRAIL} fill="none" stroke="#fff" strokeWidth="150" strokeLinecap="round" strokeLinejoin="round" />
+              </mask>
+            </defs>
+            <image href={asset("/brand/loader-ring.png")} width={BOX.w} height={BOX.h} mask="url(#tb-trail-mask)" />
+          </svg>
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img ref={camera} src={asset("/brand/loader-camera.png")} alt="" className="loader-layer" style={{ opacity: 0 }} />
           {/* eslint-disable-next-line @next/next/no-img-element */}
