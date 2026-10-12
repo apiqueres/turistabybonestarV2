@@ -49,60 +49,23 @@ const SRC = "scratch/logo-light-a.png";
   // 4) favicon: emblem on white
   const icon = await sharp(markLight).resize({ width: 52, height: 52, fit: "contain", background: { r: 0, g: 0, b: 0, alpha: 0 } }).png().toBuffer();
   await sharp({ create: { width: 64, height: 64, channels: 4, background: "#ffffff" } }).composite([{ input: icon, gravity: "centre" }]).png().toFile("src/app/icon.png");
-  // 4b) loader layers (fractions measured on scratch/logo-grid.jpg): ring + sparkles, plane sprite,
-  // camera, wordmark and a raster globe for the final cross-fade. All but the plane are full-size layers.
+  // 4b) loader sprites (fractions measured on scratch/logo-grid.jpg): the plane and the camera, trimmed.
   const L = await sharp(light).resize({ width: 1024 }).png().toBuffer();
   const { data: ld, info: li } = await sharp(L).ensureAlpha().raw().toBuffer({ resolveWithObject: true });
-  const LW = li.width, LH = li.height, N = LW * LH;
-  const PLANE = { left: Math.round(LW * 0.79), top: Math.round(LH * 0.11), width: Math.round(LW * 0.21), height: Math.round(LH * 0.2) };
-  const G = { cx: 0.5 * LW, cy: 0.26 * LH, r: 0.217 * LW };
-  const CAM = [[0.172, 0.345], [0.215, 0.345], [0.225, 0.305], [0.36, 0.305], [0.372, 0.345], [0.445, 0.345], [0.448, 0.525], [0.178, 0.53]];
+  const LW = li.width, LH = li.height;
+  // tight outline of the camera body (the swoosh brushes its box on every side)
+  const CAM = [[0.19, 0.36], [0.23, 0.36], [0.238, 0.318], [0.347, 0.318], [0.362, 0.36], [0.44, 0.36], [0.44, 0.506], [0.19, 0.506]];
   const inPoly = (px, py, poly) => { let inside = false; for (let i = 0, j = poly.length - 1; i < poly.length; j = i++) { const [xi, yi] = poly[i], [xj, yj] = poly[j]; if (yi > py !== yj > py && px < ((xj - xi) * (py - yi)) / (yj - yi) + xi) inside = !inside; } return inside; };
-  const isCyan = (i) => ld[i * 4 + 2] > 150 && ld[i * 4] < 110;
-  // Swoosh centre line (same as TRAIL in Loader.tsx), sampled to find the ring where it passes in front of the globe.
-  const SEG = [[358, 285, 240, 320, 90, 400, 88, 452], [88, 452, 92, 505, 250, 520, 430, 505], [430, 505, 560, 495, 660, 430, 740, 350], [740, 350, 800, 290, 860, 250, 916, 200]];
-  const trail = [];
-  for (const [x0, y0, x1, y1, x2, y2, x3, y3] of SEG) for (let t = 0; t <= 1; t += 0.01) { const u = 1 - t; trail.push([u*u*u*x0 + 3*u*u*t*x1 + 3*u*t*t*x2 + t*t*t*x3, u*u*u*y0 + 3*u*u*t*y1 + 3*u*t*t*y2 + t*t*t*y3]); }
-  const nearTrail = (x, y, d) => trail.some(([tx, ty]) => (tx - x) * (tx - x) + (ty - y) * (ty - y) < d * d);
-  const layers = { ring: Buffer.alloc(N * 4), camera: Buffer.alloc(N * 4), words: Buffer.alloc(N * 4), globe: Buffer.alloc(N * 4) };
-  const plane = Buffer.alloc(PLANE.width * PLANE.height * 4);
+  const PLANE = { left: Math.round(LW * 0.79), top: Math.round(LH * 0.11), width: Math.round(LW * 0.21), height: Math.round(LH * 0.2) };
+  const cam = Buffer.alloc(LW * LH * 4);
   for (let y = 0; y < LH; y++) for (let x = 0; x < LW; x++) {
-    const i = y * LW + x; if (ld[i * 4 + 3] === 0) continue;
+    const i = (y * LW + x) * 4;
     const fx = x / LW, fy = y / LH;
-    let dst = layers.ring;
-    if (x >= PLANE.left && x < PLANE.left + PLANE.width && y >= PLANE.top && y < PLANE.top + PLANE.height) {
-      const di = ((y - PLANE.top) * PLANE.width + (x - PLANE.left)) * 4;
-      plane[di] = ld[i * 4]; plane[di + 1] = ld[i * 4 + 1]; plane[di + 2] = ld[i * 4 + 2]; plane[di + 3] = ld[i * 4 + 3];
-      continue;
-    }
-    if (Math.hypot(x - G.cx, y - G.cy) <= G.r && !(y > G.cy && nearTrail(x, y, 46))) dst = layers.globe; // the lower swoosh crosses in front of the globe
-    else if (inPoly(fx, fy, CAM)) dst = layers.camera;
-    else if (fy > 0.86 || ((fy > 0.5 || (fy > 0.46 && fx > 0.6)) && !isCyan(i))) dst = layers.words; // letters (the "A" apex rises above the half line) + subtitle
-    else if (fy < 0.27 && (fx < 0.4 || fx > 0.66)) dst = layers.words;                          // sparkles appear with the wordmark
-    dst[i * 4] = ld[i * 4]; dst[i * 4 + 1] = ld[i * 4 + 1]; dst[i * 4 + 2] = ld[i * 4 + 2]; dst[i * 4 + 3] = ld[i * 4 + 3];
+    if (ld[i + 3] && inPoly(fx, fy, CAM)) { cam[i] = ld[i]; cam[i + 1] = ld[i + 1]; cam[i + 2] = ld[i + 2]; cam[i + 3] = ld[i + 3]; }
   }
-  // The camera hides a stretch of the swoosh in the logo. Paint it into the ring layer along the trail so the
-  // plane leaves an unbroken trail; the camera covers it again when it lands.
-  {
-    const R = 19, col = [20, 168, 212];
-    const band = new Uint8Array(N); // coverage of the painted band (max over the discs, so the edges stay smooth)
-    for (const [tx, ty] of trail) {
-      for (let dy = -R; dy <= R; dy++) for (let dx = -R; dx <= R; dx++) {
-        const d2 = dx * dx + dy * dy; if (d2 > R * R) continue;
-        const x = Math.round(tx + dx), y = Math.round(ty + dy); if (x < 0 || y < 0 || x >= LW || y >= LH) continue;
-        if (!inPoly(x / LW, y / LH, CAM)) continue; // only where the camera will cover it
-        const a = Math.round(255 * Math.max(0, Math.min(1, (R - Math.sqrt(d2)) / 2.5)));
-        const i = y * LW + x; if (a > band[i]) band[i] = a;
-      }
-    }
-    for (let i = 0; i < N; i++) {
-      if (!band[i] || layers.ring[i * 4 + 3] > 0) continue;
-      layers.ring[i * 4] = col[0]; layers.ring[i * 4 + 1] = col[1]; layers.ring[i * 4 + 2] = col[2]; layers.ring[i * 4 + 3] = band[i];
-    }
-  }
-  for (const [name, buf] of Object.entries(layers)) await sharp(buf, { raw: { width: LW, height: LH, channels: 4 } }).resize({ width: 768 }).png({ palette: true, quality: 90 }).toFile(`public/brand/loader-${name}.png`);
-  await sharp(plane, { raw: { width: PLANE.width, height: PLANE.height, channels: 4 } }).png().toFile("public/brand/loader-plane.png");
-  console.log("loader layers", JSON.stringify({ W: LW, H: LH, plane: PLANE, globe: G }));
+  await sharp(cam, { raw: { width: LW, height: LH, channels: 4 } }).trim().png().toFile("public/brand/loader-camera.png");
+  await sharp(L).extract(PLANE).trim().png().toFile("public/brand/loader-plane.png");
+  console.log("loader sprites ok");
   // 5) preview sheet: full light on white, full dark on ink, marks
   const tile = async (buf, bg, w, h) => sharp({ create: { width: w, height: h, channels: 4, background: bg } }).composite([{ input: await sharp(buf).resize({ width: w - 40, height: h - 40, fit: "contain", background: { r: 0, g: 0, b: 0, alpha: 0 } }).toBuffer(), gravity: "centre" }]).png().toBuffer();
   const tiles = [await tile(light, "#ffffff", 520, 440), await tile(dark, "#0b0f10", 520, 440), await tile(markLight, "#ffffff", 260, 440), await tile(markDark, "#0b0f10", 260, 440)];
