@@ -8,12 +8,12 @@ interface Props {
   className?: string;
 }
 
-/** Logo + wordmark "TURISTA by BONESTAR". */
+/** Emblem (globe, plane and camera) + wordmark "TURISTA by BONESTAR". The full logo lives in the loader, the veil and the emails. */
 export function Brand({ tone = "dark", href = "/", className = "" }: Props) {
   const inner = (
     <>
       {/* eslint-disable-next-line @next/next/no-img-element */}
-      <img src={asset(`/brand/logo-${tone === "light" ? "white" : "black"}-512.png`)} alt="" />
+      <img src={asset(`/brand/logo-mark-${tone === "light" ? "dark" : "light"}-192.png`)} alt="" />
       <span className="brand-name">
         Turista<span>by</span>Bonestar
       </span>

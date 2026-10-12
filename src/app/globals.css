@@ -178,7 +178,7 @@ button {
   z-index: 3;
 }
 .section-label img {
-  width: 26px;
+  width: 30px;
   height: auto;
   opacity: 0.95;
 }
@@ -333,7 +333,7 @@ html.reduced-motion .hero-el {
   border-right: 1px solid var(--line);
 }
 .nav-logo img {
-  height: 34px;
+  height: 40px;
   width: auto;
 }
 .nav-links {
@@ -419,9 +419,41 @@ html.reduced-motion .hero-el {
   gap: 28px;
   width: min(320px, 70vw);
 }
-.loader-inner img {
-  width: 140px;
+.loader-logo {
+  position: relative;
+  width: min(300px, 70vw);
+}
+.loader-layer {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
   height: auto;
+  display: block;
+}
+.loader-globe {
+  transform-origin: center;
+  will-change: transform;
+}
+.loader-plane {
+  will-change: left, top;
+}
+.loader-burst {
+  position: absolute;
+  width: 18%;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  background: radial-gradient(circle, #fff 0%, rgba(255, 255, 255, 0.9) 35%, rgba(255, 255, 255, 0) 70%);
+  opacity: 0;
+  pointer-events: none;
+}
+.loader-flash {
+  position: absolute;
+  inset: 0;
+  background: #fff;
+  opacity: 0;
+  pointer-events: none;
 }
 .loader-line {
   width: 100%;
@@ -1037,7 +1069,7 @@ html.reduced-motion .hero-el {
   white-space: nowrap;
 }
 .brand img {
-  height: 34px;
+  height: 40px;
   width: auto;
 }
 .brand-name {

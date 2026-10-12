@@ -138,7 +138,7 @@ export function RouteTransition() {
     <div ref={veil} className="route-veil" aria-hidden>
       <div className="route-veil-inner">
         {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img src={asset("/brand/logo-white-512.png")} alt="" className="route-veil-logo" />
+        <img src={asset("/brand/logo-full-dark-512.png")} alt="" className="route-veil-logo" />
         <svg viewBox={`0 0 ${W} ${H}`} className="route-veil-svg">
           <defs>
             <mask id="tb-orbit-mask" maskUnits="userSpaceOnUse" x="0" y="0" width={W} height={H}>
