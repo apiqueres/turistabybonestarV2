@@ -433,10 +433,16 @@ html.reduced-motion .hero-el {
 }
 .loader-globe {
   transform-origin: center;
-  will-change: transform;
+  will-change: transform, opacity;
+  height: auto;
+  aspect-ratio: 1;
+}
+.loader-trail {
+  overflow: visible;
 }
 .loader-plane {
-  will-change: left, top;
+  transform-origin: center;
+  will-change: left, top, transform;
 }
 .loader-burst {
   position: absolute;

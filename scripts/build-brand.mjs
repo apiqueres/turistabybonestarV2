@@ -49,29 +49,36 @@ const SRC = "scratch/logo-light-a.png";
   // 4) favicon: emblem on white
   const icon = await sharp(markLight).resize({ width: 52, height: 52, fit: "contain", background: { r: 0, g: 0, b: 0, alpha: 0 } }).png().toBuffer();
   await sharp({ create: { width: 64, height: 64, channels: 4, background: "#ffffff" } }).composite([{ input: icon, gravity: "centre" }]).png().toFile("src/app/icon.png");
-  // 4b) loader layers from the light logo (fractions measured on scratch/logo-grid.jpg)
+  // 4b) loader layers (fractions measured on scratch/logo-grid.jpg): ring + sparkles, plane sprite,
+  // camera, wordmark and a raster globe for the final cross-fade. All but the plane are full-size layers.
   const L = await sharp(light).resize({ width: 1024 }).png().toBuffer();
-  const lm = await sharp(L).metadata();
-  const LW = lm.width, LH = lm.height;
-  const box = (fx0, fy0, fx1, fy1) => ({ left: Math.round(LW * fx0), top: Math.round(LH * fy0), width: Math.round(LW * (fx1 - fx0)), height: Math.round(LH * (fy1 - fy0)) });
-  const PLANE = box(0.79, 0.11, 1.0, 0.31);
-  // plane sprite: cyan pixels of its box
   const { data: ld, info: li } = await sharp(L).ensureAlpha().raw().toBuffer({ resolveWithObject: true });
+  const LW = li.width, LH = li.height, N = LW * LH;
+  const PLANE = { left: Math.round(LW * 0.79), top: Math.round(LH * 0.11), width: Math.round(LW * 0.21), height: Math.round(LH * 0.2) };
+  const G = { cx: 0.5 * LW, cy: 0.26 * LH, r: 0.205 * LW };
+  const CAM = [[0.172, 0.345], [0.215, 0.345], [0.225, 0.305], [0.36, 0.305], [0.372, 0.345], [0.445, 0.345], [0.448, 0.525], [0.178, 0.53]];
+  const inPoly = (px, py, poly) => { let inside = false; for (let i = 0, j = poly.length - 1; i < poly.length; j = i++) { const [xi, yi] = poly[i], [xj, yj] = poly[j]; if (yi > py !== yj > py && px < ((xj - xi) * (py - yi)) / (yj - yi) + xi) inside = !inside; } return inside; };
+  const isCyan = (i) => ld[i * 4 + 2] > 150 && ld[i * 4] < 110;
+  const layers = { ring: Buffer.alloc(N * 4), camera: Buffer.alloc(N * 4), words: Buffer.alloc(N * 4), globe: Buffer.alloc(N * 4) };
   const plane = Buffer.alloc(PLANE.width * PLANE.height * 4);
-  const base = Buffer.from(ld);
-  for (let y = 0; y < PLANE.height; y++) for (let x = 0; x < PLANE.width; x++) {
-    const si = ((PLANE.top + y) * li.width + (PLANE.left + x)) * 4, di = (y * PLANE.width + x) * 4;
-    plane[di] = ld[si]; plane[di + 1] = ld[si + 1]; plane[di + 2] = ld[si + 2]; plane[di + 3] = ld[si + 3];
-    base[si + 3] = 0; // the base logo loses the plane; the sprite lands there at the end
+  for (let y = 0; y < LH; y++) for (let x = 0; x < LW; x++) {
+    const i = y * LW + x; if (ld[i * 4 + 3] === 0) continue;
+    const fx = x / LW, fy = y / LH;
+    let dst = layers.ring;
+    if (x >= PLANE.left && x < PLANE.left + PLANE.width && y >= PLANE.top && y < PLANE.top + PLANE.height) {
+      const di = ((y - PLANE.top) * PLANE.width + (x - PLANE.left)) * 4;
+      plane[di] = ld[i * 4]; plane[di + 1] = ld[i * 4 + 1]; plane[di + 2] = ld[i * 4 + 2]; plane[di + 3] = ld[i * 4 + 3];
+      continue;
+    }
+    if (Math.hypot(x - G.cx, y - G.cy) <= G.r) dst = layers.globe;
+    else if (inPoly(fx, fy, CAM)) dst = layers.camera;
+    else if (fy > 0.86 || (fy > 0.5 && !isCyan(i))) dst = layers.words;                       // letters + subtitle
+    else if (fy < 0.27 && (fx < 0.4 || fx > 0.66)) dst = layers.words;                          // sparkles appear with the wordmark
+    dst[i * 4] = ld[i * 4]; dst[i * 4 + 1] = ld[i * 4 + 1]; dst[i * 4 + 2] = ld[i * 4 + 2]; dst[i * 4 + 3] = ld[i * 4 + 3];
   }
+  for (const [name, buf] of Object.entries(layers)) await sharp(buf, { raw: { width: LW, height: LH, channels: 4 } }).resize({ width: 768 }).png({ palette: true, quality: 90 }).toFile(`public/brand/loader-${name}.png`);
   await sharp(plane, { raw: { width: PLANE.width, height: PLANE.height, channels: 4 } }).png().toFile("public/brand/loader-plane.png");
-  await sharp(base, { raw: { width: li.width, height: li.height, channels: 4 } }).png().toFile("public/brand/loader-base.png");
-  // globe: circular cutout, centre (0.50, 0.26), radius 0.205 of the width
-  const G = { cx: 0.50 * LW, cy: 0.26 * LH, r: 0.205 * LW };
-  const GB = { left: Math.round(G.cx - G.r), top: Math.round(G.cy - G.r), size: Math.round(G.r * 2) };
-  const circle = Buffer.from(`<svg width="${GB.size}" height="${GB.size}"><circle cx="${GB.size / 2}" cy="${GB.size / 2}" r="${GB.size / 2 - 1}" fill="#fff"/></svg>`);
-  await sharp(L).extract({ left: GB.left, top: GB.top, width: GB.size, height: GB.size }).composite([{ input: circle, blend: "dest-in" }]).png().toFile("public/brand/loader-globe.png");
-  console.log("loader layers", JSON.stringify({ W: LW, H: LH, plane: PLANE, globe: GB }));
+  console.log("loader layers", JSON.stringify({ W: LW, H: LH, plane: PLANE, globe: G }));
   // 5) preview sheet: full light on white, full dark on ink, marks
   const tile = async (buf, bg, w, h) => sharp({ create: { width: w, height: h, channels: 4, background: bg } }).composite([{ input: await sharp(buf).resize({ width: w - 40, height: h - 40, fit: "contain", background: { r: 0, g: 0, b: 0, alpha: 0 } }).toBuffer(), gravity: "centre" }]).png().toBuffer();
   const tiles = [await tile(light, "#ffffff", 520, 440), await tile(dark, "#0b0f10", 520, 440), await tile(markLight, "#ffffff", 260, 440), await tile(markDark, "#0b0f10", 260, 440)];
