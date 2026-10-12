@@ -77,9 +77,28 @@ const SRC = "scratch/logo-light-a.png";
     }
     if (Math.hypot(x - G.cx, y - G.cy) <= G.r && !(y > G.cy && nearTrail(x, y, 46))) dst = layers.globe; // the lower swoosh crosses in front of the globe
     else if (inPoly(fx, fy, CAM)) dst = layers.camera;
-    else if (fy > 0.86 || (fy > 0.5 && !isCyan(i))) dst = layers.words;                       // letters + subtitle
+    else if (fy > 0.86 || ((fy > 0.5 || (fy > 0.46 && fx > 0.6)) && !isCyan(i))) dst = layers.words; // letters (the "A" apex rises above the half line) + subtitle
     else if (fy < 0.27 && (fx < 0.4 || fx > 0.66)) dst = layers.words;                          // sparkles appear with the wordmark
     dst[i * 4] = ld[i * 4]; dst[i * 4 + 1] = ld[i * 4 + 1]; dst[i * 4 + 2] = ld[i * 4 + 2]; dst[i * 4 + 3] = ld[i * 4 + 3];
+  }
+  // The camera hides a stretch of the swoosh in the logo. Paint it into the ring layer along the trail so the
+  // plane leaves an unbroken trail; the camera covers it again when it lands.
+  {
+    const R = 19, col = [20, 168, 212];
+    const band = new Uint8Array(N); // coverage of the painted band (max over the discs, so the edges stay smooth)
+    for (const [tx, ty] of trail) {
+      for (let dy = -R; dy <= R; dy++) for (let dx = -R; dx <= R; dx++) {
+        const d2 = dx * dx + dy * dy; if (d2 > R * R) continue;
+        const x = Math.round(tx + dx), y = Math.round(ty + dy); if (x < 0 || y < 0 || x >= LW || y >= LH) continue;
+        if (!inPoly(x / LW, y / LH, CAM)) continue; // only where the camera will cover it
+        const a = Math.round(255 * Math.max(0, Math.min(1, (R - Math.sqrt(d2)) / 2.5)));
+        const i = y * LW + x; if (a > band[i]) band[i] = a;
+      }
+    }
+    for (let i = 0; i < N; i++) {
+      if (!band[i] || layers.ring[i * 4 + 3] > 0) continue;
+      layers.ring[i * 4] = col[0]; layers.ring[i * 4 + 1] = col[1]; layers.ring[i * 4 + 2] = col[2]; layers.ring[i * 4 + 3] = band[i];
+    }
   }
   for (const [name, buf] of Object.entries(layers)) await sharp(buf, { raw: { width: LW, height: LH, channels: 4 } }).resize({ width: 768 }).png({ palette: true, quality: 90 }).toFile(`public/brand/loader-${name}.png`);
   await sharp(plane, { raw: { width: PLANE.width, height: PLANE.height, channels: 4 } }).png().toFile("public/brand/loader-plane.png");
