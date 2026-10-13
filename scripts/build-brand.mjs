@@ -49,23 +49,8 @@ const SRC = "scratch/logo-light-a.png";
   // 4) favicon: emblem on white
   const icon = await sharp(markLight).resize({ width: 52, height: 52, fit: "contain", background: { r: 0, g: 0, b: 0, alpha: 0 } }).png().toBuffer();
   await sharp({ create: { width: 64, height: 64, channels: 4, background: "#ffffff" } }).composite([{ input: icon, gravity: "centre" }]).png().toFile("src/app/icon.png");
-  // 4b) loader sprites (fractions measured on scratch/logo-grid.jpg): the plane and the camera, trimmed.
-  const L = await sharp(light).resize({ width: 1024 }).png().toBuffer();
-  const { data: ld, info: li } = await sharp(L).ensureAlpha().raw().toBuffer({ resolveWithObject: true });
-  const LW = li.width, LH = li.height;
-  // tight outline of the camera body (the swoosh brushes its box on every side)
-  const CAM = [[0.19, 0.36], [0.23, 0.36], [0.238, 0.318], [0.347, 0.318], [0.362, 0.36], [0.44, 0.36], [0.44, 0.506], [0.19, 0.506]];
-  const inPoly = (px, py, poly) => { let inside = false; for (let i = 0, j = poly.length - 1; i < poly.length; j = i++) { const [xi, yi] = poly[i], [xj, yj] = poly[j]; if (yi > py !== yj > py && px < ((xj - xi) * (py - yi)) / (yj - yi) + xi) inside = !inside; } return inside; };
-  const PLANE = { left: Math.round(LW * 0.79), top: Math.round(LH * 0.11), width: Math.round(LW * 0.21), height: Math.round(LH * 0.2) };
-  const cam = Buffer.alloc(LW * LH * 4);
-  for (let y = 0; y < LH; y++) for (let x = 0; x < LW; x++) {
-    const i = (y * LW + x) * 4;
-    const fx = x / LW, fy = y / LH;
-    if (ld[i + 3] && inPoly(fx, fy, CAM)) { cam[i] = ld[i]; cam[i + 1] = ld[i + 1]; cam[i + 2] = ld[i + 2]; cam[i + 3] = ld[i + 3]; }
-  }
-  await sharp(cam, { raw: { width: LW, height: LH, channels: 4 } }).trim().png().toFile("public/brand/loader-camera.png");
-  await sharp(L).extract(PLANE).trim().png().toFile("public/brand/loader-plane.png");
-  console.log("loader sprites ok");
+  // 4b) The intro sprites (public/brand/loader-plane.png and loader-camera.png) are illustrations generated with
+  // Higgsfield from the logo, not crops of it; they are not rebuilt here.
   // 5) preview sheet: full light on white, full dark on ink, marks
   const tile = async (buf, bg, w, h) => sharp({ create: { width: w, height: h, channels: 4, background: bg } }).composite([{ input: await sharp(buf).resize({ width: w - 40, height: h - 40, fit: "contain", background: { r: 0, g: 0, b: 0, alpha: 0 } }).toBuffer(), gravity: "centre" }]).png().toBuffer();
   const tiles = [await tile(light, "#ffffff", 520, 440), await tile(dark, "#0b0f10", 520, 440), await tile(markLight, "#ffffff", 260, 440), await tile(markDark, "#0b0f10", 260, 440)];
