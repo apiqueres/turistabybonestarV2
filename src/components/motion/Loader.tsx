@@ -14,7 +14,7 @@ import { markLoaded, prefersReducedMotion } from "@/lib/motion";
  * Intro in three beats: the globe spins on its axis in the centre; a big plane crosses the whole screen from the
  * bottom-left corner to the top-right; the camera drops into the centre and its flash reveals the original logo.
  */
-const TOTAL = 2.9;
+const TOTAL = 3.8;
 const land = feature(landTopo as unknown as Topology, (landTopo as unknown as Topology).objects.land as GeometryCollection);
 
 export function Loader() {
@@ -93,19 +93,19 @@ export function Loader() {
     }
     // 1. the globe spins
     tl.fromTo(cv, { opacity: 0, scale: 0.8 }, { opacity: 1, scale: 1, duration: 0.45, ease: "power2.out" }, 0);
-    tl.to(spin, { lambda: 140, duration: 2.3, ease: "power1.inOut", onUpdate: render }, 0);
+    tl.to(spin, { lambda: 140, duration: 3.2, ease: "power1.inOut", onUpdate: render }, 0);
     // 2. the plane crosses the screen corner to corner
     // the sprite is centred on (left, top): from -40/140 to 140/-40 the midpoint is the centre of the screen
-    tl.fromTo(p, { left: "-40vw", top: "140vh" }, { left: "140vw", top: "-40vh", duration: 1.25, ease: "power1.inOut" }, 0.35);
+    tl.fromTo(p, { left: "-40vw", top: "140vh" }, { left: "140vw", top: "-40vh", duration: 2.15, ease: "power1.inOut" }, 0.35);
     // 3. the camera drops into the centre and shoots
-    tl.fromTo(cam, { yPercent: -220, opacity: 0 }, { yPercent: 0, opacity: 1, duration: 0.6, ease: "bounce.out" }, 1.5);
-    tl.fromTo(b, { scale: 0.2, opacity: 0 }, { scale: 2, opacity: 1, duration: 0.14, ease: "power3.out" }, 2.12);
-    tl.to(b, { opacity: 0, scale: 2.8, duration: 0.25, ease: "power2.out" }, 2.26);
-    tl.fromTo(f, { opacity: 0 }, { opacity: 1, duration: 0.06, ease: "none" }, 2.15);
+    tl.fromTo(cam, { yPercent: -220, opacity: 0 }, { yPercent: 0, opacity: 1, duration: 0.6, ease: "bounce.out" }, 2.4);
+    tl.fromTo(b, { scale: 0.2, opacity: 0 }, { scale: 2, opacity: 1, duration: 0.14, ease: "power3.out" }, 3.02);
+    tl.to(b, { opacity: 0, scale: 2.8, duration: 0.25, ease: "power2.out" }, 3.16);
+    tl.fromTo(f, { opacity: 0 }, { opacity: 1, duration: 0.06, ease: "none" }, 3.05);
     // under the flash the scene is swapped for the original logo
-    tl.set([cv, cam], { opacity: 0 }, 2.22);
-    tl.set(lg, { opacity: 1 }, 2.22);
-    tl.to(f, { opacity: 0, duration: 0.5, ease: "power2.out" }, 2.24);
+    tl.set([cv, cam], { opacity: 0 }, 3.12);
+    tl.set(lg, { opacity: 1 }, 3.12);
+    tl.to(f, { opacity: 0, duration: 0.5, ease: "power2.out" }, 3.14);
     tl.to({}, { duration: Math.max(0.05, TOTAL - tl.duration()) });
     return () => {
       tl.kill();
