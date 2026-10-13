@@ -125,6 +125,8 @@ model Solicitud {
   assignedToId String?
   assignedTo   AdminUser?  @relation(fields: [assignedToId], references: [id], onDelete: SetNull)
   assignedAt   DateTime?
+  /// Cuándo pasó a «cerrada» (null si está abierta). A los 24 meses se anonimiza (ver lib/repo/retention.ts).
+  closedAt     DateTime?
   messages  MessageLog[]
 
   @@index([createdAt])
@@ -139,6 +141,8 @@ model Contacto {
   data      Json // ContactoInput
   email     String
   handled   Boolean  @default(false)
+  /// Cuándo se marcó como atendido. A los 12 meses se borra (ver lib/repo/retention.ts).
+  handledAt DateTime?
 
   @@index([createdAt])
   @@index([handled])

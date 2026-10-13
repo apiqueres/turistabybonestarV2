@@ -2,7 +2,7 @@
 
 import type { Answers, Question, SetAnswer } from "@/types/form";
 import type { Destination } from "@/types/content";
-import { ConsentInfo, ConsentLabel } from "./Consent";
+import { ConsentLabel } from "./Consent";
 
 interface Props {
   question: Question;
@@ -126,19 +126,15 @@ export function QuestionField({ question: q, answers, setAnswer, siblings = [] }
     );
   }
 
-  // toggle (la casilla «privacidad» es el consentimiento: enlaza la política y muestra la capa informativa)
+  // toggle (en la casilla «privacidad», el texto «política de privacidad» enlaza a la política)
   const on = value === true;
-  const consent = q.id === "privacidad";
   return (
-    <div>
-      <label className="check">
-        <input type="checkbox" checked={on} onChange={(e) => setAnswer(q.id, e.target.checked ? true : undefined)} />
-        <span>
-          {consent ? <ConsentLabel text={q.label} /> : q.label}
-          {q.required ? " *" : ""}
-        </span>
-      </label>
-      {consent && <ConsentInfo purpose="preparar y enviarte una propuesta de viaje y contactarte para concretarla" />}
-    </div>
+    <label className="check">
+      <input type="checkbox" checked={on} onChange={(e) => setAnswer(q.id, e.target.checked ? true : undefined)} />
+      <span>
+        {q.id === "privacidad" ? <ConsentLabel text={q.label} /> : q.label}
+        {q.required ? " *" : ""}
+      </span>
+    </label>
   );
 }

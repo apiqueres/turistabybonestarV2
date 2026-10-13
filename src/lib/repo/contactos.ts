@@ -36,7 +36,8 @@ export async function getContacto(id: string): Promise<StoredContact | null> {
 }
 
 export async function setContactoHandled(id: string, handled: boolean): Promise<StoredContact> {
-  return toFront(await db().contacto.update({ where: { id }, data: { handled } }));
+  // handledAt marca el inicio del plazo de conservación (12 meses, ver retention.ts).
+  return toFront(await db().contacto.update({ where: { id }, data: { handled, handledAt: handled ? new Date() : null } }));
 }
 
 export async function deleteContacto(id: string): Promise<void> {

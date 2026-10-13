@@ -145,12 +145,15 @@ export async function updateSolicitud(
   patch: { status?: RequestStatus; notes?: string },
   actor: Actor,
 ): Promise<StoredRequest | null> {
-  const visible = await db().solicitud.findFirst({ where: { id, ...scopeFor(actor) }, select: { id: true } });
+  const visible = await db().solicitud.findFirst({ where: { id, ...scopeFor(actor) }, select: { id: true, closedAt: true } });
   if (!visible) return null;
+  // closedAt marca el inicio del plazo de conservación (24 meses, ver retention.ts): se fija al cerrar y se borra al reabrir.
+  const closedAt = !patch.status ? {} : patch.status === "cerrada" ? { closedAt: visible.closedAt ?? new Date() } : { closedAt: null };
   const row = await db().solicitud.update({
     where: { id },
     data: {
       ...(patch.status ? { status: toDbStatus(patch.status) } : {}),
+      ...closedAt,
       ...(patch.notes !== undefined ? { notes: patch.notes || null } : {}),
     },
     include: { ...ASSIGNEE, messages: { orderBy: { createdAt: "desc" } } },
@@ -198,12 +201,12 @@ export async function logMessage(entry: {
   });
 }
 
-/** Anonimiza las solicitudes cerradas con más de `months` meses (tarea opcional de mantenimiento). */
+/** Anonimiza las solicitudes cerradas hace más de `months` meses (la lanza el planificador de retention-scheduler.ts). */
 export async function anonymiseClosed(months = 24): Promise<number> {
   const prisma = db();
   const before = new Date();
   before.setMonth(before.getMonth() - months);
-  const rows = await prisma.solicitud.findMany({ where: { status: "cerrada", createdAt: { lt: before }, NOT: { email: "" } } });
+  const rows = await prisma.solicitud.findMany({ where: { status: "cerrada", closedAt: { lt: before }, NOT: { email: "" } } });
   for (const r of rows) {
     const data = r.data as unknown as SolicitudInput;
     const anon: SolicitudInput = { ...data, contacto: { ...data.contacto, nombre: "Anonimizado", email: "", telefono: "" } };

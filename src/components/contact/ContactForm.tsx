@@ -7,7 +7,7 @@ import { STATIC_DEMO } from "@/lib/config";
 import { readJSON, writeJSON } from "@/lib/storage";
 import { mailtoLink } from "@/lib/mailto";
 import { ArrowRight } from "@/components/ui/icons";
-import { ConsentInfo, ConsentLabel } from "@/components/form/Consent";
+import { ConsentLabel } from "@/components/form/Consent";
 
 interface Props {
   content: SiteContent["contact"];
@@ -108,7 +108,6 @@ ${f.telefono}` })}
           <span><ConsentLabel text={fields.privacy} /></span>
         </label>
         {errors.privacidad && <div className="field-error text-[13px] text-accent mt-2">{errors.privacidad}</div>}
-        <ConsentInfo purpose="responder a tu consulta" />
       </div>
       <div className="flex items-center justify-center md:justify-start gap-6 flex-wrap">
         <button type="submit" className="btn btn-primary btn-sm justify-center" disabled={status === "sending"}>
