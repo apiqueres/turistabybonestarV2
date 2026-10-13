@@ -11,7 +11,7 @@ export default async function OffersPage() {
   const communityHref = brand.communityUrl || `https://wa.me/${digits}?text=${encodeURIComponent(`Hola, quiero unirme a la comunidad «${brand.communityName}» y recibir el itinerario gratuito.`)}`;
   return (
     <SiteShell>
-      <OffersGrid content={offers} offers={offersList} communityHref={communityHref} />
+      <OffersGrid content={offers} offers={offersList} communityHref={communityHref} whatsapp={brand.whatsapp} />
     </SiteShell>
   );
 }

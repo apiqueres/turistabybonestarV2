@@ -2,7 +2,6 @@
 
 import { useRef } from "react";
 import Image from "next/image";
-import Link from "next/link";
 import type { SiteContent } from "@/types/content";
 import { useMotion } from "@/lib/useMotion";
 import type { Offer } from "@/types/content";
@@ -11,18 +10,21 @@ import { asset, STATIC_DEMO } from "@/lib/config";
 import { ScrubHeading } from "@/components/motion/ScrubHeading";
 import { SectionLabel } from "@/components/layout/SectionLabel";
 import { ArrowRight } from "@/components/ui/icons";
+import { waHref } from "@/lib/whatsapp";
 
 interface Props {
   content: SiteContent["offers"];
   /** Ofertas del servidor (base de datos). En la demo estática se usan las editadas en el navegador. */
   offers: Offer[];
   communityHref: string;
+  /** Teléfono de WhatsApp del negocio: «Quiero esta oferta» abre un chat con el título de la oferta. */
+  whatsapp: string;
 }
 
 const src = (s: string) => (s.startsWith("data:") ? s : asset(s));
 
 /** Seasonal offers in the same layout as the featured destinations, with prices. */
-export function OffersGrid({ content, offers: serverOffers, communityHref }: Props) {
+export function OffersGrid({ content, offers: serverOffers, communityHref, whatsapp }: Props) {
   const ref = useRef<HTMLElement>(null);
   useMotion(ref);
   const demo = useOffers();
@@ -76,10 +78,15 @@ export function OffersGrid({ content, offers: serverOffers, communityHref }: Pro
                       <span>{o.dates}</span>
                       <span>{o.duration}</span>
                     </div>
-                    <Link href={o.destinationId ? `/donde-nos-vamos?pais=${o.destinationId}` : "/donde-nos-vamos"} className="btn btn-primary btn-sm self-start mt-2">
+                    <a
+                      href={waHref(whatsapp, `Hola, quiero esta oferta: «${o.title}».`)}
+                      target="_blank"
+                      rel="noopener"
+                      className="btn btn-primary btn-sm self-start mt-2"
+                    >
                       {content.cta}
                       <ArrowRight className="btn-icon" />
-                    </Link>
+                    </a>
                   </div>
                 </article>
               ))}
