@@ -9,7 +9,7 @@ export function ConsentLabel({ text }: { text: string }) {
     <>
       {parts.map((part, i) =>
         PRIVACY_RE.test(part) ? (
-          <a key={i} href="/privacidad" target="_blank" rel="noopener" className="underline">
+          <a key={i} href="/privacidad" target="_blank" rel="noopener" className="text-accent underline">
             {part}
           </a>
         ) : (
