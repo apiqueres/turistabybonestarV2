@@ -76,7 +76,7 @@ export function OffersGrid({ content, offers: serverOffers, communityHref }: Pro
                       <span>{o.dates}</span>
                       <span>{o.duration}</span>
                     </div>
-                    <Link href={`/donde-nos-vamos?pais=${o.destinationId}`} className="btn btn-primary btn-sm self-start mt-2">
+                    <Link href={o.destinationId ? `/donde-nos-vamos?pais=${o.destinationId}` : "/donde-nos-vamos"} className="btn btn-primary btn-sm self-start mt-2">
                       {content.cta}
                       <ArrowRight className="btn-icon" />
                     </Link>

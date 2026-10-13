@@ -50,8 +50,10 @@ export interface Destination {
 export interface Offer {
   id: string;
   title: string;
-  /** Destination slug the offer belongs to (for the link to its card). */
-  destinationId: string;
+  /** Destino en texto libre, tal y como lo escribe el admin. */
+  destination: string;
+  /** Slug del destino de la web si el texto coincide con uno (enlace a su ficha). */
+  destinationId?: string;
   price: string;
   priceNote: string;
   dates: string;

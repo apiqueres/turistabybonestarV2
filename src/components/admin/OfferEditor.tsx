@@ -7,7 +7,7 @@ import { imgSrc } from "./DestinationEditor";
 import { slugify } from "@/lib/slug";
 import { ArrowRight } from "@/components/ui/icons";
 
-export const EMPTY_OFFER: Offer = { id: "", title: "", destinationId: "", price: "", priceNote: "por persona", dates: "", duration: "", text: "", includes: [], image: { src: "", alt: "" }, badge: "", promo: false, promoText: "", active: true };
+export const EMPTY_OFFER: Offer = { id: "", title: "", destination: "", price: "", priceNote: "por persona", dates: "", duration: "", text: "", includes: [], image: { src: "", alt: "" }, badge: "", promo: false, promoText: "", active: true };
 
 interface Props {
   initial: Offer;
@@ -27,9 +27,16 @@ export function OfferEditor({ initial, destinations, isNew, onSave, onDelete, on
   const [msg, setMsg] = useState<string | null>(null);
   const k = initial.id || "new";
   const field = <K extends keyof Offer>(key: K, v: Offer[K]) => setO((x) => ({ ...x, [key]: v }));
-  const pickDestination = (slugId: string) => {
-    const d = destinations.find((x) => x.slug === slugId);
-    setO((x) => ({ ...x, destinationId: slugId, image: x.image.src || !d ? x.image : { ...d.image } }));
+  /** Texto libre; si coincide con un destino de la web (nombre o slug) se enlaza a su ficha y se toma su imagen. */
+  const setDestination = (text: string) => {
+    const needle = text.trim().toLowerCase();
+    const d = needle ? destinations.find((x) => x.name.toLowerCase() === needle || x.slug === needle) : undefined;
+    setO((x) => ({
+      ...x,
+      destination: text,
+      destinationId: d?.slug,
+      image: x.image.src ? x.image : d ? { ...d.image } : x.image,
+    }));
   };
   const [uploading, setUploading] = useState(false);
   const onImage = async (file?: File) => {
@@ -45,7 +52,7 @@ export function OfferEditor({ initial, destinations, isNew, onSave, onDelete, on
     }
   };
   const save = () => {
-    if (!o.title || !o.price || !o.destinationId) return setMsg("Faltan el título, el precio y el destino.");
+    if (!o.title.trim() || !o.price.trim() || !o.destination.trim()) return setMsg("Faltan campos por rellenar: título, destino y precio son obligatorios.");
     onSave({ ...o, id: o.id || slugify(o.title) || `oferta-${Date.now()}` });
   };
 
@@ -93,10 +100,11 @@ export function OfferEditor({ initial, destinations, isNew, onSave, onDelete, on
           </div>
           <div>
             <label className="lbl" htmlFor={`od-${k}`}>Destino</label>
-            <select id={`od-${k}`} className="select" value={o.destinationId} onChange={(e) => pickDestination(e.target.value)}>
-              <option value="">Elige un destino</option>
-              {destinations.map((d) => <option key={d.slug} value={d.slug}>{d.name}</option>)}
-            </select>
+            <input id={`od-${k}`} className="input" list={`odl-${k}`} value={o.destination} onChange={(e) => setDestination(e.target.value)} placeholder="Punta Cana, Marruecos…" autoComplete="off" />
+            <datalist id={`odl-${k}`}>
+              {destinations.map((d) => <option key={d.slug} value={d.name} />)}
+            </datalist>
+            {o.destinationId && <span className="t-small t-muted">Enlazada a la ficha del destino.</span>}
           </div>
           <div>
             <label className="lbl" htmlFor={`ob-${k}`}>Etiqueta (opcional)</label>

@@ -6,7 +6,8 @@ import type { Offer as Row } from "@/generated/prisma/client";
 const toFront = (r: Row): Offer => ({
   id: r.id,
   title: r.title,
-  destinationId: r.destinationId,
+  destination: r.destination,
+  ...(r.destinationId ? { destinationId: r.destinationId } : {}),
   price: r.price,
   priceNote: r.priceNote,
   dates: r.dates,
@@ -22,7 +23,8 @@ const toFront = (r: Row): Offer => ({
 
 const toRow = (o: Offer) => ({
   title: o.title,
-  destinationId: o.destinationId,
+  destination: o.destination,
+  destinationId: o.destinationId || null,
   price: o.price,
   priceNote: o.priceNote,
   dates: o.dates,

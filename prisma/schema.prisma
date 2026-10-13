@@ -65,9 +65,11 @@ model Destination {
 model Offer {
   id            String      @id
   title         String
-  // Slug del destino (así lo usa el front: enlace a la ficha y selector del editor).
-  destinationId String
-  destination   Destination @relation(fields: [destinationId], references: [slug], onUpdate: Cascade, onDelete: Restrict)
+  /// Destino tal y como lo escribe el admin (texto libre).
+  destination   String       @default("")
+  /// Slug del destino de la web si el texto coincide con uno (enlace a su ficha); null si no.
+  destinationId String?
+  destinationRef Destination? @relation(fields: [destinationId], references: [slug], onUpdate: Cascade, onDelete: SetNull)
   price         String
   priceNote     String
   dates         String

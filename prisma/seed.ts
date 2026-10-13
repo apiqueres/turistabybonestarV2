@@ -53,7 +53,7 @@ async function seedOffers() {
     if (exists) continue;
     await prisma.offer.create({
       data: {
-        id: o.id, title: o.title, destinationId: o.destinationId, price: o.price, priceNote: o.priceNote,
+        id: o.id, title: o.title, destination: o.destination, destinationId: o.destinationId ?? null, price: o.price, priceNote: o.priceNote,
         dates: o.dates, duration: o.duration, text: o.text, includes: o.includes, imageSrc: o.image.src,
         imageAlt: o.image.alt, badge: o.badge ?? null, active: o.active, sortOrder: i,
       },

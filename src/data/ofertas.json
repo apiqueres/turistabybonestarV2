@@ -2,6 +2,7 @@
   {
     "id": "punta-cana-noviembre",
     "title": "Punta Cana todo incluido",
+    "destination": "Punta Cana",
     "destinationId": "punta-cana",
     "price": "1.290 €",
     "priceNote": "por persona, vuelo directo y todo incluido",
@@ -17,6 +18,7 @@
   {
     "id": "marruecos-puente-diciembre",
     "title": "Marrakech y desierto en el puente de diciembre",
+    "destination": "Marruecos",
     "destinationId": "marruecos",
     "price": "690 €",
     "priceNote": "por persona, del 5 al 9 de diciembre",
@@ -32,6 +34,7 @@
   {
     "id": "egipto-enero",
     "title": "Egipto con crucero por el Nilo",
+    "destination": "Egipto",
     "destinationId": "egipto",
     "price": "1.450 €",
     "priceNote": "por persona, pensión completa en el crucero",
@@ -46,6 +49,7 @@
   {
     "id": "tailandia-febrero",
     "title": "Tailandia, templos y playa",
+    "destination": "Tailandia",
     "destinationId": "tailandia",
     "price": "1.890 €",
     "priceNote": "por persona, vuelos y hoteles 4*",

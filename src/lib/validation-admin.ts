@@ -61,7 +61,8 @@ export const destinationUpsertSchema = z.object({ destination: destinationSchema
 export const offerSchema = z.object({
   id: z.string().trim().min(1).max(120).regex(/^[a-z0-9-]+$/, "El id solo admite minúsculas, números y guiones"),
   title: short.min(1, "Falta el título"),
-  destinationId: z.string().trim().min(1, "Falta el destino").max(80),
+  destination: short.min(1, "Falta el destino"),
+  destinationId: z.string().trim().max(80).optional(),
   price: short.min(1, "Falta el precio"),
   priceNote: short,
   dates: short,

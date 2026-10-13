@@ -87,7 +87,7 @@ export function OffersAdmin({ store, destinations }: { store: ListStore<Offer>; 
                       <div>{o.title}</div>
                       <div className="t-muted">{o.duration}</div>
                     </td>
-                    <td>{destName(o.destinationId)}</td>
+                    <td>{o.destination || destName(o.destinationId ?? "")}</td>
                     <td className="whitespace-nowrap">{o.price}</td>
                     <td>{o.dates}</td>
                     <td className="whitespace-nowrap">
