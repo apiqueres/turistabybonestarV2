@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { usePathname } from "next/navigation";
 import { geoOrthographic, geoPath } from "d3-geo";
 import { feature } from "topojson-client";
 import type { Topology, GeometryCollection } from "topojson-specification";
@@ -17,6 +18,10 @@ const TOTAL = 4.0;
 const land = feature(landTopo as unknown as Topology, (landTopo as unknown as Topology).objects.land as GeometryCollection);
 
 export function Loader() {
+  // El panel de administración entra directo, sin intro. Se decide una vez por carga completa:
+  // la intro no debe relanzarse al pasar del admin a la web pública con navegación de cliente.
+  const pathname = usePathname();
+  const [skip] = useState(() => pathname.startsWith("/admin"));
   const [done, setDone] = useState(false);
   const [gone, setGone] = useState(false);
   const canvas = useRef<HTMLCanvasElement>(null);
@@ -35,6 +40,10 @@ export function Loader() {
       markLoaded();
       ScrollTrigger.refresh();
     };
+    if (skip) {
+      finish();
+      return;
+    }
     if (reduced) {
       const t = window.setTimeout(finish, 150);
       return () => window.clearTimeout(t);
@@ -101,9 +110,9 @@ export function Loader() {
     return () => {
       tl.kill();
     };
-  }, []);
+  }, [skip]);
 
-  if (gone) return null;
+  if (skip || gone) return null;
 
   return (
     <div className={`loader ${done ? "is-done" : ""}`} aria-hidden onTransitionEnd={() => done && setGone(true)}>

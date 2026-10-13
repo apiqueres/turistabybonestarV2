@@ -9,7 +9,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
   if (STATIC_DEMO) return <DemoAdminShell>{children}</DemoAdminShell>;
   const user = await requireUser({ allowPending: true });
   return (
-    <AdminShell userLabel={user.email || user.name} role={user.role}>
+    <AdminShell userLabel={user.name} role={user.role}>
       {children}
     </AdminShell>
   );

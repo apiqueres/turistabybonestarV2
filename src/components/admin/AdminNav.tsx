@@ -22,6 +22,7 @@ export const ADMIN_NAV: { href: string; label: string; roles: Role[] }[] = [
 ];
 
 interface Props {
+  /** Nombre de la persona con sesión (solo el nombre, sin email). */
   userLabel: string;
   /** Rol de la sesión; sin dato se muestra todo el menú (solo lo usa la demo). */
   role?: Role;
@@ -46,7 +47,7 @@ export function AdminNav({ userLabel, role = "admin", note, hide = [] }: Props) 
   };
   return (
     <aside className="admin-side">
-      <Brand href="/" />
+      <Brand href="/" full />
       <nav className="admin-nav" aria-label="Administración">
         {ADMIN_NAV.filter((n) => n.roles.includes(role) && !hide.includes(n.href)).map((n) => (
           <Link key={n.href} href={n.href} className={pathname.startsWith(n.href) ? "is-active" : ""}>
@@ -55,7 +56,7 @@ export function AdminNav({ userLabel, role = "admin", note, hide = [] }: Props) 
         ))}
       </nav>
       <div className="mt-auto flex flex-col gap-3">
-        <div className="kicker">Sesión · {userLabel}</div>
+        <div className="kicker admin-user">{userLabel}</div>
         {note && <div className="t-small t-muted">{note}</div>}
         <button type="button" className="btn btn-secondary btn-sm self-start" onClick={logout}>
           Salir
