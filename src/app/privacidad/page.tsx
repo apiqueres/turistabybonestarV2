@@ -3,7 +3,6 @@ import { LegalPage } from "@/components/layout/LegalPage";
 
 export const metadata: Metadata = { title: "Política de privacidad — TuristaByBonestar" };
 
-/* Los datos entre corchetes están pendientes de confirmar con la agencia. */
 export default function Privacidad() {
   return (
     <LegalPage title="Política de privacidad">
@@ -14,7 +13,7 @@ export default function Privacidad() {
 
       <h2 className="t-h3 mt-6">Responsable del tratamiento</h2>
       <ul className="flex flex-col gap-1">
-        <li>[RAZÓN SOCIAL O NOMBRE Y APELLIDOS] (TuristaByBonestar), NIF [NIF/CIF].</li>
+        <li>CAMELOTSUECA, S.L. (TuristaByBonestar), CIF B98788169.</li>
         <li>Passeig de l&apos;Estació 11, 46410 Sueca (Valencia).</li>
         <li>contacto@turistabybonestar.com · +34 623 375 998.</li>
       </ul>
@@ -67,8 +66,8 @@ export default function Privacidad() {
           agencia y de sus gestores, con las garantías del Marco de Privacidad de Datos UE-EE. UU. al que Google está adherido.
         </li>
         <li>
-          <strong>[PROVEEDOR DE ALOJAMIENTO]</strong>, [país]: la web y su base de datos se alojan en sus servidores como
-          encargado del tratamiento.
+          <strong>Hetzner Online GmbH</strong> (Alemania): la web y su base de datos se alojan en su centro de datos de
+          Núremberg, dentro de la Unión Europea, como encargado del tratamiento.
         </li>
         <li>
           <strong>OpenStreetMap Foundation</strong> (Nominatim): al buscar un lugar en el mapa, el texto que escribes y tu
@@ -84,13 +83,13 @@ export default function Privacidad() {
       <h2 className="t-h3 mt-6">Cuánto tiempo los guardamos</h2>
       <ul className="flex flex-col gap-2">
         <li>
-          Solicitudes de viaje: mientras esté abierta y hasta [24 meses] después de cerrarse; pasado ese plazo se anonimizan
+          Solicitudes de viaje: mientras esté abierta y hasta 24 meses después de cerrarse; pasado ese plazo se anonimizan
           (se borran nombre, correo y teléfono).
         </li>
-        <li>Mensajes del formulario de contacto: hasta [12 meses] desde la respuesta.</li>
+        <li>Mensajes del formulario de contacto: hasta 12 meses desde la respuesta.</li>
         <li>
           Si contratas un viaje, la documentación se conserva los plazos que exigen la normativa fiscal y de viajes combinados
-          (en general, [5] años).
+          (en general, cinco años).
         </li>
       </ul>
 
@@ -115,7 +114,7 @@ export default function Privacidad() {
         recogen únicamente para preparar la propuesta y los facilita la persona adulta responsable.
       </p>
 
-      <p className="t-small t-muted">Última actualización: [fecha de publicación].</p>
+      <p className="t-small t-muted">Última actualización: 13 de octubre de 2026.</p>
     </LegalPage>
   );
 }

@@ -3,7 +3,7 @@ import { LegalPage } from "@/components/layout/LegalPage";
 
 export const metadata: Metadata = { title: "Aviso legal — TuristaByBonestar" };
 
-/* Los datos entre corchetes están pendientes de confirmar con la agencia. */
+/* Pendiente: número de título-licencia de agencia de viajes (se añade cuando la agencia lo facilite). */
 export default function AvisoLegal() {
   return (
     <LegalPage title="Aviso legal">
@@ -12,13 +12,12 @@ export default function AvisoLegal() {
         Electrónico (LSSI-CE), se informa de que el sitio web turistabybonestar.com (en adelante, «la web») es titularidad de:
       </p>
       <ul className="flex flex-col gap-1">
-        <li>Titular: [RAZÓN SOCIAL O NOMBRE Y APELLIDOS], que opera bajo el nombre comercial TuristaByBonestar.</li>
-        <li>NIF: [NIF/CIF].</li>
-        <li>Domicilio: Passeig de l&apos;Estació 11, 46410 Sueca (Valencia) [confirmar si es el domicilio social].</li>
+        <li>Titular: CAMELOTSUECA, S.L., que opera bajo el nombre comercial TuristaByBonestar.</li>
+        <li>CIF: B98788169.</li>
+        <li>Domicilio social: Passeig de l&apos;Estació 11, 46410 Sueca (Valencia).</li>
         <li>Correo electrónico: contacto@turistabybonestar.com.</li>
         <li>Teléfono: +34 623 375 998.</li>
-        <li>Datos registrales: [Registro Mercantil de Valencia, tomo, folio, hoja] (si procede).</li>
-        <li>Título-licencia de agencia de viajes: [CV-Mm-0000-V] (Comunitat Valenciana).</li>
+        <li>Datos registrales: Registro Mercantil de Valencia, tomo 10055, libro 7337, folio 196, sección 8, hoja V-168491.</li>
       </ul>
 
       <h2 className="t-h3 mt-6">Objeto</h2>
@@ -58,8 +57,8 @@ export default function AvisoLegal() {
       <h2 className="t-h3 mt-6">Legislación aplicable</h2>
       <p>
         Estas condiciones se rigen por la legislación española. Para cualquier controversia, y cuando la ley lo permita, las
-        partes se someten a los juzgados y tribunales de [Sueca / Valencia]. Las personas consumidoras pueden acudir además a la
-        plataforma europea de resolución de litigios en línea: https://ec.europa.eu/consumers/odr.
+        partes se someten a los juzgados y tribunales del domicilio social del titular. Las personas consumidoras pueden acudir
+        además a la plataforma europea de resolución de litigios en línea: https://ec.europa.eu/consumers/odr.
       </p>
     </LegalPage>
   );
