@@ -177,7 +177,7 @@ button {
   z-index: 3;
 }
 .section-label img {
-  width: 26px;
+  width: 30px;
   height: auto;
   opacity: 0.95;
 }
@@ -328,7 +328,7 @@ html.reduced-motion .hero-el {
   border-right: 1px solid var(--line);
 }
 .nav-logo img {
-  height: 34px;
+  height: 40px;
   width: auto;
 }
 .nav-links {
@@ -407,16 +407,58 @@ html.reduced-motion .hero-el {
   opacity: 0.6;
   pointer-events: none;
 }
-.loader-inner {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 28px;
-  width: min(320px, 70vw);
+.loader-globe {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: min(260px, 56vw);
+  aspect-ratio: 1;
+  transform: translate(-50%, -50%);
+  will-change: transform, opacity;
 }
-.loader-inner img {
-  width: 140px;
+.loader-plane {
+  position: absolute;
+  width: min(44vw, 520px);
   height: auto;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+  will-change: left, top;
+}
+.loader-camera {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: min(230px, 48vw);
+  height: auto;
+  transform: translate(-50%, -50%);
+  will-change: transform, opacity;
+}
+.loader-logo {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: min(320px, 70vw);
+  height: auto;
+  transform: translate(-50%, -50%);
+}
+.loader-burst {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: min(120px, 26vw);
+  aspect-ratio: 1;
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  background: radial-gradient(circle, #fff 0%, rgba(255, 255, 255, 0.9) 35%, rgba(255, 255, 255, 0) 70%);
+  opacity: 0;
+  pointer-events: none;
+}
+.loader-flash {
+  position: absolute;
+  inset: 0;
+  background: #fff;
+  opacity: 0;
+  pointer-events: none;
 }
 .loader-line {
   width: 100%;
@@ -1044,7 +1086,7 @@ html.reduced-motion .hero-el {
   white-space: nowrap;
 }
 .brand img {
-  height: 34px;
+  height: 40px;
   width: auto;
 }
 .brand-name {

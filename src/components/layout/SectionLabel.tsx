@@ -5,7 +5,7 @@ export function SectionLabel({ name, tone = "dark" }: { name: string; tone?: "da
   return (
     <div className={`section-label ${tone === "light" ? "on-dark" : ""}`}>
       {/* eslint-disable-next-line @next/next/no-img-element */}
-      <img src={asset(`/brand/logo-${tone === "light" ? "white" : "black"}-96.png`)} alt="" />
+      <img src={asset(`/brand/logo-mark-${tone === "light" ? "dark" : "light"}-96.png`)} alt="" />
       <span>{name}</span>
     </div>
   );

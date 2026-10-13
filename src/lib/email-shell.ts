@@ -64,7 +64,7 @@ function renderBlock(b: EmailBlock): string {
 
 export function renderEmailHtml(spec: EmailSpec): string {
   const { brand, siteUrl } = spec;
-  const logo = `${siteUrl.replace(/\/$/, "")}/brand/logo-black-512.png`;
+  const logo = `${siteUrl.replace(/\/$/, "")}/brand/logo-full-light-512.png`;
   return `<!doctype html>
 <html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>${esc(spec.title)}</title>
