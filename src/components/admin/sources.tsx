@@ -222,7 +222,8 @@ export function RequestsDb({
     mode: "db",
     setFilter: (f) => router.push(requestsUrl(f, q, 1, gestor)),
     setGestor: (g) => router.push(requestsUrl(filter, q, 1, g)),
-    setQuery: (next) => router.push(requestsUrl(filter, next, 1, gestor)),
+    // La búsqueda se lanza mientras se escribe: replace para no llenar el historial con cada letra.
+    setQuery: (next) => router.replace(requestsUrl(filter, next, 1, gestor)),
     setPage: (p) => router.push(requestsUrl(filter, q, p, gestor)),
     update: async (id, patch) => {
       await api(`/api/admin/solicitudes/${encodeURIComponent(id)}`, { method: "PATCH", body: patch });
@@ -265,7 +266,9 @@ export function RequestsDemo({ brand }: { brand: EmailBrand }) {
   const filtered = requests.filter((r) => {
     if (filter !== "todas" && r.status !== filter) return false;
     if (!needle) return true;
-    const hay = [r.data.contacto.nombre, r.data.contacto.email, r.data.contacto.telefono, r.id, ...r.data.destinos.map((d) => d.nombre)].join(" ").toLowerCase();
+    const hay = [r.data.contacto.nombre, r.data.contacto.email, r.data.contacto.telefono, r.id, r.assignedTo?.name ?? "", ...r.data.destinos.map((d) => d.nombre)]
+      .join(" ")
+      .toLowerCase();
     return hay.includes(needle);
   });
   const { rows, current } = paginate(filtered, page);
@@ -284,7 +287,7 @@ export function RequestsDemo({ brand }: { brand: EmailBrand }) {
     mode: "demo",
     setFilter: (f) => router.push(requestsUrl(f, q, 1)),
     setGestor: () => undefined,
-    setQuery: (next) => router.push(requestsUrl(filter, next, 1)),
+    setQuery: (next) => router.replace(requestsUrl(filter, next, 1)),
     setPage: (p) => router.push(requestsUrl(filter, q, p)),
     update: async (id, patch) => update(id, patch),
     assign: async () => "La asignación de gestores requiere la base de datos.",

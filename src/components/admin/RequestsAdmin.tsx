@@ -1,6 +1,6 @@
 "use client";
 
-import { Fragment, useState } from "react";
+import { Fragment, useEffect, useRef, useState } from "react";
 import type { FormStep } from "@/types/form";
 import type { EmailBrand } from "@/lib/email-shell";
 import type { RequestFilter, RequestsStore } from "./sources";
@@ -16,21 +16,44 @@ interface Props {
   brand: EmailBrand;
 }
 
+/** Pausa tras la última tecla antes de lanzar la búsqueda. */
+const SEARCH_DELAY = 300;
+
 /** Paginated list of requests (10 per page) with status and text filters; clicking a row opens its detail inline. */
 export function RequestsAdmin({ store, steps, brand }: Props) {
   const [openId, setOpenId] = useState<string | null>(null);
   const [q, setQ] = useState(store.q);
   const [prevQ, setPrevQ] = useState(store.q);
   if (store.q !== prevQ) {
-    // La URL cambió (navegación): el cuadro de búsqueda se alinea con ella.
+    // La URL cambió (navegación): el cuadro de búsqueda se alinea con ella, salvo que ya coincida
+    // (es la propia búsqueda en vivo y no hay que pisar lo que se está escribiendo).
     setPrevQ(store.q);
-    setQ(store.q);
+    if (store.q !== q.trim()) setQ(store.q);
   }
+
+  // Búsqueda en vivo: al parar de escribir se aplica el texto; si se vacía, se quita el filtro.
+  // `sent` evita repetir la misma navegación mientras el servidor aún no ha devuelto la URL nueva.
+  const sent = useRef(store.q);
+  const { setQuery } = store;
+  const storeQ = store.q;
+  useEffect(() => {
+    const next = q.trim();
+    if (next === storeQ || next === sent.current) return;
+    const t = window.setTimeout(() => {
+      sent.current = next;
+      setOpenId(null);
+      setQuery(next);
+    }, SEARCH_DELAY);
+    return () => window.clearTimeout(t);
+  }, [q, storeQ, setQuery]);
 
   const submitSearch = (e: React.FormEvent) => {
     e.preventDefault();
+    const next = q.trim();
+    if (next === store.q) return;
+    sent.current = next;
     setOpenId(null);
-    store.setQuery(q.trim());
+    store.setQuery(next);
   };
 
   return (
@@ -41,7 +64,7 @@ export function RequestsAdmin({ store, steps, brand }: Props) {
           <h1 className="t-h2 mt-2">Solicitudes</h1>
         </div>
         <form className="flex items-center gap-3 flex-wrap" onSubmit={submitSearch}>
-          <input className="input" style={{ width: 220 }} placeholder="Buscar nombre, correo, destino…" aria-label="Buscar" value={q} onChange={(e) => setQ(e.target.value)} />
+          <input className="input" style={{ width: 220 }} placeholder="Buscar nombre, correo, gestor…" type="search" aria-label="Buscar" value={q} onChange={(e) => setQ(e.target.value)} />
           <label className="lbl mb-0" htmlFor="flt">Estado</label>
           <select id="flt" className="select" style={{ width: "auto" }} value={store.filter} onChange={(e) => { setOpenId(null); store.setFilter(e.target.value as RequestFilter); }}>
             <option value="todas">Todas ({store.counts.todas})</option>

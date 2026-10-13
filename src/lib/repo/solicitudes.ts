@@ -78,7 +78,7 @@ export interface ListOptions {
   q?: string;
 }
 
-/** Listado paginado (10 por página) con filtros por estado, gestor y texto (nombre, correo, teléfono, id, brief). */
+/** Listado paginado (10 por página) con filtros por estado, gestor y texto (nombre, correo, teléfono, id, brief, nombre del gestor). */
 export async function listSolicitudes(
   actor: Actor,
   opts: ListOptions = {},
@@ -104,6 +104,7 @@ export async function listSolicitudes(
             { phone: { contains: q } },
             { id: { contains: q } },
             { prompt: { contains: q, mode: "insensitive" as const } },
+            { assignedTo: { is: { name: { contains: q, mode: "insensitive" as const } } } },
           ],
         }
       : {}),
