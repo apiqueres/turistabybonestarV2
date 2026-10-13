@@ -99,7 +99,7 @@ export const formContent: FormContent = {
         {
           id: "privacidad",
           kind: "toggle",
-          label: "He leído y acepto los términos y condiciones y la política de privacidad, y autorizo a la agencia a contactarme por teléfono",
+          label: "He leído y acepto la política de privacidad y autorizo a TuristaByBonestar a contactarme por correo, teléfono o WhatsApp para preparar mi propuesta de viaje",
           required: true,
         },
       ],
