@@ -162,7 +162,7 @@ export function RequestDetail({ request: r, steps, brand, store, onDeleted }: Pr
           {state && <span className="form-status">{state}</span>}
         </div>
         {composing ? (
-          <MessageComposer key={r.id} to={r.data.contacto.email} initial={defaultAdminMessage(r.data, brand)} render={(m) => clientMessageEmail(r.id, r.data, m, brand)} mode={store.mode} send={(msg) => store.sendMessage(r, msg, brand)} />
+          <MessageComposer key={r.id} to={r.data.contacto.email} initial={defaultAdminMessage(r.data, brand)} render={(m) => clientMessageEmail(r.id, r.data, m, brand)} mode={store.mode} send={(msg, files) => store.sendMessage(r, msg, brand, files)} />
         ) : (
           <div>
             <span className="lbl">Brief para el gestor</span>

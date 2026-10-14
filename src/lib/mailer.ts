@@ -57,6 +57,14 @@ export interface OutgoingMail {
   text: string;
   replyTo?: string;
   bcc?: string;
+  attachments?: MailAttachment[];
+}
+
+/** Archivo adjunto tal como lo recibe la ruta (ya validado): nombre, tipo y bytes. */
+export interface MailAttachment {
+  filename: string;
+  contentType: string;
+  content: Buffer;
 }
 
 /** Envía con unas credenciales concretas. Devuelve el resultado sin lanzar. */
@@ -70,6 +78,7 @@ async function deliver(creds: Credentials, from: string, mail: OutgoingMail): Pr
       text: mail.text,
       replyTo: mail.replyTo,
       bcc: mail.bcc,
+      attachments: mail.attachments,
     });
     return { status: "sent" };
   } catch (err) {
@@ -108,7 +117,7 @@ async function sendAgency(kind: string, mail: OutgoingMail, solicitudId?: string
   return result.status;
 }
 
-const rendered = (e: RenderedEmail, to: string, replyTo?: string): OutgoingMail => ({ to, subject: e.subject, html: e.html, text: e.text, replyTo });
+const rendered = (e: RenderedEmail, to: string, replyTo?: string, attachments?: MailAttachment[]): OutgoingMail => ({ to, subject: e.subject, html: e.html, text: e.text, replyTo, attachments });
 
 /** Quién envía un mensaje desde el panel: su id y su dirección corporativa. */
 export interface Sender {
@@ -169,13 +178,13 @@ export function notifyAssignee(id: string, createdAt: string, data: SolicitudInp
 /* ---- Desde el panel (cada usuario con su remitente) ------------------------------------------ */
 
 /** Mensaje libre al cliente de una solicitud. */
-export function sendClientMessage(sender: Sender, id: string, data: SolicitudInput, msg: AdminMessage, brand: EmailBrand) {
-  return sendAsUser(sender, "admin", rendered(clientMessageEmail(id, data, msg, brand), data.contacto.email), id);
+export function sendClientMessage(sender: Sender, id: string, data: SolicitudInput, msg: AdminMessage, brand: EmailBrand, attachments?: MailAttachment[]) {
+  return sendAsUser(sender, "admin", rendered(clientMessageEmail(id, data, msg, brand), data.contacto.email, undefined, attachments), id);
 }
 
 /** Respuesta a un mensaje del formulario de contacto (sin solicitud asociada). */
-export function sendContactReply(sender: Sender, id: string, data: ContactoInput, msg: AdminMessage, brand: EmailBrand) {
-  return sendAsUser(sender, "admin", rendered(contactReplyEmail(id, data, msg, brand), data.email));
+export function sendContactReply(sender: Sender, id: string, data: ContactoInput, msg: AdminMessage, brand: EmailBrand, attachments?: MailAttachment[]) {
+  return sendAsUser(sender, "admin", rendered(contactReplyEmail(id, data, msg, brand), data.email, undefined, attachments));
 }
 
 /**

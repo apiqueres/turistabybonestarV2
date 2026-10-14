@@ -3,7 +3,7 @@
 import { Fragment, useState } from "react";
 import { useRouter } from "next/navigation";
 import type { StoredContact } from "@/types/admin";
-import { api } from "@/lib/admin/api";
+import { api, apiForm, messageForm } from "@/lib/admin/api";
 import type { EmailBrand } from "@/lib/email-shell";
 import { contactReplyEmail, defaultContactReply } from "@/lib/email-templates";
 import { ArrowRight } from "@/components/ui/icons";
@@ -106,8 +106,8 @@ export function ContactsAdmin({ rows, total, page, pending, onlyPending, brand }
                               render={(m) => contactReplyEmail(c.id, c.data, m, brand)}
                               summaryLabel="Incluir su mensaje original"
                               mode="db"
-                              send={async (m) => {
-                                const res = await api<{ to: string }>(`/api/admin/contactos/${encodeURIComponent(c.id)}/mensaje`, { method: "POST", body: m });
+                              send={async (m, files) => {
+                                const res = await apiForm<{ to: string }>(`/api/admin/contactos/${encodeURIComponent(c.id)}/mensaje`, messageForm(m, files));
                                 router.refresh();
                                 return `Correo enviado a ${res.to}.`;
                               }}

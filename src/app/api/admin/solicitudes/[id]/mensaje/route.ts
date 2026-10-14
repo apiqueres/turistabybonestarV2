@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { requireApiUser } from "@/lib/admin/session";
-import { parseBody } from "@/lib/admin/api-utils";
+import { parseMessageWithFiles } from "@/lib/admin/api-utils";
 import { getSolicitud } from "@/lib/repo/solicitudes";
 import { getSiteContent } from "@/lib/content";
 import { sendClientMessage } from "@/lib/mailer";
@@ -15,12 +15,12 @@ export const runtime = "nodejs";
 export async function POST(req: Request, { params }: { params: Promise<{ id: string }> }) {
   const { user, error } = await requireApiUser();
   if (error) return error;
-  const { data, error: bad } = await parseBody(req, adminMessageSchema);
+  const { data, files, error: bad } = await parseMessageWithFiles(req, adminMessageSchema);
   if (bad) return bad;
   const request = await getSolicitud((await params).id, user);
   if (!request) return NextResponse.json({ ok: false, error: "No existe" }, { status: 404 });
   const { brand } = await getSiteContent();
-  const result = await sendClientMessage({ id: user.id, email: user.email }, request.id, request.data, data, brand);
+  const result = await sendClientMessage({ id: user.id, email: user.email }, request.id, request.data, data, brand, files);
   if (result.status !== "sent") {
     return NextResponse.json({ ok: false, error: `No se pudo enviar el correo. ${result.error ?? ""}`.trim() }, { status: 502 });
   }

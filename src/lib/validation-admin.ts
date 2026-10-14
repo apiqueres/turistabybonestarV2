@@ -36,6 +36,7 @@ export const adminMessageSchema = z.object({
   message: z.string().trim().min(1, "Escribe el mensaje").max(20_000),
   signature: z.string().max(1000),
   includeSummary: z.boolean(),
+  attachments: z.array(z.string().max(120)).max(5).optional(),
 });
 
 export const destinationSchema = z.object({

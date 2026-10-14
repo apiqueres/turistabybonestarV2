@@ -6,7 +6,7 @@ import type { FormStep } from "@/types/form";
 import type { EmailBrand } from "@/lib/email-shell";
 import type { AdminMessage } from "@/lib/email-templates";
 import type { RequestStatus, StoredRequest } from "@/types/admin";
-import { api } from "@/lib/admin/api";
+import { api, apiForm, messageForm } from "@/lib/admin/api";
 import { useDestinations, useFormSteps, useOffers, useRequests } from "@/lib/admin/data";
 import { clientMessageEmail } from "@/lib/email-templates";
 import { openMailto } from "@/lib/mailto";
@@ -64,7 +64,7 @@ export interface RequestsStore {
   assign: (id: string, gestorId: string | null) => Promise<string>;
   remove: (id: string) => Promise<void>;
   /** Envía el correo al cliente y devuelve un resumen para mostrar. */
-  sendMessage: (request: StoredRequest, msg: AdminMessage, brand: EmailBrand) => Promise<string>;
+  sendMessage: (request: StoredRequest, msg: AdminMessage, brand: EmailBrand, files: File[]) => Promise<string>;
 }
 
 /* ---------------- Destinos ---------------- */
@@ -239,8 +239,8 @@ export function RequestsDb({
       await api(`/api/admin/solicitudes/${encodeURIComponent(id)}`, { method: "DELETE" });
       router.refresh();
     },
-    sendMessage: async (request, msg) => {
-      const res = await api<{ to: string; viaAgency: boolean }>(`/api/admin/solicitudes/${encodeURIComponent(request.id)}/mensaje`, { method: "POST", body: msg });
+    sendMessage: async (request, msg, _brand, files) => {
+      const res = await apiForm<{ to: string; viaAgency: boolean }>(`/api/admin/solicitudes/${encodeURIComponent(request.id)}/mensaje`, messageForm(msg, files));
       router.refresh();
       return res.viaAgency
         ? `Correo enviado a ${res.to} con la cuenta de la agencia. Conecta tu Gmail en «Mi cuenta» para enviar con tu dirección.`

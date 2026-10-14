@@ -55,7 +55,12 @@ export interface AdminMessage {
   message: string;
   signature: string;
   includeSummary: boolean;
+  /** Nombres de los archivos adjuntos (los bytes viajan aparte, en el multipart). */
+  attachments?: string[];
 }
+
+/** Bloque «Adjuntos» con los nombres de los archivos, si los hay. */
+const attachmentBlocks = (msg: AdminMessage): EmailBlock[] => (msg.attachments?.length ? [{ kind: "note", title: msg.attachments.length === 1 ? "Adjunto" : "Adjuntos", items: msg.attachments }] : []);
 
 /** Free-form message written by the agency from the admin panel, in the same template. */
 export function clientMessageEmail(id: string, s: SolicitudInput, msg: AdminMessage, brand: EmailBrand): RenderedEmail {
@@ -68,6 +73,7 @@ export function clientMessageEmail(id: string, s: SolicitudInput, msg: AdminMess
     blocks: [
       ...paragraphs.map((text) => ({ kind: "p" as const, text })),
       ...(msg.includeSummary ? [{ kind: "p" as const, text: "Para que lo tengas a mano, esto es lo que nos contaste:" }, ...requestBlocks(s)] : []),
+      ...attachmentBlocks(msg),
       { kind: "signature", lines: msg.signature.split("\n").map((l) => l.trim()).filter(Boolean) },
     ],
     brand,
@@ -97,6 +103,7 @@ export function contactReplyEmail(id: string, c: ContactoInput, msg: AdminMessag
     blocks: [
       ...paragraphs.map((text) => ({ kind: "p" as const, text })),
       ...(msg.includeSummary ? [{ kind: "note" as const, title: "Tu mensaje", items: c.mensaje.split(/\n+/).map((l) => l.trim()).filter(Boolean) }] : []),
+      ...attachmentBlocks(msg),
       { kind: "signature", lines: msg.signature.split("\n").map((l) => l.trim()).filter(Boolean) },
     ],
     brand,
