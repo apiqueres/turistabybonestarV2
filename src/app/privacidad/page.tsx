@@ -13,7 +13,7 @@ export default function Privacidad() {
 
       <h2 className="t-h3 mt-6">Responsable del tratamiento</h2>
       <ul className="flex flex-col gap-1">
-        <li>CAMELOTSUECA, S.L. (TuristaByBonestar), CIF B98788169.</li>
+        <li>TuristaByBonestar, CIF B75690214.</li>
         <li>Passeig de l&apos;Estació 11, 46410 Sueca (Valencia).</li>
         <li>contacto@turistabybonestar.com · +34 623 375 998.</li>
       </ul>

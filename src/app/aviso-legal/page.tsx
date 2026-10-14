@@ -12,12 +12,11 @@ export default function AvisoLegal() {
         Electrónico (LSSI-CE), se informa de que el sitio web turistabybonestar.com (en adelante, «la web») es titularidad de:
       </p>
       <ul className="flex flex-col gap-1">
-        <li>Titular: CAMELOTSUECA, S.L., que opera bajo el nombre comercial TuristaByBonestar.</li>
-        <li>CIF: B98788169.</li>
+        <li>Titular: TuristaByBonestar.</li>
+        <li>CIF: B75690214.</li>
         <li>Domicilio social: Passeig de l&apos;Estació 11, 46410 Sueca (Valencia).</li>
         <li>Correo electrónico: contacto@turistabybonestar.com.</li>
         <li>Teléfono: +34 623 375 998.</li>
-        <li>Datos registrales: Registro Mercantil de Valencia, tomo 10055, libro 7337, folio 196, sección 8, hoja V-168491.</li>
       </ul>
 
       <h2 className="t-h3 mt-6">Objeto</h2>
