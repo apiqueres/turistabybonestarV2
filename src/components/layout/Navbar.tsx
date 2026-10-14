@@ -45,7 +45,7 @@ export function Navbar({ brand, links, cta }: Props) {
     <>
       <header className={`nav ${scrolled ? "is-scrolled" : ""}`}>
         <div className="nav-logo" title={brand}>
-          <Brand />
+          <Brand tone="light" />
         </div>
         <nav className="nav-links" aria-label="Principal">
           {links.map((l) => (
