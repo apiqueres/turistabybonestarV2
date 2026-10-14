@@ -1015,6 +1015,11 @@ html.reduced-motion .hero-el {
 .dest-grid > *:not(:nth-child(3n + 1)) {
   border-left: 1px solid var(--line);
 }
+/* Cada tarjeta es una columna: el contenido crece y el botón queda siempre abajo, a la misma altura en toda la fila. */
+.dest-card {
+  display: flex;
+  flex-direction: column;
+}
 .dest-card .media {
   margin: 0 24px;
 }

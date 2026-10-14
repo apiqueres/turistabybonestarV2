@@ -36,7 +36,7 @@ export function DestinationsGrid({ data, items, whatsapp }: Props) {
         <div className="dest-grid" data-cascade>
           {featured.map((d) => (
             <article key={d.id} className="card dest-card" data-cascade-item>
-              <Link href={`/donde-nos-vamos?pais=${d.id}`} className="block">
+              <Link href={`/donde-nos-vamos?pais=${d.id}`} className="block flex-1">
                 <div className="media" data-parallax style={{ aspectRatio: "4 / 3" }}>
                   <div className="media-inner">
                     <Image src={d.image.src} alt={d.image.alt} fill sizes="(max-width: 900px) 100vw, 33vw" className="object-cover" />
@@ -54,7 +54,7 @@ export function DestinationsGrid({ data, items, whatsapp }: Props) {
                   </div>
                 </div>
               </Link>
-              <div className="pt-5 pb-8 px-5 md:px-6 flex justify-center md:justify-start">
+              <div className="pt-5 pb-8 px-5 md:px-6 flex justify-center">
                 <a href={waHref(whatsapp, destinationMessage(d.name))} target="_blank" rel="noreferrer" className="btn btn-primary btn-sm">
                   Escribir por WhatsApp
                 </a>

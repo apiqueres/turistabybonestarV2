@@ -59,7 +59,7 @@ export function OffersGrid({ content, offers: serverOffers, communityHref, whats
                       )}
                     </div>
                   </div>
-                  <div className="pt-6 pb-8 md:px-6 flex flex-col gap-4">
+                  <div className="pt-6 pb-8 md:px-6 flex flex-col gap-4 flex-1">
                     <div className="flex items-start justify-between gap-4">
                       <h2 className="t-h3">{o.title}</h2>
                       {o.badge && <span className="badge offer-badge whitespace-nowrap">{o.badge}</span>}
@@ -82,7 +82,7 @@ export function OffersGrid({ content, offers: serverOffers, communityHref, whats
                       href={waHref(whatsapp, `Hola, quiero esta oferta: «${o.title}».`)}
                       target="_blank"
                       rel="noopener"
-                      className="btn btn-primary btn-sm self-start mt-2"
+                      className="btn btn-primary btn-sm self-center mt-auto"
                     >
                       {content.cta}
                       <ArrowRight className="btn-icon" />
