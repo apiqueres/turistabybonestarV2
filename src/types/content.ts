@@ -105,7 +105,7 @@ export interface SiteContent {
       secondary: Link;
       video: { mp4: string; poster: string };
     };
-    method: { kicker: string; steps: Step[] };
+    method: { kicker: string; title?: [string, string]; steps: Step[] };
     destinations: { kicker: string; title: [string, string]; link: Link };
     about: {
       kicker: string;

@@ -49,7 +49,7 @@ export function OfferEditor({ initial, destinations, isNew, onSave, onDelete, on
   };
   const save = () => {
     if (!o.title.trim() || !o.price.trim() || !o.destination.trim()) return setMsg("Faltan campos por rellenar: título, destino y precio son obligatorios.");
-    onSave({ ...o, id: o.id || slugify(o.title) || `oferta-${Date.now()}` });
+    onSave({ ...o, id: o.id || slugify(o.title) || `oferta-${Date.now()}`, includes: o.includes.map((s) => s.trim()).filter(Boolean) });
   };
 
   return (
@@ -128,7 +128,7 @@ export function OfferEditor({ initial, destinations, isNew, onSave, onDelete, on
           </div>
           <div className="col-span-2">
             <label className="lbl" htmlFor={`oin-${k}`}>Qué incluye (una línea por punto)</label>
-            <textarea id={`oin-${k}`} className="textarea" value={o.includes.join("\n")} onChange={(e) => field("includes", e.target.value.split("\n").filter(Boolean))} />
+            <textarea id={`oin-${k}`} className="textarea" value={o.includes.join("\n")} onChange={(e) => field("includes", e.target.value.split("\n"))} />
           </div>
         </div>
         <div className="flex flex-wrap gap-3 items-center rule pt-4">

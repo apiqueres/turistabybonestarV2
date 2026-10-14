@@ -5,6 +5,7 @@ import type { SiteContent } from "@/types/content";
 import { useMotion } from "@/lib/useMotion";
 import { SectionLabel } from "@/components/layout/SectionLabel";
 import { ScrubHeading } from "@/components/motion/ScrubHeading";
+import { siteContent } from "@/data/site";
 
 export function Method({ data }: { data: SiteContent["home"]["method"] }) {
   const ref = useRef<HTMLElement>(null);
@@ -14,6 +15,7 @@ export function Method({ data }: { data: SiteContent["home"]["method"] }) {
     <section id="metodo" ref={ref} data-section className="section">
       <SectionLabel name={data.kicker} />
       <div className="section-inner gutter min-h-[100svh] flex flex-col justify-center">
+        <ScrubHeading lines={data.title ?? siteContent.home.method.title ?? ["", ""]} className="t-h2 mb-14" />
         <div className="cols-3 rule">
           {data.steps.map((s) => (
             <div key={s.number} className="py-12 md:px-12 first:md:pl-0 last:md:pr-0">

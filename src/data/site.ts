@@ -36,6 +36,7 @@ export const siteContent: SiteContent = {
     },
     method: {
       kicker: "Así de simple",
+      title: ["Tu viaje", "en tres pasos."],
       steps: [
         {
           number: "01",

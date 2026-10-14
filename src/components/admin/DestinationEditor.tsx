@@ -63,7 +63,7 @@ export function DestinationEditor({ initial, isNew, onSave, onDelete, onCancel, 
     if (other && d.id !== initial.id) return setMsg(`Ya hay un destino en ese país («${other}»); el mapa solo admite uno por país.`);
     const slug = slugify(d.name);
     if (!slug) return setMsg("El nombre necesita alguna letra o número.");
-    onSave({ ...d, name: d.name.trim(), slug });
+    onSave({ ...d, name: d.name.trim(), slug, includes: d.includes.map((s) => s.trim()).filter(Boolean) });
   };
 
   return (
@@ -107,7 +107,7 @@ export function DestinationEditor({ initial, isNew, onSave, onDelete, onCancel, 
         </div>
         <div>
           <label className="lbl" htmlFor={`inc-${initial.id || "new"}`}>Qué incluye (una línea por punto)</label>
-          <textarea id={`inc-${initial.id || "new"}`} className="textarea" value={d.includes.join("\n")} onChange={(e) => field("includes", e.target.value.split("\n").filter(Boolean))} />
+          <textarea id={`inc-${initial.id || "new"}`} className="textarea" value={d.includes.join("\n")} onChange={(e) => field("includes", e.target.value.split("\n"))} />
         </div>
         <div className="flex flex-wrap gap-3 items-center rule pt-4">
           <button type="button" className="btn btn-primary btn-sm" onClick={save}>
