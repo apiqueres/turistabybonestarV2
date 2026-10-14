@@ -7,6 +7,7 @@ import { asset } from "@/lib/config";
 import { loadMapCountries, type MapCountry } from "@/lib/geo/countries";
 import { slugify } from "@/lib/slug";
 import { ArrowRight } from "@/components/ui/icons";
+import { CARD_RATIO, ImageCropDialog } from "./ImageCropDialog";
 
 export const EMPTY_DESTINATION: Destination = { id: "", slug: "", name: "", code: "", region: "", lon: 0, lat: 0, tagline: "", bestSeason: "", duration: "", idealFor: "", badge: "", includes: [], image: { src: "", alt: "" }, featured: false };
 export const imgSrc = (src: string) => (src.startsWith("data:") || !src ? src : asset(src));
@@ -47,18 +48,13 @@ export function DestinationEditor({ initial, isNew, onSave, onDelete, onCancel, 
     if (!c) return field("id", "");
     setD((x) => ({ ...x, id: c.id, lon: c.lon, lat: c.lat, code: x.code || c.code }));
   };
-  const [uploading, setUploading] = useState(false);
-  const onImage = async (file?: File) => {
-    if (!file) return;
-    setUploading(true);
-    try {
-      field("image", { ...d.image, src: await pickImage(file, mode, d.image.alt || d.name) });
-      setMsg(null);
-    } catch (err) {
-      setMsg(err instanceof Error ? err.message : "No se pudo cargar la imagen.");
-    } finally {
-      setUploading(false);
-    }
+  // La foto elegida pasa por el diálogo de recorte antes de subirse.
+  const [pending, setPending] = useState<File | null>(null);
+  const uploadCropped = async (file: File) => {
+    const src = await pickImage(file, mode, d.image.alt || d.name);
+    field("image", { ...d.image, src });
+    setMsg(null);
+    return imgSrc(src);
   };
   const save = () => {
     if (!d.name.trim()) return setMsg("Falta el nombre.");
@@ -77,8 +73,8 @@ export function DestinationEditor({ initial, isNew, onSave, onDelete, onCancel, 
         {d.image.src ? <img className="thumb" src={imgSrc(d.image.src)} alt={d.image.alt} /> : <div className="thumb" />}
         <div>
           <label className="lbl" htmlFor={`img-${initial.id || "new"}`}>Imagen (JPG/PNG/WebP)</label>
-          <input id={`img-${initial.id || "new"}`} type="file" accept="image/*" disabled={uploading} onChange={(e) => onImage(e.target.files?.[0])} className="t-small" />
-          {uploading && <span className="t-small t-muted">Subiendo…</span>}
+          <input id={`img-${initial.id || "new"}`} type="file" accept="image/*" onChange={(e) => { setPending(e.target.files?.[0] ?? null); e.target.value = ""; }} className="t-small" />
+          {pending && <ImageCropDialog file={pending} ratios={CARD_RATIO} upload={uploadCropped} onClose={() => setPending(null)} />}
         </div>
         <div>
           <label className="lbl" htmlFor={`alt-${initial.id || "new"}`}>Texto alternativo</label>

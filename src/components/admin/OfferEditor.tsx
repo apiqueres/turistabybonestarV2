@@ -4,6 +4,7 @@ import { useState } from "react";
 import type { Destination, Offer } from "@/types/content";
 import { pickImage } from "@/lib/admin/image";
 import { imgSrc } from "./DestinationEditor";
+import { CARD_RATIO, ImageCropDialog } from "./ImageCropDialog";
 import { slugify } from "@/lib/slug";
 import { ArrowRight } from "@/components/ui/icons";
 
@@ -38,18 +39,13 @@ export function OfferEditor({ initial, destinations, isNew, onSave, onDelete, on
       image: x.image.src ? x.image : d ? { ...d.image } : x.image,
     }));
   };
-  const [uploading, setUploading] = useState(false);
-  const onImage = async (file?: File) => {
-    if (!file) return;
-    setUploading(true);
-    try {
-      field("image", { ...o.image, src: await pickImage(file, mode, o.image.alt || o.title) });
-      setMsg(null);
-    } catch (err) {
-      setMsg(err instanceof Error ? err.message : "No se pudo cargar la imagen.");
-    } finally {
-      setUploading(false);
-    }
+  // La foto elegida pasa por el diálogo de recorte antes de subirse.
+  const [pending, setPending] = useState<File | null>(null);
+  const uploadCropped = async (file: File) => {
+    const src = await pickImage(file, mode, o.image.alt || o.title);
+    field("image", { ...o.image, src });
+    setMsg(null);
+    return imgSrc(src);
   };
   const save = () => {
     if (!o.title.trim() || !o.price.trim() || !o.destination.trim()) return setMsg("Faltan campos por rellenar: título, destino y precio son obligatorios.");
@@ -63,8 +59,8 @@ export function OfferEditor({ initial, destinations, isNew, onSave, onDelete, on
         {o.image.src ? <img className="thumb" src={imgSrc(o.image.src)} alt={o.image.alt} /> : <div className="thumb" />}
         <div>
           <label className="lbl" htmlFor={`oimg-${k}`}>Imagen (si no subes ninguna se usa la del destino)</label>
-          <input id={`oimg-${k}`} type="file" accept="image/*" disabled={uploading} onChange={(e) => onImage(e.target.files?.[0])} className="t-small" />
-          {uploading && <span className="t-small t-muted">Subiendo…</span>}
+          <input id={`oimg-${k}`} type="file" accept="image/*" onChange={(e) => { setPending(e.target.files?.[0] ?? null); e.target.value = ""; }} className="t-small" />
+          {pending && <ImageCropDialog file={pending} ratios={CARD_RATIO} upload={uploadCropped} onClose={() => setPending(null)} />}
         </div>
         <div>
           <label className="lbl" htmlFor={`oalt-${k}`}>Texto alternativo</label>

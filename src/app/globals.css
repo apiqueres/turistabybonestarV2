@@ -1450,6 +1450,82 @@ html.reduced-motion .hero-el {
   object-fit: cover;
   background: var(--bg-alt);
 }
+/* Diálogo de recorte de imágenes (panel) */
+.crop-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 200;
+  display: grid;
+  place-items: center;
+  padding: 16px;
+  background: rgba(11, 15, 16, 0.6);
+  backdrop-filter: blur(4px);
+}
+.crop-dialog {
+  width: min(640px, 100%);
+  max-height: calc(100vh - 32px);
+  overflow: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 24px;
+  background: var(--surface);
+  box-shadow: 0 24px 60px rgba(11, 15, 16, 0.35);
+}
+.crop-close {
+  display: grid;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  color: var(--muted);
+}
+.crop-close:hover {
+  color: var(--ink);
+}
+.crop-frame {
+  position: relative;
+  width: 100%;
+  overflow: hidden;
+  background: var(--bg-alt);
+  touch-action: none;
+  cursor: grab;
+  user-select: none;
+}
+.crop-frame:active {
+  cursor: grabbing;
+}
+.crop-frame.is-busy {
+  pointer-events: none;
+  opacity: 0.7;
+}
+.crop-frame img {
+  position: absolute;
+  top: 0;
+  left: 0;
+  max-width: none;
+  pointer-events: none;
+}
+.crop-frame .crop-final {
+  position: static;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.crop-hint {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+}
+.crop-zoom {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+.crop-zoom input[type="range"] {
+  flex: 1;
+  accent-color: var(--accent);
+}
 /* Adjuntos del compositor de mensajes */
 .attach-list {
   margin-top: 8px;

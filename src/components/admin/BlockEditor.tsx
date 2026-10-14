@@ -4,6 +4,7 @@ import { useMemo, useState } from "react";
 import { Close, ArrowRight } from "@/components/ui/icons";
 import { uploadImage } from "@/lib/admin/image";
 import { asset } from "@/lib/config";
+import { BLOCK_RATIOS, ImageCropDialog } from "./ImageCropDialog";
 
 /**
  * Editor genérico de un bloque de texto de la web (JSON con la forma de src/data/site.ts):
@@ -42,16 +43,12 @@ const IMAGE_KEYS = new Set(["src", "poster"]);
 
 /** Campo de imagen: ruta editable + subida al servidor + miniatura. */
 function ImageField({ id, name, value, onChange }: { id: string; name: string; value: string; onChange: (v: string) => void }) {
-  const [state, setState] = useState<string | null>(null);
-  const upload = async (file?: File) => {
-    if (!file) return;
-    setState("Subiendo…");
-    try {
-      onChange((await uploadImage(file)).path);
-      setState(null);
-    } catch (err) {
-      setState(err instanceof Error ? err.message : "No se pudo subir la imagen.");
-    }
+  // La foto elegida pasa por el diálogo de recorte (proporción a elegir) antes de subirse.
+  const [pending, setPending] = useState<File | null>(null);
+  const uploadCropped = async (file: File) => {
+    const path = (await uploadImage(file)).path;
+    onChange(path);
+    return asset(path);
   };
   return (
     <div className="md:col-span-2 flex gap-4 items-start">
@@ -60,8 +57,8 @@ function ImageField({ id, name, value, onChange }: { id: string; name: string; v
       <div className="flex-1 flex flex-col gap-2">
         <label className="lbl" htmlFor={id}>{label(name)}</label>
         <input id={id} className="input" value={value} onChange={(e) => onChange(e.target.value)} />
-        <input type="file" accept="image/*" className="t-small" aria-label="Subir imagen" onChange={(e) => upload(e.target.files?.[0])} />
-        {state && <span className="t-small t-muted">{state}</span>}
+        <input type="file" accept="image/*" className="t-small" aria-label="Subir imagen" onChange={(e) => { setPending(e.target.files?.[0] ?? null); e.target.value = ""; }} />
+        {pending && <ImageCropDialog file={pending} ratios={BLOCK_RATIOS} upload={uploadCropped} onClose={() => setPending(null)} />}
       </div>
     </div>
   );
