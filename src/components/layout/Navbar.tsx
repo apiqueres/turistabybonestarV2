@@ -45,11 +45,11 @@ export function Navbar({ brand, links, cta }: Props) {
     <>
       <header className={`nav ${scrolled ? "is-scrolled" : ""}`}>
         <div className="nav-logo" title={brand}>
-          <Brand />
+          <Brand tone="light" />
         </div>
         <nav className="nav-links" aria-label="Principal">
           {links.map((l) => (
-            <Link key={l.key} href={l.href} className={`nav-link ${isActive(l.key) ? "is-active" : ""} ${l.accent ? "is-gold" : ""}`}>
+            <Link key={l.key} href={l.href} className={`nav-link ${isActive(l.key) ? "is-active" : ""} ${l.accent ? "is-accent" : ""}`}>
               {l.label}
             </Link>
           ))}
@@ -72,7 +72,7 @@ export function Navbar({ brand, links, cta }: Props) {
       </header>
       <div className={`nav-menu ${open ? "is-open" : ""}`} aria-hidden={!open}>
         {links.map((l) => (
-          <Link key={l.key} href={l.href} onClick={() => setOpen(false)} className={l.accent ? "nav-gold-text" : isActive(l.key) ? "text-accent" : ""}>
+          <Link key={l.key} href={l.href} onClick={() => setOpen(false)} className={l.accent ? "nav-accent-text" : isActive(l.key) ? "text-accent" : ""}>
             {l.label}
           </Link>
         ))}

@@ -12,6 +12,8 @@ export type Question =
   | { id: string; kind: "text"; label: string; placeholder?: string; multiline?: boolean; inputType?: "text" | "email" | "tel"; required?: boolean }
   | { id: string; kind: "date"; label: string }
   | { id: string; kind: "number"; label: string; min: number; max: number }
+  /** One age per child: the number of inputs follows the "number" question `countFrom`. */
+  | { id: string; kind: "ages"; label: string; countFrom: string; min: number; max: number }
   | { id: string; kind: "toggle"; label: string; required?: boolean }
   | { id: string; kind: "destinations" };
 
@@ -24,7 +26,7 @@ export interface FormStep {
   questions: Question[];
 }
 
-export type AnswerValue = string | string[] | number | boolean;
+export type AnswerValue = string | string[] | number | boolean | (number | null)[];
 export type Answers = Record<string, AnswerValue>;
 export type SetAnswerInput = AnswerValue | undefined | ((prev: AnswerValue | undefined) => AnswerValue | undefined);
 export type SetAnswer = (id: string, input: SetAnswerInput) => void;

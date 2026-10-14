@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect } from "react";
 import type { Answers, Question, SetAnswer } from "@/types/form";
 import type { Destination } from "@/types/content";
 import { ConsentLabel } from "./Consent";
@@ -21,6 +22,9 @@ export function shiftDay(iso: string, days: number): string {
   return d.toISOString().slice(0, 10);
 }
 
+/** Option ids of a "multi" answer (the ages answer is the only other array, and it holds numbers). */
+const strings = (v: unknown): string[] => (Array.isArray(v) ? v.filter((x): x is string => typeof x === "string") : []);
+
 /** Renders one question of the wizard according to its `kind`. */
 export function QuestionField({ question: q, answers, setAnswer, siblings = [] }: Props) {
   const value = answers[q.id];
@@ -28,11 +32,11 @@ export function QuestionField({ question: q, answers, setAnswer, siblings = [] }
   if (q.kind === "destinations") return null; // the destination comes from the map, it is never asked here
 
   if (q.kind === "multi") {
-    const arr = Array.isArray(value) ? value : [];
+    const arr = strings(value);
     const full = q.max !== undefined && arr.length >= q.max;
     const toggle = (id: string) =>
       setAnswer(q.id, (prev) => {
-        const cur = Array.isArray(prev) ? prev : [];
+        const cur = strings(prev);
         if (cur.includes(id)) return cur.filter((x) => x !== id);
         if (q.max !== undefined && cur.length >= q.max) return cur;
         return [...cur, id];
@@ -126,6 +130,8 @@ export function QuestionField({ question: q, answers, setAnswer, siblings = [] }
     );
   }
 
+  if (q.kind === "ages") return <AgesField question={q} answers={answers} setAnswer={setAnswer} />;
+
   // toggle (en la casilla «privacidad», el texto «política de privacidad» enlaza a la política)
   const on = value === true;
   return (
@@ -136,5 +142,51 @@ export function QuestionField({ question: q, answers, setAnswer, siblings = [] }
         {q.required ? " *" : ""}
       </span>
     </label>
+  );
+}
+
+type AgesQuestion = Extract<Question, { kind: "ages" }>;
+
+/** One small number input per child; follows the count of the linked "number" question and disappears at zero. */
+function AgesField({ question: q, answers, setAnswer }: { question: AgesQuestion; answers: Answers; setAnswer: SetAnswer }) {
+  const raw = answers[q.countFrom];
+  const count = typeof raw === "number" && Number.isFinite(raw) ? Math.min(20, Math.max(0, Math.floor(raw))) : 0;
+  const value = answers[q.id];
+  const ages: (number | null)[] = Array.isArray(value) ? value.map((x) => (typeof x === "number" ? x : null)) : [];
+
+  // The number of children changed: trim or pad the ages so each slot still matches a child.
+  useEffect(() => {
+    if (ages.length === count) return;
+    setAnswer(q.id, (prev) => {
+      if (count === 0) return undefined;
+      const cur = Array.isArray(prev) ? prev : [];
+      const next = Array.from({ length: count }, (_, i) => (typeof cur[i] === "number" ? (cur[i] as number) : null));
+      return next.every((x) => x === null) ? undefined : next;
+    });
+  }, [count, ages.length, q.id, setAnswer]);
+
+  if (count === 0) return null;
+
+  const set = (i: number, text: string) =>
+    setAnswer(q.id, (prev) => {
+      const cur = Array.isArray(prev) ? prev : [];
+      const next = Array.from({ length: count }, (_, k) => (typeof cur[k] === "number" ? (cur[k] as number) : null));
+      const n = text === "" ? null : Math.min(q.max, Math.max(q.min, Math.floor(Number(text))));
+      next[i] = n !== null && Number.isFinite(n) ? n : null;
+      return next.every((x) => x === null) ? undefined : next;
+    });
+
+  return (
+    <div className="field">
+      <label htmlFor={`${q.id}-1`}>{q.label}</label>
+      <div className="ages">
+        {Array.from({ length: count }, (_, i) => (
+          <div key={i} className="age">
+            <input id={`${q.id}-${i + 1}`} type="number" inputMode="numeric" min={q.min} max={q.max} value={ages[i] ?? ""} placeholder="—" aria-label={`Edad del niño ${i + 1}`} onChange={(e) => set(i, e.target.value)} />
+            <span>Niño {i + 1}</span>
+          </div>
+        ))}
+      </div>
+    </div>
   );
 }

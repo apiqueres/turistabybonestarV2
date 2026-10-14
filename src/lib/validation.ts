@@ -7,6 +7,8 @@ const answerValue = z.union([
   z.array(z.string().max(120)).max(40),
   z.number().finite(),
   z.boolean(),
+  // Edades de los niños, una por niño (null = sin indicar).
+  z.array(z.number().int().min(0).max(17).nullable()).max(20),
 ]);
 
 export const solicitudSchema = z.object({

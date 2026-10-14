@@ -1,5 +1,6 @@
 import { formContent } from "@/data/form";
 import type { SolicitudInput } from "./validation";
+import { formatAges } from "./ages";
 
 export interface SummarySection {
   title: string;
@@ -16,6 +17,8 @@ function optionLabel(stepId: string, questionId: string, optionId: string): stri
 }
 
 function formatValue(stepId: string, questionId: string, v: unknown): string {
+  const q = formContent.steps.find((s) => s.id === stepId)?.questions.find((qq) => qq.id === questionId);
+  if (q?.kind === "ages") return formatAges(v);
   if (Array.isArray(v)) return v.map((id) => optionLabel(stepId, questionId, String(id))).join(", ");
   if (typeof v === "boolean") return v ? "Sí" : "No";
   if (typeof v === "string") return /^\d{4}-\d{2}-\d{2}$/.test(v) ? formatDate(v) : optionLabel(stepId, questionId, v);

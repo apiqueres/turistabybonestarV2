@@ -5,6 +5,7 @@ import type { RequestStatus, StoredRequest } from "@/types/admin";
 import type { FormStep } from "@/types/form";
 import type { EmailBrand } from "@/lib/email-shell";
 import { buildPrompt } from "@/lib/prompt";
+import { formatAges } from "@/lib/ages";
 import { clientMessageEmail, defaultAdminMessage } from "@/lib/email-templates";
 import { ArrowRight } from "@/components/ui/icons";
 import { MessageComposer } from "./MessageComposer";
@@ -28,7 +29,7 @@ function labelFor(steps: FormStep[], qid: string, value: unknown): [string, stri
       if (q.id !== qid) continue;
       const label = ("label" in q && q.label) || s.kicker.replace(/^\d+\s—\s/, "");
       const opt = (id: string) => (q.kind === "multi" || q.kind === "single" ? (q.options.find((o) => o.id === id)?.label ?? id) : id);
-      const text = Array.isArray(value) ? value.map((v) => opt(String(v))).join(", ") : typeof value === "boolean" ? (value ? "Sí" : "No") : opt(String(value));
+      const text = q.kind === "ages" ? formatAges(value) : Array.isArray(value) ? value.map((v) => opt(String(v))).join(", ") : typeof value === "boolean" ? (value ? "Sí" : "No") : opt(String(value));
       return [label, text];
     }
   }

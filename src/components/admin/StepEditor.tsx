@@ -3,7 +3,7 @@
 import type { FormStep, Question } from "@/types/form";
 import { ArrowRight, Close } from "@/components/ui/icons";
 
-export const KIND: Record<Question["kind"], string> = { multi: "Selección múltiple", single: "Una respuesta", text: "Texto", date: "Fecha", number: "Número", toggle: "Casilla", destinations: "Destinos (mapa)" };
+export const KIND: Record<Question["kind"], string> = { multi: "Selección múltiple", single: "Una respuesta", text: "Texto", date: "Fecha", number: "Número", ages: "Edades (una por niño)", toggle: "Casilla", destinations: "Destinos (mapa)" };
 const slug = (s: string) => s.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "") || `opcion-${Date.now()}`;
 
 interface Props {

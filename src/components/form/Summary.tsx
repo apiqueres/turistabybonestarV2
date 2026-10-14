@@ -1,6 +1,7 @@
 import type { Answers, FormContent, FormStep } from "@/types/form";
 import type { Destination } from "@/types/content";
 import { placeLabel } from "@/lib/geo/places";
+import { formatAges } from "@/lib/ages";
 
 interface Props {
   steps: FormStep[];
@@ -22,8 +23,9 @@ export function Summary({ steps, answers, destinations, content }: Props) {
       if (v === undefined || v === "" || (Array.isArray(v) && !v.length)) continue;
       const label = ("label" in q && q.label) || step.kicker.replace(/^\d+\s—\s/, "");
       let text: string;
-      if (q.kind === "multi" && Array.isArray(v)) text = v.map((id) => q.options.find((o) => o.id === id)?.label ?? id).join(", ");
+      if (q.kind === "multi" && Array.isArray(v)) text = v.map((id) => q.options.find((o) => o.id === String(id))?.label ?? String(id)).join(", ");
       else if (q.kind === "single" && typeof v === "string") text = q.options.find((o) => o.id === v)?.label ?? v;
+      else if (q.kind === "ages") text = formatAges(v);
       else if (typeof v === "boolean") text = v ? "Sí" : "No";
       else text = String(v);
       rows.push([label, text]);

@@ -21,7 +21,7 @@ const LABELS: Record<string, string> = {
   privacy: "Privacidad", submit: "Botón de envío", success: "Mensaje de éxito", mapNudge: "Aviso del mapa", community: "Comunidad", sections: "Secciones",
   contact: "Contacto", legal: "Legal", legalLinks: "Enlaces legales", credits: "Créditos", tagline: "Lema", city: "Dirección", whatsapp: "WhatsApp",
   communityName: "Nombre de la comunidad", communityUrl: "Enlace de la comunidad", hours: "Horario", instagram: "Instagram", year: "Año", links: "Enlaces",
-  key: "Clave de ruta", accent: "Destacado (dorado)",
+  key: "Clave de ruta", accent: "Destacado (cian)",
 };
 const label = (k: string) => LABELS[k] ?? k;
 

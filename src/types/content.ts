@@ -17,7 +17,7 @@ export interface Link {
 export interface NavLink extends Link {
   /** Route path used to mark the active link. */
   key: string;
-  /** Highlighted in gold (e.g. Ofertas). */
+  /** Highlighted in the brand cyan (e.g. Ofertas). */
   accent?: boolean;
 }
 

@@ -35,6 +35,7 @@ export const formContent: FormContent = {
         { id: "vuelta", kind: "date", label: "Fecha de vuelta" },
         { id: "adultos", kind: "number", label: "Adultos", min: 1, max: 20 },
         { id: "ninos", kind: "number", label: "Niños", min: 0, max: 20 },
+        { id: "edades", kind: "ages", label: "Edad de los niños", countFrom: "ninos", min: 0, max: 17 },
         {
           id: "presupuesto",
           kind: "single",

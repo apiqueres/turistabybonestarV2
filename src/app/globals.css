@@ -15,6 +15,7 @@
   --accent: #00b4d8;
   --accent-text: #0a8daa;
   --accent-rgb: 0, 180, 216;
+  --accent-dark: #0098b8;
   --gutter: 32px;
   --nav-h: 60px;
   --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
@@ -312,20 +313,25 @@ html.reduced-motion .hero-el {
   z-index: 50;
   display: flex;
   align-items: stretch;
-  border-bottom: 1px solid var(--line);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.12);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
-  background: rgba(255, 255, 255, 0.55);
+  /* Negro difuminado: el blanco de antes al 55 % pasa a negro al 75 % (+20 puntos). */
+  background: rgba(0, 0, 0, 0.75);
+  color: #fff;
   transition: background-color 0.5s var(--ease-out);
 }
 .nav.is-scrolled {
-  background: rgba(255, 255, 255, 0.88);
+  background: rgba(0, 0, 0, 0.96);
 }
 .nav-logo {
   display: flex;
   align-items: center;
   padding: 0 var(--gutter);
-  border-right: 1px solid var(--line);
+  border-right: 1px solid rgba(255, 255, 255, 0.12);
+}
+.nav-logo .brand-name span {
+  color: rgba(255, 255, 255, 0.5);
 }
 .nav-logo img {
   height: 40px;
@@ -343,30 +349,32 @@ html.reduced-motion .hero-el {
 }
 .nav-link {
   position: relative;
-  color: var(--ink);
+  color: #fff;
   transition: color 0.4s var(--ease-out);
 }
 .nav-link.is-active {
-  color: var(--accent-text);
+  color: var(--accent);
 }
 .nav-cta {
   display: flex;
   align-items: center;
   padding: 0 var(--gutter);
-  border-left: 1px solid var(--line);
+  border-left: 1px solid rgba(255, 255, 255, 0.12);
 }
 .nav-burger {
   display: none;
   align-items: center;
   justify-content: center;
   width: 60px;
-  border-left: 1px solid var(--line);
+  border-left: 1px solid rgba(255, 255, 255, 0.12);
   margin-left: auto;
+  color: #fff;
 }
 .nav-menu {
   position: fixed;
   inset: var(--nav-h) 0 0 0;
-  background: rgba(255, 255, 255, 0.97);
+  background: rgba(0, 0, 0, 0.96);
+  color: #fff;
   backdrop-filter: blur(12px);
   z-index: 49;
   display: flex;
@@ -646,6 +654,15 @@ html.reduced-motion .hero-el {
   .loader-line::after {
     animation-duration: 0.01s;
   }
+  .promo-track {
+    animation: none;
+    display: block;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .promo-track > span:not(:first-child) {
+    display: none;
+  }
 }
 
 /* ---------- Routes: shared helpers ---------- */
@@ -797,6 +814,29 @@ html.reduced-motion .hero-el {
 .field .field-error {
   font-size: 13px;
   color: var(--accent-text);
+}
+/* Edades de los niños: una casilla pequeña por niño, en fila. */
+.ages {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px 24px;
+}
+.age {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  width: 72px;
+}
+.field .age input {
+  text-align: center;
+  padding: 8px 0 10px;
+}
+.age span {
+  font-family: var(--font-mono), "IBM Plex Mono", ui-monospace, monospace;
+  font-size: 11px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--muted);
 }
 .check {
   display: flex;
@@ -1328,9 +1368,9 @@ html.reduced-motion .hero-el {
   color: var(--muted);
 }
 .badge.promo-badge {
-  background: var(--gold);
+  background: var(--accent);
   color: var(--ink);
-  border-color: var(--gold);
+  border-color: var(--accent);
 }
 .select,
 .input,
@@ -1512,21 +1552,16 @@ html.reduced-motion .hero-el {
   }
 }
 
-/* ---------- Gold call-to-action ---------- */
-:root {
-  --gold: #d4af37;
-  --gold-dark: #b8921e;
-  --gold-rgb: 212, 175, 55;
-}
+/* ---------- Accent call-to-action (cian de la marca) ---------- */
 .btn-primary,
 .on-dark .btn-primary {
-  background: var(--gold);
+  background: var(--accent);
   color: var(--ink);
-  box-shadow: 0 6px 18px rgba(var(--gold-rgb), 0.3);
+  box-shadow: 0 6px 18px rgba(var(--accent-rgb), 0.3);
 }
 .btn-primary:hover,
 .on-dark .btn-primary:hover {
-  background: var(--gold-dark);
+  background: var(--accent-dark);
   color: var(--ink);
 }
 
@@ -1661,14 +1696,14 @@ html.reduced-motion .hero-el {
   }
 }
 
-/* ---------- Gold nav link (Ofertas) ---------- */
-.nav-link.is-gold,
-.nav-gold-text {
-  color: var(--gold-dark);
+/* ---------- Accent nav link (Ofertas) ---------- */
+.nav-link.is-accent,
+.nav-accent-text {
+  color: var(--accent);
   font-weight: 500;
 }
-.nav-link.is-gold.is-active {
-  color: var(--gold-dark);
+.nav-link.is-accent.is-active {
+  color: var(--accent);
   text-decoration: underline;
   text-underline-offset: 6px;
 }
@@ -1678,9 +1713,9 @@ html.reduced-motion .hero-el {
   line-height: 1;
 }
 .offer-badge {
-  background: var(--gold);
+  background: var(--accent);
   color: var(--ink);
-  border-color: var(--gold);
+  border-color: var(--accent);
 }
 
 /* ---------- Promo bar (portada) ---------- */
@@ -1696,7 +1731,7 @@ html.reduced-motion .hero-el {
   align-items: center;
   gap: 16px;
   padding: 0 var(--gutter);
-  background: var(--gold);
+  background: var(--accent);
   color: var(--ink);
   font-family: var(--font-mono), monospace;
   font-size: 12px;
@@ -1717,12 +1752,42 @@ html.reduced-motion .hero-el {
 html.reduced-motion .promo {
   transition: none;
 }
-.promo-text {
+/* Marquesina: el texto se repite y se desplaza de derecha a izquierda, como un rótulo de televisión. */
+.promo-marquee {
   flex: 1;
   min-width: 0;
+  overflow: hidden;
+}
+.promo-track {
+  display: inline-flex;
   white-space: nowrap;
+  will-change: transform;
+  animation: promo-marquee var(--promo-dur, 20s) linear infinite;
+}
+.promo-track > span {
+  flex: none;
+  padding-right: 64px;
+}
+.promo:hover .promo-track {
+  animation-play-state: paused;
+}
+@keyframes promo-marquee {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+/* Sin movimiento: una sola copia, recortada con puntos suspensivos. */
+html.reduced-motion .promo-track {
+  animation: none;
+  display: block;
   overflow: hidden;
   text-overflow: ellipsis;
+}
+html.reduced-motion .promo-track > span:not(:first-child) {
+  display: none;
 }
 .promo-link {
   display: inline-flex;
@@ -1802,7 +1867,7 @@ html.reduced-motion .promo {
   place-items: center;
   border: 1px solid var(--ink);
   border-radius: 999px;
-  background: var(--gold);
+  background: var(--accent);
   color: var(--ink);
 }
 .place-search-go svg {
@@ -1870,13 +1935,13 @@ html.reduced-motion .promo {
   cursor: default;
 }
 .city-pin circle {
-  fill: var(--gold);
+  fill: var(--accent);
   stroke: var(--ink);
   stroke-width: 1.5;
 }
 .city-pin .city-ring {
   fill: none;
-  stroke: var(--gold);
+  stroke: var(--accent);
   stroke-width: 1.5;
   opacity: 0.8;
   transform-origin: center;
