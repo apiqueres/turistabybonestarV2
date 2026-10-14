@@ -1,5 +1,5 @@
 // Builds the brand files from the light logo generated with Higgsfield (scratch/logo-light-a.png):
-// full logo (light/dark), emblem marks, favicon and the loader layers. Run: node scripts/build-brand.mjs
+// full logo (light/dark), emblem marks, the wordmark crop (letters only), favicon and a preview sheet. Run: node scripts/build-brand.mjs
 import sharp from "sharp";
 const SRC = "scratch/logo-light-a.png";
 (async () => {
@@ -39,6 +39,25 @@ const SRC = "scratch/logo-light-a.png";
   };
   const markLight = await (await markOf(light)).toBuffer();
   const markDark = await (await markOf(dark)).toBuffer();
+  // 3b) wordmark: the lettering below the emblem (TURISTA + "by Bonestar's Bistro"). The "A" apex climbs into the
+  // orbit ring and the camera sits on the "T", so cyan is dropped above the "by" line and ink is only kept where the letters are.
+  const wordOf = async (buf) => {
+    const top = Math.round(meta.height * 0.49);
+    const { data: d, info: inf } = await sharp(buf).extract({ left: 0, top, width: meta.width, height: meta.height - top }).ensureAlpha().raw().toBuffer({ resolveWithObject: true });
+    const o = Buffer.from(d);
+    const byLine = Math.round(meta.height * 0.74) - top; // above this only the letters (ink) belong to the wordmark
+    const apexOnly = Math.round(meta.height * 0.527) - top; // above: only the "A" apex (right side) is lettering
+    const tallOnly = Math.round(meta.height * 0.574) - top; // above: the camera still overlaps the left half
+    for (let y = 0; y < inf.height; y++) for (let x = 0; x < inf.width; x++) {
+      const i = (y * inf.width + x) * 4;
+      const r = d[i], b = d[i + 2];
+      const cyanish = b - r > 40; // ring, trail and camera, including their soft edges; the letters are neutral
+      if ((y < byLine && cyanish) || (y < apexOnly && x < meta.width * 0.68) || (y < tallOnly && x < meta.width * 0.49)) o[i + 3] = 0;
+    }
+    return sharp(o, { raw: { width: inf.width, height: inf.height, channels: 4 } }).trim().png();
+  };
+  const wordLight = await (await wordOf(light)).toBuffer();
+  const wordDark = await (await wordOf(dark)).toBuffer();
   const save = async (buf, name, widths) => {
     for (const w of widths) await sharp(buf).resize({ width: w }).png().toFile(`public/brand/${name}-${w}.png`);
   };
@@ -46,6 +65,8 @@ const SRC = "scratch/logo-light-a.png";
   await save(dark, "logo-full-dark", [512, 1024]);
   await save(markLight, "logo-mark-light", [96, 192]);
   await save(markDark, "logo-mark-dark", [96, 192]);
+  await save(wordLight, "logo-word-light", [192, 384]);
+  await save(wordDark, "logo-word-dark", [192, 384]);
   // 4) favicon: emblem on white
   const icon = await sharp(markLight).resize({ width: 52, height: 52, fit: "contain", background: { r: 0, g: 0, b: 0, alpha: 0 } }).png().toBuffer();
   await sharp({ create: { width: 64, height: 64, channels: 4, background: "#ffffff" } }).composite([{ input: icon, gravity: "centre" }]).png().toFile("src/app/icon.png");
@@ -53,7 +74,7 @@ const SRC = "scratch/logo-light-a.png";
   // Higgsfield from the logo, not crops of it; they are not rebuilt here.
   // 5) preview sheet: full light on white, full dark on ink, marks
   const tile = async (buf, bg, w, h) => sharp({ create: { width: w, height: h, channels: 4, background: bg } }).composite([{ input: await sharp(buf).resize({ width: w - 40, height: h - 40, fit: "contain", background: { r: 0, g: 0, b: 0, alpha: 0 } }).toBuffer(), gravity: "centre" }]).png().toBuffer();
-  const tiles = [await tile(light, "#ffffff", 520, 440), await tile(dark, "#0b0f10", 520, 440), await tile(markLight, "#ffffff", 260, 440), await tile(markDark, "#0b0f10", 260, 440)];
+  const tiles = [await tile(light, "#ffffff", 520, 440), await tile(dark, "#0b0f10", 520, 440), await tile(markLight, "#ffffff", 260, 440), await tile(markDark, "#0b0f10", 260, 440), await tile(wordLight, "#ffffff", 360, 440), await tile(wordDark, "#0b0f10", 360, 440)];
   let x = 0; const comp = [];
   for (const t of tiles) { const m = await sharp(t).metadata(); comp.push({ input: t, top: 0, left: x }); x += m.width; }
   await sharp({ create: { width: x, height: 440, channels: 4, background: "#888" } }).composite(comp).jpeg({ quality: 85 }).toFile("scratch/brand-preview.jpg");

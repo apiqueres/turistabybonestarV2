@@ -112,7 +112,6 @@ button {
 .btn,
 .nav-links,
 .nav-menu,
-.brand-name,
 .section-label,
 .wiz-header,
 .wiz-footer,
@@ -1082,14 +1081,9 @@ html.reduced-motion .hero-el {
   height: 40px;
   width: auto;
 }
-.brand-name {
-  font-size: 13px;
-  letter-spacing: 0.16em;
-  text-transform: uppercase;
-}
-.brand-name span {
-  color: var(--muted);
-  margin: 0 2px;
+.brand .brand-word {
+  height: 34px;
+  margin-top: 2px;
 }
 .country.is-selectable {
   cursor: pointer;
@@ -1190,9 +1184,8 @@ html.reduced-motion .hero-el {
   }
 }
 @media (max-width: 560px) {
-  .wiz-header .brand-name,
-  .nav-logo .brand-name {
-    display: none;
+  .brand .brand-word {
+    height: 30px;
   }
   .wiz-header {
     font-size: 11px;
